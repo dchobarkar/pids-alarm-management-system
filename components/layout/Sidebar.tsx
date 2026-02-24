@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Alarms", href: "/alarms" },
-  { label: "Assignments", href: "/assignments" },
-  { label: "Reports", href: "/reports" },
-  { label: "Users", href: "/users" },
+  { label: "Alarms", href: "/dashboard/alarms" },
+  { label: "Assignments", href: "/dashboard/assignments" },
+  { label: "Reports", href: "/dashboard/reports" },
+  { label: "Users", href: "/dashboard/users" },
 ];
 
 const Sidebar = () => {

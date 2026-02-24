@@ -7,12 +7,11 @@ const Layout = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <>
+    <div className="min-h-screen bg-(--bg-app)">
       <DBNavbar />
       <Sidebar />
-
-      {children}
-    </>
+      <main className="pl-64 pt-14 min-h-screen">{children}</main>
+    </div>
   );
 };
 
