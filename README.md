@@ -120,7 +120,7 @@ PIDS API ingestion, GIS analytics, patrol tracking
 
 ## 📜 License
 
-Proprietary — Internal Use Only
+Proprietary — Internal Use Only. See [LICENSE](LICENSE) for full terms.
 
 ---
 
