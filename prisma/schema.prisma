@@ -1,0 +1,134 @@
+// PIDS Alarm Management System - Phase 1
+// Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OPERATOR
+  SUPERVISOR
+  NIGHT_SUPERVISOR
+  RMP
+  ER
+  QRV_SUPERVISOR
+}
+
+enum AlarmStatus {
+  CREATED
+  ASSIGNED
+  INVESTIGATION_DONE
+  CLOSED
+}
+
+enum Criticality {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  role          Role
+  supervisorId  String?   @map("supervisor_id")
+  chainageStart Decimal   @map("chainage_start") @db.Decimal(10, 3)
+  chainageEnd   Decimal   @map("chainage_end") @db.Decimal(10, 3)
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  supervisor   User?    @relation("SupervisorRelation", fields: [supervisorId], references: [id])
+  subordinates User[]   @relation("SupervisorRelation")
+  createdAlarms Alarm[] @relation("CreatedAlarms")
+  assignments   AlarmAssignment[] @relation("AssignedTo")
+  assignedBy   AlarmAssignment[] @relation("AssignedBy")
+  fieldReports FieldReport[]
+  closedAlarms Alarm[]  @relation("ClosedAlarms")
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Alarm {
+  id           String        @id @default(uuid())
+  latitude     Decimal       @db.Decimal(10, 7)
+  longitude    Decimal       @db.Decimal(10, 7)
+  chainage     Decimal       @db.Decimal(10, 3)
+  alarmType    String        @map("alarm_type")
+  criticality  Criticality
+  incidentTime DateTime     @map("incident_time")
+  createdById  String       @map("created_by")
+  status       AlarmStatus  @default(CREATED)
+  closedById   String?      @map("closed_by")
+  closedAt     DateTime?    @map("closed_at")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  createdBy    User              @relation("CreatedAlarms", fields: [createdById], references: [id])
+  closedBy     User?             @relation("ClosedAlarms", fields: [closedById], references: [id])
+  assignments  AlarmAssignment[]
+  fieldReports FieldReport[]
+
+  @@map("alarms")
+}
+
+model AlarmAssignment {
+  id          String   @id @default(uuid())
+  alarmId     String   @map("alarm_id")
+  assignedTo  String   @map("assigned_to")
+  assignedBy  String   @map("assigned_by")
+  assignedAt  DateTime @default(now()) @map("assigned_at")
+
+  alarm     Alarm @relation(fields: [alarmId], references: [id], onDelete: Cascade)
+  assignee  User  @relation("AssignedTo", fields: [assignedTo], references: [id])
+  assigner  User  @relation("AssignedBy", fields: [assignedBy], references: [id])
+
+  @@unique([alarmId])
+  @@map("alarm_assignments")
+}
+
+model FieldReport {
+  id        String   @id @default(uuid())
+  alarmId   String   @map("alarm_id")
+  userId    String   @map("user_id")
+  remark    String   @db.Text
+  geoLat    Decimal? @map("geo_lat") @db.Decimal(10, 7)
+  geoLng    Decimal? @map("geo_lng") @db.Decimal(10, 7)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  alarm  Alarm  @relation(fields: [alarmId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+  media  Media[]
+
+  @@map("field_reports")
+}
+
+model Media {
+  id         String   @id @default(uuid())
+  reportId   String   @map("report_id")
+  fileUrl    String   @map("file_url")
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  report FieldReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@map("media")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String
+  entityType  String   @map("entity_type")
+  entityId    String   @map("entity_id")
+  performedBy String   @map("performed_by")
+  metadata    Json?    @db.JsonB
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [performedBy], references: [id], onDelete: Cascade)
+
+  @@map("audit_logs")
+}
