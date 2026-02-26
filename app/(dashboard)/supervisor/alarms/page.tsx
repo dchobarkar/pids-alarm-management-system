@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth/get-session";
 import { getAlarmsByScope } from "@/lib/alarm/alarm-repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import ScopedAlarmsTable from "@/components/alarms/ScopedAlarmsTable";
+import SupervisorAlarmsClient from "./SupervisorAlarmsClient";
 
 type SearchParams = { status?: string; criticality?: string };
 
@@ -54,11 +54,7 @@ export default async function SupervisorAlarmsPage({
         Alarms (your chainages)
       </h1>
       <Card>
-        <ScopedAlarmsTable
-          alarms={alarms}
-          basePath="/supervisor/alarms"
-          searchParams={params}
-        />
+        <SupervisorAlarmsClient alarms={alarms} searchParams={params} />
       </Card>
     </div>
   );

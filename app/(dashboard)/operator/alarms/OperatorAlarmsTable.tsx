@@ -74,6 +74,30 @@ const OperatorAlarmsTable = ({ alarms, searchParams }: Props) => {
       ),
     },
     {
+      header: "Assigned RMP",
+      accessor: "assignments" as const,
+      render: (r: AlarmWithRelations) => {
+        const a = r.assignments?.[0];
+        return a ? a.rmp.name : "—";
+      },
+    },
+    {
+      header: "Assignment status",
+      accessor: "assignments" as const,
+      render: (r: AlarmWithRelations) => {
+        const a = r.assignments?.[0];
+        return a ? a.status : "—";
+      },
+    },
+    {
+      header: "Accepted at",
+      accessor: "assignments" as const,
+      render: (r: AlarmWithRelations) => {
+        const a = r.assignments?.[0];
+        return a?.acceptedAt ? new Date(a.acceptedAt).toLocaleString() : "—";
+      },
+    },
+    {
       header: "Incident time",
       accessor: "incidentTime" as const,
       render: (r: AlarmWithRelations) =>

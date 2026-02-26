@@ -1,4 +1,7 @@
-import { AlarmStatus as AlarmStatusEnum } from "@/lib/generated/prisma";
+import {
+  AlarmStatus as AlarmStatusEnum,
+  AssignmentStatus,
+} from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import type { CreateAlarmInput } from "@/lib/validation/alarm-schema";
 import type {
@@ -77,8 +80,20 @@ export async function getAlarmsByScope(
   return getScopedAlarms(user, filters, options);
 }
 
+const activeAssignmentInclude = {
+  where: {
+    status: { in: [AssignmentStatus.PENDING, AssignmentStatus.ACCEPTED] },
+  },
+  orderBy: { assignedAt: "desc" as const },
+  take: 1,
+  include: {
+    rmp: { select: { id: true, name: true } },
+    supervisor: { select: { id: true, name: true } },
+  },
+};
+
 /**
- * Get single alarm by id. Returns null if not found.
+ * Get single alarm by id. Returns null if not found. Includes active assignment if any.
  */
 export async function getAlarmById(
   id: string,
@@ -88,6 +103,7 @@ export async function getAlarmById(
     include: {
       chainage: true,
       createdBy: { select: { id: true, name: true, email: true } },
+      assignments: activeAssignmentInclude,
     },
   });
   return alarm as AlarmWithRelations | null;
