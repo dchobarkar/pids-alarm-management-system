@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
 
-const RegisterPage = () => {
+const Page = () => {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -102,4 +102,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default Page;

@@ -1,34 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
 
-const LoginPage = () => {
-  const router = useRouter();
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const urlError = searchParams.get("error");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const displayError =
+    error ||
+    (urlError === "CredentialsSignin" ? "Invalid email or password." : null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      // Placeholder: replace with real auth API
       if (!email || !password) {
         setError("Email and password are required.");
+        setLoading(false);
         return;
       }
-      // Simulate login success
-      await new Promise((r) => setTimeout(r, 600));
-      router.push("/dashboard");
+      await signIn("credentials", {
+        email,
+        password,
+        callbackUrl: "/auth/redirect",
+        redirect: true,
+      });
+      setError("Sign in failed. Please try again.");
     } catch {
       setError("Sign in failed. Please try again.");
     } finally {
@@ -43,7 +53,7 @@ const LoginPage = () => {
           Enter your credentials to access the PIDS Alarm Management System.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <Alert variant="error">{error}</Alert>}
+          {displayError && <Alert variant="error">{displayError}</Alert>}
           <Input
             label="Email"
             type="email"
@@ -66,9 +76,9 @@ const LoginPage = () => {
             <Button type="submit" className="flex-1" loading={loading}>
               Sign in
             </Button>
-            <Link href="/register" className="flex-1">
+            <Link href="/" className="flex-1">
               <Button type="button" variant="secondary" className="w-full">
-                Create account
+                Back
               </Button>
             </Link>
           </div>
@@ -76,6 +86,12 @@ const LoginPage = () => {
       </Card>
     </div>
   );
-};
+}
 
-export default LoginPage;
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="max-w-md mx-auto px-6 py-12 text-(--text-muted)">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
