@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -11,4 +6,231 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Role {
+  OPERATOR
+  SUPERVISOR
+  NIGHT_SUPERVISOR
+  RMP
+  ER
+  QRV_SUPERVISOR
+}
+
+enum AlarmType {
+  VIBRATION
+  DIGGING
+  INTRUSION
+  TAMPERING
+  UNKNOWN
+}
+
+enum Criticality {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlarmStatus {
+  CREATED
+  UNASSIGNED
+  ASSIGNED
+  IN_PROGRESS
+  VERIFIED
+  FALSE_ALARM
+  ESCALATED
+  CLOSED
+}
+
+enum AssignmentStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+}
+
+// ---------------------------------------------------------------------------
+// User
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  role         Role
+
+  supervisorId String?
+  supervisor   User?    @relation("SupervisorToRMP", fields: [supervisorId], references: [id])
+  subordinates User[]  @relation("SupervisorToRMP")
+
+  chainages ChainageUser[]
+
+  assignments          AlarmAssignment[] @relation("RmpAssignments")
+  supervisedAssignments AlarmAssignment[] @relation("SupervisorAssignments")
+  verifications        Verification[]
+  evidences            Evidence[]
+  alarmsCreated        Alarm[]           @relation("AlarmCreatedBy")
+  alarmLogs            AlarmLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Chainage & ChainageUser
+// ---------------------------------------------------------------------------
+
+model Chainage {
+  id        String  @id @default(uuid())
+  startKm   Float
+  endKm     Float
+  label     String
+  latitude  Float?
+  longitude Float?
+
+  users  ChainageUser[]
+  alarms Alarm[]
+
+  createdAt DateTime @default(now())
+}
+
+model ChainageUser {
+  id         String   @id @default(uuid())
+  userId     String
+  chainageId String
+
+  user     User     @relation(fields: [userId], references: [id])
+  chainage Chainage @relation(fields: [chainageId], references: [id])
+
+  assignedAt DateTime @default(now())
+
+  @@unique([userId, chainageId])
+  @@index([userId])
+  @@index([chainageId])
+}
+
+// ---------------------------------------------------------------------------
+// Alarm
+// ---------------------------------------------------------------------------
+
+model Alarm {
+  id            String       @id @default(uuid())
+  latitude      Float
+  longitude     Float
+  chainageValue Float
+
+  chainageId String
+  chainage   Chainage @relation(fields: [chainageId], references: [id])
+
+  alarmType    AlarmType
+  criticality  Criticality
+  incidentTime DateTime
+
+  createdById String
+  createdBy   User   @relation("AlarmCreatedBy", fields: [createdById], references: [id])
+
+  status AlarmStatus @default(CREATED)
+
+  assignments   AlarmAssignment[]
+  verifications Verification[]
+  evidences     Evidence[]
+  alarmLogs     AlarmLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([chainageId])
+  @@index([status])
+  @@index([createdById])
+}
+
+// ---------------------------------------------------------------------------
+// AlarmAssignment
+// ---------------------------------------------------------------------------
+
+model AlarmAssignment {
+  id            String   @id @default(uuid())
+  alarmId       String
+  rmpId         String
+  supervisorId  String?
+
+  alarm      Alarm @relation(fields: [alarmId], references: [id])
+  rmp        User  @relation("RmpAssignments", fields: [rmpId], references: [id])
+  supervisor User? @relation("SupervisorAssignments", fields: [supervisorId], references: [id])
+
+  assignedAt  DateTime  @default(now())
+  acceptedAt  DateTime?
+  completedAt DateTime?
+
+  status AssignmentStatus @default(PENDING)
+
+  @@index([alarmId])
+  @@index([rmpId])
+}
+
+// ---------------------------------------------------------------------------
+// Verification
+// ---------------------------------------------------------------------------
+
+model Verification {
+  id            String   @id @default(uuid())
+  alarmId       String
+  verifiedById  String
+
+  latitude  Float
+  longitude Float
+  distance Float
+
+  remarks    String?
+  verifiedAt DateTime @default(now())
+
+  alarm      Alarm @relation(fields: [alarmId], references: [id])
+  verifiedBy User  @relation(fields: [verifiedById], references: [id])
+
+  @@index([alarmId])
+}
+
+// ---------------------------------------------------------------------------
+// Evidence
+// ---------------------------------------------------------------------------
+
+model Evidence {
+  id            String   @id @default(uuid())
+  alarmId       String
+  uploadedById  String
+
+  fileUrl    String
+  fileType   String
+  uploadedAt DateTime @default(now())
+
+  alarm      Alarm @relation(fields: [alarmId], references: [id])
+  uploadedBy User  @relation(fields: [uploadedById], references: [id])
+
+  @@index([alarmId])
+}
+
+// ---------------------------------------------------------------------------
+// AlarmLog (Audit Trail)
+// ---------------------------------------------------------------------------
+
+model AlarmLog {
+  id        String   @id @default(uuid())
+  alarmId   String
+  action    String
+  actorId   String?
+  meta      Json?
+
+  alarm Alarm  @relation(fields: [alarmId], references: [id])
+  actor User?  @relation(fields: [actorId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([alarmId])
+  @@index([actorId])
 }
