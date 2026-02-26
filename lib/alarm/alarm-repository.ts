@@ -108,3 +108,19 @@ export async function getAlarmById(
   });
   return alarm as AlarmWithRelations | null;
 }
+
+/**
+ * All alarms with status ESCALATED (for QRV dashboard). No chainage scope.
+ */
+export async function getEscalatedAlarms(): Promise<AlarmWithRelations[]> {
+  const alarms = await prisma.alarm.findMany({
+    where: { status: "ESCALATED" },
+    include: {
+      chainage: true,
+      createdBy: { select: { id: true, name: true, email: true } },
+      assignments: activeAssignmentInclude,
+    },
+    orderBy: { updatedAt: "desc" },
+  });
+  return alarms as AlarmWithRelations[];
+}

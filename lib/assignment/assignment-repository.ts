@@ -1,6 +1,7 @@
 import { AssignmentStatus } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
+import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
 import type { Prisma } from "@/lib/generated/prisma";
 
 export type AssignmentWithAlarm = Prisma.AlarmAssignmentGetPayload<{
@@ -33,6 +34,7 @@ export async function createAssignment(params: {
     where: { id: params.alarmId },
     select: { status: true },
   });
+  assertAlarmNotClosed(alarm.status);
   assertTransition(alarm.status, "ASSIGNED");
 
   const assignment = await prisma.alarmAssignment.create({
@@ -132,6 +134,7 @@ export async function acceptAssignment(
   if (assignment.status !== AssignmentStatus.PENDING)
     return { success: false, error: "Assignment is not pending." };
 
+  assertAlarmNotClosed(assignment.alarm.status);
   assertTransition(assignment.alarm.status, "IN_PROGRESS");
 
   await prisma.$transaction([
@@ -160,4 +163,52 @@ export async function acceptAssignment(
   ]);
 
   return { success: true };
+}
+
+/**
+ * QRV Supervisor reassigns an ESCALATED alarm. Creates new assignment, status → ASSIGNED, log ALARM_REASSIGNED.
+ */
+export async function createReassignment(params: {
+  alarmId: string;
+  rmpId: string;
+  actorId: string;
+}): Promise<AssignmentWithRmp> {
+  const alarm = await prisma.alarm.findUniqueOrThrow({
+    where: { id: params.alarmId },
+    select: { status: true },
+  });
+  assertAlarmNotClosed(alarm.status);
+  assertTransition(alarm.status, "ASSIGNED");
+
+  const assignment = await prisma.alarmAssignment.create({
+    data: {
+      alarmId: params.alarmId,
+      rmpId: params.rmpId,
+      supervisorId: params.actorId,
+      status: AssignmentStatus.PENDING,
+    },
+    include: {
+      rmp: { select: { id: true, name: true } },
+      supervisor: { select: { id: true, name: true } },
+    },
+  });
+
+  await prisma.alarm.update({
+    where: { id: params.alarmId },
+    data: { status: "ASSIGNED" },
+  });
+
+  await prisma.alarmLog.create({
+    data: {
+      alarmId: params.alarmId,
+      action: "ALARM_REASSIGNED",
+      actorId: params.actorId,
+      meta: {
+        assignedTo: params.rmpId,
+        assignedBy: params.actorId,
+      } as object,
+    },
+  });
+
+  return assignment as AssignmentWithRmp;
 }

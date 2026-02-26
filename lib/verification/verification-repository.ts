@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import type { Prisma } from "@/lib/generated/prisma";
+import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
 
 export type VerificationWithVerifier = Prisma.VerificationGetPayload<{
   include: {
@@ -32,6 +33,12 @@ export async function createVerification(params: {
   geoMismatch: boolean;
   remarks?: string | null;
 }): Promise<VerificationWithVerifier> {
+  const alarm = await prisma.alarm.findUnique({
+    where: { id: params.alarmId },
+    select: { status: true },
+  });
+  if (alarm) assertAlarmNotClosed(alarm.status);
+
   const v = await prisma.verification.create({
     data: {
       alarmId: params.alarmId,

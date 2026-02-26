@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { getSlaInfo } from "@/lib/sla/elapsed";
 
 import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
 import Table from "@/components/ui/Table";
@@ -42,7 +43,14 @@ const OperatorAlarmsTable = ({ alarms, searchParams }: Props) => {
     {
       header: "ID",
       accessor: "id" as const,
-      render: (r: AlarmWithRelations) => r.id.slice(0, 8),
+      render: (r: AlarmWithRelations) => (
+        <Link
+          href={`/operator/alarms/${r.id}`}
+          className="text-(--brand-primary) hover:underline"
+        >
+          {r.id.slice(0, 8)}
+        </Link>
+      ),
     },
     {
       header: "Chainage",
@@ -98,6 +106,38 @@ const OperatorAlarmsTable = ({ alarms, searchParams }: Props) => {
       },
     },
     {
+      header: "SLA",
+      accessor: "id" as const,
+      render: (r: AlarmWithRelations) => {
+        const sla = getSlaInfo(
+          r.status as "UNASSIGNED" | "ASSIGNED" | "IN_PROGRESS",
+          r.createdAt,
+          r.assignments?.[0]
+            ? {
+                assignedAt: r.assignments[0].assignedAt,
+                acceptedAt: r.assignments[0].acceptedAt,
+              }
+            : null,
+        );
+        if (!sla) return "—";
+        return (
+          <span
+            title={sla.label}
+            style={{
+              color:
+                sla.status === "breached"
+                  ? "var(--color-red-500, red)"
+                  : sla.status === "warning"
+                    ? "var(--color-amber-500, orange)"
+                    : "var(--color-green-600, green)",
+            }}
+          >
+            {sla.label}
+          </span>
+        );
+      },
+    },
+    {
       header: "Incident time",
       accessor: "incidentTime" as const,
       render: (r: AlarmWithRelations) =>
@@ -128,15 +168,17 @@ const OperatorAlarmsTable = ({ alarms, searchParams }: Props) => {
         <Link href={q({})} className="text-(--brand-primary) hover:underline">
           All
         </Link>
-        {(["UNASSIGNED", "ASSIGNED", "CLOSED"] as const).map((s) => (
-          <Link
-            key={s}
-            href={q({ status: s })}
-            className="text-(--brand-primary) hover:underline"
-          >
-            {s}
-          </Link>
-        ))}
+        {(["UNASSIGNED", "ASSIGNED", "ESCALATED", "CLOSED"] as const).map(
+          (s) => (
+            <Link
+              key={s}
+              href={q({ status: s })}
+              className="text-(--brand-primary) hover:underline"
+            >
+              {s}
+            </Link>
+          ),
+        )}
         <span className="text-(--text-muted)">|</span>
         {(["LOW", "MEDIUM", "HIGH", "CRITICAL"] as const).map((c) => (
           <Link

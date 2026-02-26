@@ -11,7 +11,7 @@ const roleDashboard: Record<Role, string> = {
   NIGHT_SUPERVISOR: "/supervisor",
   RMP: "/rmp",
   ER: "/rmp",
-  QRV_SUPERVISOR: "/supervisor",
+  QRV_SUPERVISOR: "/qrv",
 };
 
 const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
