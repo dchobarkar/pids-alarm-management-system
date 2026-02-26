@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import ScopedAlarmsTable from "@/components/alarms/ScopedAlarmsTable";
 import AssignAlarmModal from "@/components/alarms/AssignAlarmModal";
+import { escalateAlarm } from "@/app/(dashboard)/supervisor/assignments/escalate-actions";
 import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
 
 interface Props {
@@ -21,6 +22,12 @@ const SupervisorAlarmsClient = ({ alarms, searchParams }: Props) => {
     router.refresh();
   };
 
+  const handleEscalate = async (alarmId: string) => {
+    const result = await escalateAlarm(alarmId);
+    if (result.success) router.refresh();
+    else alert(result.error);
+  };
+
   return (
     <>
       <ScopedAlarmsTable
@@ -28,8 +35,11 @@ const SupervisorAlarmsClient = ({ alarms, searchParams }: Props) => {
         basePath="/supervisor/alarms"
         searchParams={searchParams}
         showAssignmentColumns
+        showSlaColumn
         assignMode="supervisor"
+        escalateMode
         onAssignClick={setAssignModalAlarm}
+        onEscalate={handleEscalate}
       />
       <AssignAlarmModal
         open={assignModalAlarm != null}
