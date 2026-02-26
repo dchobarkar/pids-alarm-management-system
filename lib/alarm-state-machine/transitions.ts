@@ -3,11 +3,12 @@ import type { AlarmStatus } from "@/lib/generated/prisma";
 const ALLOWED_TRANSITIONS: [AlarmStatus, AlarmStatus][] = [
   ["UNASSIGNED", "ASSIGNED"],
   ["ASSIGNED", "IN_PROGRESS"],
+  ["IN_PROGRESS", "VERIFIED"],
+  ["IN_PROGRESS", "FALSE_ALARM"],
 ];
 
 /**
- * Returns true if transitioning alarm status from `from` to `to` is allowed in Phase 3.
- * Only UNASSIGNED→ASSIGNED and ASSIGNED→IN_PROGRESS are allowed.
+ * Returns true if transitioning alarm status from `from` to `to` is allowed.
  */
 export function canTransition(from: AlarmStatus, to: AlarmStatus): boolean {
   return ALLOWED_TRANSITIONS.some(([f, t]) => f === from && t === to);
@@ -18,8 +19,6 @@ export function canTransition(from: AlarmStatus, to: AlarmStatus): boolean {
  */
 export function assertTransition(from: AlarmStatus, to: AlarmStatus): void {
   if (!canTransition(from, to)) {
-    throw new Error(
-      `Invalid alarm status transition: ${from} → ${to}. Allowed: UNASSIGNED→ASSIGNED, ASSIGNED→IN_PROGRESS.`,
-    );
+    throw new Error(`Invalid alarm status transition: ${from} → ${to}.`);
   }
 }
