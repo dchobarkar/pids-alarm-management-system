@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# local evidence uploads (replaced by Azure Blob later)
+/public/uploads
+
 # production
 /build
 

@@ -83,6 +83,16 @@ export async function getAssignmentsByAlarm(alarmId: string) {
 }
 
 /**
+ * Active assignment for an alarm (ACCEPTED), if any. Used to verify RMP ownership for verification.
+ */
+export async function getActiveAssignmentForAlarm(alarmId: string) {
+  return prisma.alarmAssignment.findFirst({
+    where: { alarmId, status: AssignmentStatus.ACCEPTED },
+    orderBy: { acceptedAt: "desc" },
+  });
+}
+
+/**
  * Assignments for an RMP (for /rmp/tasks). PENDING and ACCEPTED.
  */
 export async function getRmpAssignments(

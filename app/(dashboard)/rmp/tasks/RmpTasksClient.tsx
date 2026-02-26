@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import Table from "@/components/ui/Table";
@@ -60,18 +61,28 @@ const RmpTasksClient = ({ assignments }: Props) => {
     {
       header: "Actions",
       accessor: "id" as const,
-      render: (r: AssignmentWithAlarm) =>
-        r.status === "PENDING" ? (
-          <button
-            type="button"
-            onClick={() => handleAccept(r.id)}
-            className="text-(--brand-primary) hover:underline text-sm"
-          >
-            Accept Task
-          </button>
-        ) : (
-          "—"
-        ),
+      render: (r: AssignmentWithAlarm) => {
+        if (r.status === "PENDING")
+          return (
+            <button
+              type="button"
+              onClick={() => handleAccept(r.id)}
+              className="text-(--brand-primary) hover:underline text-sm"
+            >
+              Accept Task
+            </button>
+          );
+        if (r.status === "ACCEPTED" && r.alarm.status === "IN_PROGRESS")
+          return (
+            <Link
+              href={`/rmp/tasks/${r.alarm.id}/verify`}
+              className="text-(--brand-primary) hover:underline text-sm"
+            >
+              Verify
+            </Link>
+          );
+        return "—";
+      },
     },
   ];
 

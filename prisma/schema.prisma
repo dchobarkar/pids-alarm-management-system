@@ -184,9 +184,10 @@ model Verification {
   alarmId       String
   verifiedById  String
 
-  latitude  Float
-  longitude Float
-  distance Float
+  latitude    Float
+  longitude   Float
+  distance    Float
+  geoMismatch Boolean  @default(false)
 
   remarks    String?
   verifiedAt DateTime @default(now())
