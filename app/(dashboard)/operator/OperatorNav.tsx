@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Dashboard", href: "/operator" },
+  { label: "Alarms", href: "/operator/alarms" },
   { label: "Users", href: "/operator/users" },
   { label: "Chainages", href: "/operator/chainages" },
   { label: "Chainage mapping", href: "/operator/chainage-mapping" },

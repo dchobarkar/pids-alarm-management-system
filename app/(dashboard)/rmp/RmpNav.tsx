@@ -6,7 +6,10 @@ import { signOut } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
 
-const navItems = [{ label: "Dashboard", href: "/rmp" }];
+const navItems = [
+  { label: "Dashboard", href: "/rmp" },
+  { label: "Alarms", href: "/rmp/alarms" },
+];
 
 const RmpNav = () => {
   const pathname = usePathname();
