@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { label: "Dashboard", href: "/rmp" },
   { label: "Alarms", href: "/rmp/alarms" },
+  { label: "Tasks", href: "/rmp/tasks" },
 ];
 
 const RmpNav = () => {

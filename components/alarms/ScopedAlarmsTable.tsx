@@ -31,9 +31,24 @@ interface Props {
   alarms: AlarmWithRelations[];
   basePath: string;
   searchParams: { status?: string; criticality?: string };
+  showAssignmentColumns?: boolean;
+  assignMode?: "supervisor" | "rmp";
+  onAssignClick?: (alarm: AlarmWithRelations) => void;
+  onSelfAssign?: (alarmId: string) => void;
 }
 
-const ScopedAlarmsTable = ({ alarms, basePath, searchParams }: Props) => {
+const ScopedAlarmsTable = ({
+  alarms,
+  basePath,
+  searchParams,
+  showAssignmentColumns,
+  assignMode,
+  onAssignClick,
+  onSelfAssign,
+}: Props) => {
+  const activeAssignment = (r: AlarmWithRelations) =>
+    r.assignments?.[0] ?? null;
+
   const columns = [
     {
       header: "ID",
@@ -69,6 +84,36 @@ const ScopedAlarmsTable = ({ alarms, basePath, searchParams }: Props) => {
         </Badge>
       ),
     },
+    ...(showAssignmentColumns
+      ? [
+          {
+            header: "Assigned RMP",
+            accessor: "assignments" as const,
+            render: (r: AlarmWithRelations) => {
+              const a = activeAssignment(r);
+              return a ? a.rmp.name : "—";
+            },
+          },
+          {
+            header: "Assignment status",
+            accessor: "assignments" as const,
+            render: (r: AlarmWithRelations) => {
+              const a = activeAssignment(r);
+              return a ? a.status : "—";
+            },
+          },
+          {
+            header: "Accepted at",
+            accessor: "assignments" as const,
+            render: (r: AlarmWithRelations) => {
+              const a = activeAssignment(r);
+              return a?.acceptedAt
+                ? new Date(a.acceptedAt).toLocaleString()
+                : "—";
+            },
+          },
+        ]
+      : []),
     {
       header: "Incident time",
       accessor: "incidentTime" as const,
@@ -80,6 +125,38 @@ const ScopedAlarmsTable = ({ alarms, basePath, searchParams }: Props) => {
       accessor: "createdBy" as const,
       render: (r: AlarmWithRelations) => r.createdBy.name,
     },
+    ...(assignMode
+      ? [
+          {
+            header: "Actions",
+            accessor: "id" as const,
+            render: (r: AlarmWithRelations) => {
+              if (r.status !== "UNASSIGNED") return "—";
+              if (assignMode === "supervisor" && onAssignClick)
+                return (
+                  <button
+                    type="button"
+                    onClick={() => onAssignClick(r)}
+                    className="text-(--brand-primary) hover:underline text-sm"
+                  >
+                    Assign
+                  </button>
+                );
+              if (assignMode === "rmp" && onSelfAssign)
+                return (
+                  <button
+                    type="button"
+                    onClick={() => onSelfAssign(r.id)}
+                    className="text-(--brand-primary) hover:underline text-sm"
+                  >
+                    Self Assign
+                  </button>
+                );
+              return "—";
+            },
+          },
+        ]
+      : []),
   ];
 
   const q = (overrides: Record<string, string>) => {

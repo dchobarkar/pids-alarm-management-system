@@ -2,11 +2,25 @@ import type { AlarmStatus } from "@/lib/generated/prisma";
 import type { Prisma } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { Role } from "@/lib/generated/prisma";
+import { AssignmentStatus } from "@/lib/generated/prisma";
+
+const activeAssignmentInclude = {
+  where: {
+    status: { in: [AssignmentStatus.PENDING, AssignmentStatus.ACCEPTED] },
+  },
+  orderBy: { assignedAt: "desc" as const },
+  take: 1,
+  include: {
+    rmp: { select: { id: true, name: true } },
+    supervisor: { select: { id: true, name: true } },
+  },
+};
 
 export type AlarmWithRelations = Prisma.AlarmGetPayload<{
   include: {
     chainage: true;
     createdBy: { select: { id: true; name: true; email: true } };
+    assignments: typeof activeAssignmentInclude;
   };
 }>;
 
@@ -67,6 +81,7 @@ export async function getScopedAlarms(
     include: {
       chainage: true,
       createdBy: { select: { id: true, name: true, email: true } },
+      assignments: activeAssignmentInclude,
     },
     orderBy:
       options.sortNewestFirst !== false ? { createdAt: "desc" } : undefined,
