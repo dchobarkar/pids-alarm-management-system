@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
+import SessionProvider from "@/components/providers/SessionProvider";
 import "../style/globals.css";
 
 const geistSans = Geist({
@@ -19,18 +20,20 @@ export const metadata: Metadata = {
     "Territory-mapped alarm dispatch & investigation platform for pipeline intrusion detection operations.",
 };
 
-export default function RootLayout({
+const Layout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) => {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <SessionProvider>{children}</SessionProvider>
       </body>
     </html>
   );
-}
+};
+
+export default Layout;

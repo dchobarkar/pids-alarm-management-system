@@ -1,4 +1,5 @@
 import "dotenv/config";
+import bcrypt from "bcrypt";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 import {
@@ -9,6 +10,9 @@ import {
   AlarmStatus,
   AssignmentStatus,
 } from "../lib/generated/prisma";
+
+const DEFAULT_PASSWORD = "Password@123";
+const SALT_ROUNDS = 10;
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL is not set");
@@ -35,10 +39,13 @@ async function main() {
   // USERS
   // --------------------------------------------------
 
+  const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, SALT_ROUNDS);
+
   const operator = await prisma.user.create({
     data: {
       name: "PIDS Operator",
       email: "operator@pids.com",
+      password: hashedPassword,
       role: Role.OPERATOR,
     },
   });
@@ -47,6 +54,7 @@ async function main() {
     data: {
       name: "Supervisor 1",
       email: "supervisor1@pids.com",
+      password: hashedPassword,
       role: Role.SUPERVISOR,
     },
   });
@@ -55,6 +63,7 @@ async function main() {
     data: {
       name: "RMP Alpha",
       email: "rmp1@pids.com",
+      password: hashedPassword,
       role: Role.RMP,
       supervisorId: supervisor.id,
     },
@@ -64,6 +73,7 @@ async function main() {
     data: {
       name: "RMP Beta",
       email: "rmp2@pids.com",
+      password: hashedPassword,
       role: Role.RMP,
       supervisorId: supervisor.id,
     },
@@ -73,6 +83,7 @@ async function main() {
     data: {
       name: "Emergency Responder",
       email: "er@pids.com",
+      password: hashedPassword,
       role: Role.ER,
       supervisorId: supervisor.id,
     },
