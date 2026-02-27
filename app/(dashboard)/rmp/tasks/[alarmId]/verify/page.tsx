@@ -5,7 +5,7 @@ import { getAlarmById } from "@/lib/alarm/alarm-repository";
 import { getActiveAssignmentForAlarm } from "@/lib/assignment/assignment-repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import VerifyAlarmForm from "./VerifyAlarmForm";
+import VerifyAlarmForm from "@/components/formComponents/VerifyAlarmForm/VerifyAlarmForm";
 
 type Props = { params: Promise<{ alarmId: string }> };
 

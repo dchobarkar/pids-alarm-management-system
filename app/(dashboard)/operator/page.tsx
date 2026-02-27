@@ -54,7 +54,7 @@ const Page = () => {
         ]}
       />
 
-      <header className="mb-8 rounded-xl max-w-3xl border border-(--border-default) bg-(--bg-surface) px-6 py-8 shadow-(--shadow-card) md:px-8">
+      <header className="mb-8 rounded-xl max-w-3xl mx-auto border border-(--border-default) bg-(--bg-surface) px-6 py-8 shadow-(--shadow-card) md:px-8">
         <div className="flex items-center gap-3">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-(--brand-primary) text-white">
             <LayoutDashboard
@@ -73,10 +73,10 @@ const Page = () => {
       </header>
 
       <section>
-        <h2 className="mb-4 text-sm font-medium uppercase tracking-wider text-(--text-muted)">
+        <h2 className="mb-4 text-sm font-medium text-center uppercase tracking-wider text-(--text-muted)">
           Quick links
         </h2>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-3xl">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-auto max-w-3xl">
           {QUICK_LINKS.map(({ href, label, description, icon: Icon }) => (
             <li key={href} className="py-8">
               <Link

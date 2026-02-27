@@ -3,7 +3,7 @@ import { getSession } from "@/lib/auth/get-session";
 import { prisma } from "@/lib/db";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import ProfileForm from "./ProfileForm";
+import ProfileForm from "@/components/formComponents/ProfileForm/ProfileForm";
 
 export default async function ProfilePage() {
   const session = await getSession();

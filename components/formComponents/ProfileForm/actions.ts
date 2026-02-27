@@ -16,7 +16,10 @@ export async function updateProfile(
 ): Promise<UpdateProfileResult> {
   const session = await getSession();
   if (!session?.user?.id) {
-    return { success: false, error: "You must be signed in to update your profile." };
+    return {
+      success: false,
+      error: "You must be signed in to update your profile.",
+    };
   }
 
   const name = (formData.get("name") as string)?.trim();
@@ -34,3 +37,4 @@ export async function updateProfile(
   revalidatePath("/profile");
   return { success: true };
 }
+

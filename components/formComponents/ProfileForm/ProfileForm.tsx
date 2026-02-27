@@ -35,15 +35,14 @@ export default function ProfileForm({ name, email, phone }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <Alert variant="error">{error}</Alert>
-      )}
-      {success && (
-        <Alert variant="info">Profile updated successfully.</Alert>
-      )}
+      {error && <Alert variant="error">{error}</Alert>}
+      {success && <Alert variant="info">Profile updated successfully.</Alert>}
 
       <div>
-        <label htmlFor="profile-name" className="block text-sm font-medium text-(--text-secondary) mb-1">
+        <label
+          htmlFor="profile-name"
+          className="block text-sm font-medium text-(--text-secondary) mb-1"
+        >
           Name
         </label>
         <input
@@ -57,7 +56,10 @@ export default function ProfileForm({ name, email, phone }: Props) {
       </div>
 
       <div>
-        <label htmlFor="profile-email" className="block text-sm font-medium text-(--text-secondary) mb-1">
+        <label
+          htmlFor="profile-email"
+          className="block text-sm font-medium text-(--text-secondary) mb-1"
+        >
           Email
         </label>
         <input
@@ -69,11 +71,16 @@ export default function ProfileForm({ name, email, phone }: Props) {
           tabIndex={-1}
           aria-readonly
         />
-        <p className="mt-1 text-xs text-(--text-muted)">Email cannot be changed here.</p>
+        <p className="mt-1 text-xs text-(--text-muted)">
+          Email cannot be changed here.
+        </p>
       </div>
 
       <div>
-        <label htmlFor="profile-phone" className="block text-sm font-medium text-(--text-secondary) mb-1">
+        <label
+          htmlFor="profile-phone"
+          className="block text-sm font-medium text-(--text-secondary) mb-1"
+        >
           Phone
         </label>
         <input
@@ -97,3 +104,4 @@ export default function ProfileForm({ name, email, phone }: Props) {
     </form>
   );
 }
+

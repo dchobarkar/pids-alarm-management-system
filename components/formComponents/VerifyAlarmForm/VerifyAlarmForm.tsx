@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { getCurrentLocation } from "@/lib/geo/get-current-location";
-import { submitVerification } from "@/app/(dashboard)/rmp/verify/actions";
+import { submitVerification } from "./actions";
 import Alert from "@/components/ui/Alert";
 
 const MAX_FILES = 5;
@@ -31,7 +31,9 @@ const VerifyAlarmForm = ({ alarmId }: Props) => {
       setLongitude(pos.longitude);
     } catch (e) {
       setError(
-        e instanceof Error ? e.message : "Failed to get location. Enable location access and try again.",
+        e instanceof Error
+          ? e.message
+          : "Failed to get location. Enable location access and try again.",
       );
     } finally {
       setCapturing(false);
@@ -72,7 +74,11 @@ const VerifyAlarmForm = ({ alarmId }: Props) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Alert variant="info" className="mb-4">
-        After you submit, an operator will review your verification (location, remarks, evidence) and either <strong>Mark Verified</strong> (issue confirmed) or <strong>Mark False Alarm</strong> (dismissed). This task will then leave your list. You can return to Tasks to see other assignments.
+        After you submit, an operator will review your verification (location,
+        remarks, evidence) and either <strong>Mark Verified</strong> (issue
+        confirmed) or <strong>Mark False Alarm</strong> (dismissed). This task
+        will then leave your list. You can return to Tasks to see other
+        assignments.
       </Alert>
       {error && (
         <Alert variant="error" className="mb-4">
@@ -149,3 +155,4 @@ const VerifyAlarmForm = ({ alarmId }: Props) => {
 };
 
 export default VerifyAlarmForm;
+
