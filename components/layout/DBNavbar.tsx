@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
-import { CircleUser, LogOut, Menu } from "lucide-react";
+import { CircleUser, LogOut, Menu, User } from "lucide-react";
 
 import { getDashboardPathForRole } from "@/lib/auth/dashboard-paths";
 import { cn } from "@/lib/utils";
@@ -106,6 +106,15 @@ const DBNavbar = ({ sidebarOpen, onSidebarToggle }: DBNavbarProps) => {
                   </div>
                 </div>
                 <div className="py-1">
+                  <Link
+                    href="/profile"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-(--text-secondary) hover:bg-(--bg-elevated) hover:text-(--text-primary)"
+                    role="menuitem"
+                  >
+                    <User className="h-4 w-4 shrink-0" aria-hidden />
+                    Profile
+                  </Link>
                   <button
                     type="button"
                     onClick={() => {

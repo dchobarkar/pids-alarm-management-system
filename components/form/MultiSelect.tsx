@@ -73,9 +73,10 @@ export default function ChainageMultiSelect({ chainages }: MultiSelectProps) {
                   type="checkbox"
                   checked={selectedIds.includes(c.id)}
                   onChange={() => toggleSelect(c.id)}
-                  className="mr-2"
+                  className="max-w-2.5"
                 />
-                <span className="text-sm">
+
+                <span className="text-sm min-w-30">
                   {c.label} ({c.startKm}–{c.endKm} km)
                 </span>
               </label>

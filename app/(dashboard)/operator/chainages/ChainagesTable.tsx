@@ -9,7 +9,10 @@ import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/form/Input";
 import Alert from "@/components/ui/Alert";
-import { updateChainage, deleteChainage } from "./actions";
+import {
+  updateChainage,
+  deleteChainage,
+} from "@/components/formComponents/CreateChainageForm/actions";
 
 interface Props {
   chainages: Chainage[];

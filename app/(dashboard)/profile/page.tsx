@@ -1,0 +1,33 @@
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth/get-session";
+import { prisma } from "@/lib/db";
+import Breadcrumb from "@/components/ui/Breadcrumb";
+import Card from "@/components/ui/Card";
+import ProfileForm from "./ProfileForm";
+
+export default async function ProfilePage() {
+  const session = await getSession();
+  if (!session?.user?.id) redirect("/auth/signin");
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true, email: true, phone: true },
+  });
+  if (!user) redirect("/auth/signin");
+
+  return (
+    <div className="p-6">
+      <Breadcrumb crumbs={[{ label: "Profile" }]} />
+      <h1 className="text-xl font-semibold text-(--text-primary) mb-6">
+        Profile
+      </h1>
+      <Card>
+        <ProfileForm
+          name={user.name}
+          email={user.email}
+          phone={user.phone}
+        />
+      </Card>
+    </div>
+  );
+}
