@@ -3,15 +3,16 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/get-session";
 import { getAlarmById } from "@/lib/alarm/alarm-repository";
 import { getVerificationsByAlarm } from "@/lib/verification/verification-repository";
+import { getSlaInfo } from "@/lib/sla/elapsed";
 import { prisma } from "@/lib/db";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
-import OperatorAlarmDetailClient from "./OperatorAlarmDetailClient";
+import CloseAlarmButton from "./CloseAlarmButton";
 
 type Props = { params: Promise<{ alarmId: string }> };
 
-export default async function OperatorAlarmDetailPage({ params }: Props) {
+export default async function Page({ params }: Props) {
   const session = await getSession();
   if (!session?.user?.id) return null;
 
@@ -25,6 +26,19 @@ export default async function OperatorAlarmDetailPage({ params }: Props) {
     orderBy: { uploadedAt: "desc" },
   });
 
+  const slaInfo = getSlaInfo(
+    alarm.status as "UNASSIGNED" | "ASSIGNED" | "IN_PROGRESS",
+    alarm.createdAt,
+    alarm.assignments[0]
+      ? {
+          assignedAt: alarm.assignments[0].assignedAt,
+          acceptedAt: alarm.assignments[0].acceptedAt,
+        }
+      : null,
+  );
+  const canClose =
+    alarm.status === "VERIFIED" || alarm.status === "FALSE_ALARM";
+
   return (
     <div className="p-6">
       <Breadcrumb
@@ -34,6 +48,7 @@ export default async function OperatorAlarmDetailPage({ params }: Props) {
           { label: alarmId.slice(0, 8) },
         ]}
       />
+
       <h1 className="text-xl font-semibold text-(--text-primary) mb-6">
         Alarm {alarmId.slice(0, 8)}
       </h1>
@@ -42,23 +57,33 @@ export default async function OperatorAlarmDetailPage({ params }: Props) {
         <Card>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <span className="text-(--text-secondary)">Chainage</span>
+
             <span>
               {alarm.chainage.label} ({alarm.chainageValue.toFixed(3)} km)
             </span>
+
             <span className="text-(--text-secondary)">Type / Criticality</span>
+
             <span>
               {alarm.alarmType} / {alarm.criticality}
             </span>
+
             <span className="text-(--text-secondary)">Status</span>
+
             <span>
               <Badge variant={alarm.status === "CLOSED" ? "closed" : "created"}>
                 {alarm.status}
               </Badge>
             </span>
+
             <span className="text-(--text-secondary)">Created by</span>
+
             <span>{alarm.createdBy.name}</span>
+
             <span className="text-(--text-secondary)">Incident time</span>
+
             <span>{new Date(alarm.incidentTime).toLocaleString()}</span>
+
             {alarm.assignments[0] && (
               <>
                 <span className="text-(--text-secondary)">Assigned RMP</span>
@@ -66,12 +91,26 @@ export default async function OperatorAlarmDetailPage({ params }: Props) {
               </>
             )}
           </div>
-          <OperatorAlarmDetailClient
-            alarmId={alarmId}
-            status={alarm.status}
-            createdAt={alarm.createdAt}
-            assignment={alarm.assignments[0] ?? null}
-          />
+
+          <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-(--border-default) pt-4">
+            {slaInfo && (
+              <span
+                className="text-sm"
+                title={`${slaInfo.label} (${slaInfo.status})`}
+                style={{
+                  color:
+                    slaInfo.status === "breached"
+                      ? "var(--color-red-500, red)"
+                      : slaInfo.status === "warning"
+                        ? "var(--color-amber-500, orange)"
+                        : "var(--color-green-600, green)",
+                }}
+              >
+                SLA: {slaInfo.label}
+              </span>
+            )}
+            {canClose && <CloseAlarmButton alarmId={alarmId} />}
+          </div>
         </Card>
 
         {verifications.length > 0 && (

@@ -49,6 +49,7 @@ const CreateAlarmForm = () => {
   return (
     <form action={handleSubmit} className="space-y-4">
       {error && <Alert variant="error">{error}</Alert>}
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           label="Latitude"
@@ -67,6 +68,7 @@ const CreateAlarmForm = () => {
           placeholder="-180 to 180"
         />
       </div>
+
       <Input
         label="Chainage value (km)"
         name="chainageValue"
@@ -76,18 +78,21 @@ const CreateAlarmForm = () => {
         required
         helperText="Must fall within an existing chainage range. Max 3 decimal places."
       />
+
       <Select
         label="Alarm type"
         name="alarmType"
         options={ALARM_TYPE_OPTIONS}
         required
       />
+
       <Select
         label="Criticality"
         name="criticality"
         options={CRITICALITY_OPTIONS}
         required
       />
+
       <Input
         label="Incident time"
         name="incidentTime"
@@ -96,10 +101,12 @@ const CreateAlarmForm = () => {
         max={maxDate}
         helperText="Cannot be in the future"
       />
+
       <div className="flex gap-2 pt-2">
         <Button type="submit" loading={loading}>
           Create alarm
         </Button>
+
         <Link href="/operator/alarms">
           <Button type="button" variant="secondary">
             Cancel

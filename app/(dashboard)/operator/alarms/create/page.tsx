@@ -1,6 +1,6 @@
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import CreateAlarmForm from "../CreateAlarmForm";
+import CreateAlarmForm from "../../../../../components/formComponents/CreateAlarmForm/CreateAlarmForm";
 
 const Page = () => {
   return (
@@ -12,9 +12,7 @@ const Page = () => {
           { label: "Create" },
         ]}
       />
-      <h1 className="text-xl font-semibold text-(--text-primary) mb-6">
-        Create alarm
-      </h1>
+
       <Card title="New alarm">
         <p className="text-(--text-secondary) text-sm mb-4">
           Chainage is derived automatically from the chainage value (must fall

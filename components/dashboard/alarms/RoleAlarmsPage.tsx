@@ -4,7 +4,7 @@ import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
-import type { AlarmsSearchParams } from "@/app/(dashboard)/_shared/alarms/loadScopedAlarmsForCurrentUser";
+import type { AlarmsSearchParams } from "@/lib/alarm/loadScopedAlarmsForCurrentUser";
 import OperatorAlarmsTable from "./OperatorAlarmsTable";
 import SupervisorAlarmsClient from "./SupervisorAlarmsClient";
 import RmpAlarmsClient from "./RmpAlarmsClient";
@@ -106,4 +106,3 @@ const RoleAlarmsPage = ({
 };
 
 export default RoleAlarmsPage;
-
