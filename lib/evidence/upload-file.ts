@@ -1,7 +1,6 @@
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg"];
 const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png"];
 
@@ -21,9 +20,6 @@ export const uploadEvidenceFile = async (
   file: File,
   baseDir: string = process.cwd(),
 ): Promise<{ url: string; fileType: string }> => {
-  if (file.size > MAX_FILE_SIZE_BYTES) {
-    throw new Error(`File too large (max 5MB): ${file.name}`);
-  }
   const mime = file.type.toLowerCase();
   if (!isAllowedEvidenceType(mime) && !isAllowedEvidenceName(file.name)) {
     throw new Error("Only JPEG and PNG images are allowed");

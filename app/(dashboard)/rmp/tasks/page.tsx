@@ -4,10 +4,13 @@ import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import RmpTasksClient from "./RmpTasksClient";
 
-export default async function RmpTasksPage() {
+type Props = { searchParams: Promise<{ verification_submitted?: string }> };
+
+export default async function RmpTasksPage({ searchParams }: Props) {
   const session = await getSession();
   if (!session?.user?.id) return null;
 
+  const params = await searchParams;
   const assignments = await getRmpAssignments(session.user.id);
 
   return (
@@ -19,7 +22,10 @@ export default async function RmpTasksPage() {
         My assignments
       </h1>
       <Card>
-        <RmpTasksClient assignments={assignments} />
+        <RmpTasksClient
+          assignments={assignments}
+          showVerificationSubmittedMessage={params.verification_submitted === "1"}
+        />
       </Card>
     </div>
   );

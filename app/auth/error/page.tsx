@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -19,28 +20,46 @@ const getErrorMessage = (code: string | null): string => {
   return ERROR_MESSAGES[code] ?? ERROR_MESSAGES.Default;
 };
 
-const Page = () => {
+const ErrorContent = () => {
   const searchParams = useSearchParams();
   const errorCode = searchParams.get("error");
   const message = getErrorMessage(errorCode);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-(--bg-app)">
-      <div className="max-w-md w-full">
-        <Card title="Authentication error">
-          <p className="text-(--text-secondary) text-center pt-10 mb-6">
-            {message}
-          </p>
-          <div className="flex justify-between w-full">
-            <Link href="/auth/signin">
-              <Button>Back to sign in</Button>
-            </Link>
-            <Link href="/">
-              <Button variant="secondary">Go to home</Button>
-            </Link>
+    <div className="max-w-md w-full">
+      <Card title="Authentication error">
+        <p className="text-(--text-secondary) text-center pt-10 mb-6">
+          {message}
+        </p>
+        <div className="flex justify-between w-full">
+          <Link href="/auth/signin">
+            <Button>Back to sign in</Button>
+          </Link>
+          <Link href="/">
+            <Button variant="secondary">Go to home</Button>
+          </Link>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+const Page = () => {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-(--bg-app)">
+      <Suspense
+        fallback={
+          <div className="max-w-md w-full">
+            <Card title="Authentication error">
+              <p className="text-(--text-secondary) pt-10 mb-6 text-center">
+                Loading…
+              </p>
+            </Card>
           </div>
-        </Card>
-      </div>
+        }
+      >
+        <ErrorContent />
+      </Suspense>
     </div>
   );
 };

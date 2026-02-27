@@ -2,18 +2,29 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import Table from "@/components/ui/Table";
 import Badge from "@/components/ui/Badge";
+import Alert from "@/components/ui/Alert";
 import { acceptAssignment } from "./actions";
 import type { AssignmentWithAlarm } from "@/lib/assignment/assignment-repository";
 
 interface Props {
   assignments: AssignmentWithAlarm[];
+  showVerificationSubmittedMessage?: boolean;
 }
 
-const RmpTasksClient = ({ assignments }: Props) => {
+const RmpTasksClient = ({ assignments, showVerificationSubmittedMessage }: Props) => {
   const router = useRouter();
+  const [showSuccess, setShowSuccess] = useState(showVerificationSubmittedMessage ?? false);
+
+  useEffect(() => {
+    if (showVerificationSubmittedMessage) {
+      setShowSuccess(true);
+      router.replace("/rmp/tasks", { scroll: false });
+    }
+  }, [showVerificationSubmittedMessage, router]);
 
   const handleAccept = async (assignmentId: string) => {
     const result = await acceptAssignment(assignmentId);
@@ -86,13 +97,20 @@ const RmpTasksClient = ({ assignments }: Props) => {
     },
   ];
 
-  if (assignments.length === 0) {
-    return (
-      <p className="text-(--text-muted) py-4">You have no assigned tasks.</p>
-    );
-  }
-
-  return <Table data={assignments} columns={columns} />;
+  return (
+    <>
+      {showSuccess && (
+        <Alert variant="info" className="mb-4">
+          Verification submitted. An operator will review it and mark the alarm as <strong>Verified</strong> or <strong>False Alarm</strong>. This task has been removed from your list.
+        </Alert>
+      )}
+      {assignments.length === 0 ? (
+        <p className="text-(--text-muted) py-4">You have no assigned tasks.</p>
+      ) : (
+        <Table data={assignments} columns={columns} />
+      )}
+    </>
+  );
 };
 
 export default RmpTasksClient;

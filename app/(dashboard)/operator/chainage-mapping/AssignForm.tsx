@@ -9,6 +9,7 @@ import Button from "@/components/ui/Button";
 import Select from "@/components/form/Select";
 import Alert from "@/components/ui/Alert";
 import { assignChainages } from "./actions";
+import ChainageMultiSelect from "@/components/form/MultiSelect";
 
 interface Props {
   users: Pick<User, "id" | "name" | "email" | "role">[];
@@ -49,21 +50,7 @@ const AssignForm = ({ users, chainages }: Props) => {
         />
         <div className="space-y-2">
           <label className="text-sm text-(--text-secondary)">Chainages</label>
-          <div className="border border-(--border-default) rounded-md p-3 max-h-40 overflow-y-auto space-y-2">
-            {chainages.map((c) => (
-              <label key={c.id} className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  name="chainageIds"
-                  value={c.id}
-                  className="rounded"
-                />
-                <span className="text-(--text-primary)">
-                  {c.label} ({c.startKm}–{c.endKm} km)
-                </span>
-              </label>
-            ))}
-          </div>
+          <ChainageMultiSelect chainages={chainages} />
         </div>
       </div>
       <Button type="submit" loading={loading}>

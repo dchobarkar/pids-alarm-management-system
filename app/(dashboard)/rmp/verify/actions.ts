@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/role-guard";
-import { Role } from "@/lib/generated/prisma";
+import { Role, AssignmentStatus } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { getActiveAssignmentForAlarm } from "@/lib/assignment/assignment-repository";
 import { createVerification } from "@/lib/verification/verification-repository";
@@ -50,6 +50,17 @@ export async function submitVerification(
     return {
       success: false,
       error: "Alarm must be IN_PROGRESS to submit verification.",
+    };
+  }
+  if (
+    alarm.latitude == null ||
+    alarm.longitude == null ||
+    !Number.isFinite(alarm.latitude) ||
+    !Number.isFinite(alarm.longitude)
+  ) {
+    return {
+      success: false,
+      error: "Alarm has no valid coordinates; cannot compute verification distance.",
     };
   }
 
@@ -119,8 +130,16 @@ export async function submitVerification(
     },
   });
 
+  await prisma.alarmAssignment.update({
+    where: { id: assignment.id },
+    data: {
+      status: AssignmentStatus.COMPLETED,
+      completedAt: new Date(),
+    },
+  });
+
   revalidatePath("/rmp/tasks");
-  revalidatePath("/rmp/tasks/[alarmId]/verify");
+  revalidatePath(`/rmp/tasks/${alarmId}/verify`);
   revalidatePath("/operator/reviews");
   return { success: true };
 }

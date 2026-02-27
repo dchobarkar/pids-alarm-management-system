@@ -38,9 +38,6 @@ export default async function OperatorChainageMappingPage() {
           { label: "Chainage mapping" },
         ]}
       />
-      <h1 className="text-xl font-semibold text-(--text-primary) mb-6">
-        Chainage mapping
-      </h1>
 
       <Card title="Assign user to chainage(s)" className="mb-6">
         <AssignForm users={users} chainages={chainages} />
