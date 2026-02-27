@@ -7,11 +7,11 @@ import SupervisorAlarmsClient from "./SupervisorAlarmsClient";
 
 type SearchParams = { status?: string; criticality?: string };
 
-export default async function SupervisorAlarmsPage({
+const SupervisorAlarmsPage = async ({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
-}) {
+}) => {
   const session = await getSession();
   if (!session?.user?.id) return null;
 
@@ -58,4 +58,6 @@ export default async function SupervisorAlarmsPage({
       </Card>
     </div>
   );
-}
+};
+
+export default SupervisorAlarmsPage;

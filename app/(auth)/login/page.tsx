@@ -10,7 +10,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
 
-function LoginForm() {
+const LoginForm = () => {
   const searchParams = useSearchParams();
   const urlError = searchParams.get("error");
   const [email, setEmail] = useState("");
@@ -88,10 +88,12 @@ function LoginForm() {
   );
 }
 
-export default function LoginPage() {
+const LoginPage = () => {
   return (
     <Suspense fallback={<div className="max-w-md mx-auto px-6 py-12 text-(--text-muted)">Loading...</div>}>
       <LoginForm />
     </Suspense>
   );
-}
+};
+
+export default LoginPage;

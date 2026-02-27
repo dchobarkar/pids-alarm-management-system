@@ -83,7 +83,7 @@ const VerifyAlarmForm = ({ alarmId }: Props) => {
           )}
         </div>
         {locationError && (
-          <p className="text-sm text-red-500 mt-1">{locationError}</p>
+          <p className="text-sm text-(--alarm-critical) mt-1">{locationError}</p>
         )}
       </div>
 

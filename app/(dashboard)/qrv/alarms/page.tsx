@@ -4,7 +4,7 @@ import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import QrvAlarmsClient from "./QrvAlarmsClient";
 
-export default async function QrvAlarmsPage() {
+const QrvAlarmsPage = async () => {
   const session = await getSession();
   if (!session?.user?.id) return null;
 
@@ -23,4 +23,6 @@ export default async function QrvAlarmsPage() {
       </Card>
     </div>
   );
-}
+};
+
+export default QrvAlarmsPage;

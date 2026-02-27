@@ -2,9 +2,9 @@ import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
 import QrvNav from "./QrvNav";
 
-export default async function QrvLayout({
+const QrvLayout = async ({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{ children: React.ReactNode }> ) => {
   await requireRole(Role.QRV_SUPERVISOR);
 
   return (
@@ -13,4 +13,6 @@ export default async function QrvLayout({
       <main className="pl-64 pt-14 min-h-screen">{children}</main>
     </div>
   );
-}
+};
+
+export default QrvLayout;

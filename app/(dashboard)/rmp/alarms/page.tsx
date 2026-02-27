@@ -7,11 +7,11 @@ import RmpAlarmsClient from "./RmpAlarmsClient";
 
 type SearchParams = { status?: string; criticality?: string };
 
-export default async function RmpAlarmsPage({
+const RmpAlarmsPage = async ({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
-}) {
+}) => {
   const session = await getSession();
   if (!session?.user?.id) return null;
 
@@ -57,4 +57,6 @@ export default async function RmpAlarmsPage({
       </Card>
     </div>
   );
-}
+};
+
+export default RmpAlarmsPage;

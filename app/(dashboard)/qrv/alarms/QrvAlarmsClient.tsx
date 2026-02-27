@@ -131,7 +131,7 @@ const QrvAlarmsClient = ({ alarms }: Props) => {
           {loadingRmps ? (
             <p className="text-(--text-muted)">Loading RMPs…</p>
           ) : error ? (
-            <p className="text-red-500 text-sm">{error}</p>
+            <p className="text-(--alarm-critical) text-sm">{error}</p>
           ) : rmps.length === 0 ? (
             <p className="text-(--text-muted)">No RMPs in this chainage.</p>
           ) : (

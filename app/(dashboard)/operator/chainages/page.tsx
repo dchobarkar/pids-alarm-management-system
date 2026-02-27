@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import ChainagesTable from "./ChainagesTable";
 import ChainageCreateButton from "./ChainageCreateButton";
 
-export default async function OperatorChainagesPage() {
+const OperatorChainagesPage = async () => {
   const chainages = await prisma.chainage.findMany({
     orderBy: { startKm: "asc" },
   });
@@ -28,4 +28,6 @@ export default async function OperatorChainagesPage() {
       </Card>
     </div>
   );
-}
+};
+
+export default OperatorChainagesPage;

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import UsersTable from "./UsersTable";
 import UserCreateButton from "./UserCreateButton";
 
-export default async function OperatorUsersPage() {
+const OperatorUsersPage = async () => {
   const users = await prisma.user.findMany({
     orderBy: { name: "asc" },
     include: {
@@ -32,4 +32,6 @@ export default async function OperatorUsersPage() {
       </Card>
     </div>
   );
-}
+};
+
+export default OperatorUsersPage;

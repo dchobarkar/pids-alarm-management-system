@@ -4,9 +4,9 @@ import RmpNav from "./RmpNav";
 
 const RMP_ROLES: Role[] = [Role.RMP, Role.ER];
 
-export default async function RmpLayout({
+const RmpLayout = async ({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{ children: React.ReactNode }> ) => {
   await requireRole(RMP_ROLES);
 
   return (
@@ -15,4 +15,6 @@ export default async function RmpLayout({
       <main className="pl-64 pt-14 min-h-screen">{children}</main>
     </div>
   );
-}
+};
+
+export default RmpLayout;

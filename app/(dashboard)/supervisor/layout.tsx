@@ -8,9 +8,9 @@ const SUPERVISOR_ROLES: Role[] = [
   Role.QRV_SUPERVISOR,
 ];
 
-export default async function SupervisorLayout({
+const SupervisorLayout = async ({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{ children: React.ReactNode }> ) => {
   await requireRole(SUPERVISOR_ROLES);
 
   return (
@@ -19,4 +19,6 @@ export default async function SupervisorLayout({
       <main className="pl-64 pt-14 min-h-screen">{children}</main>
     </div>
   );
-}
+};
+
+export default SupervisorLayout;

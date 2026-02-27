@@ -15,11 +15,11 @@ type SearchParams = {
   dateTo?: string;
 };
 
-export default async function OperatorAlarmsPage({
+const OperatorAlarmsPage = async ({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
-}) {
+}) => {
   const session = await getSession();
   if (!session?.user?.id) return null;
 
@@ -68,4 +68,6 @@ export default async function OperatorAlarmsPage({
       </Card>
     </div>
   );
-}
+};
+
+export default OperatorAlarmsPage;
