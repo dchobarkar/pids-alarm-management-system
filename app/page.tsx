@@ -1,8 +1,20 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import Button from "@/components/ui/Button";
+import { auth } from "@/lib/auth";
+import { getDashboardPathForRole } from "@/lib/auth/auth-options";
+import type { Role } from "@/lib/generated/prisma";
 
-const Page = () => {
+const Page = async () => {
+  const session = await auth();
+
+  if (session?.user?.role) {
+    const role = session.user.role as Role;
+    const dashboardPath = getDashboardPathForRole(role);
+    redirect(dashboardPath);
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-(--bg-app)">
       <div className="text-center max-w-lg">

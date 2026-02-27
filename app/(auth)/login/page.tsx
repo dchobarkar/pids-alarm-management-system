@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 import Input from "@/components/form/Input";
@@ -10,35 +10,41 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
 
-const LoginForm = () => {
-  const searchParams = useSearchParams();
-  const urlError = searchParams.get("error");
+const LoginPage = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const displayError =
-    error ||
-    (urlError === "CredentialsSignin" ? "Invalid email or password." : null);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!email || !password) {
+      setError("Email and password are required.");
+      return;
+    }
+
     setLoading(true);
     try {
-      if (!email || !password) {
-        setError("Email and password are required.");
-        setLoading(false);
-        return;
-      }
-      await signIn("credentials", {
+      const result = await signIn("credentials", {
         email,
         password,
         callbackUrl: "/auth/redirect",
-        redirect: true,
+        redirect: false,
       });
-      setError("Sign in failed. Please try again.");
+
+      if (result?.error) {
+        setError("Invalid email or password.");
+        return;
+      }
+
+      if (result?.url) {
+        router.push(result.url);
+      } else {
+        router.push("/auth/redirect");
+      }
     } catch {
       setError("Sign in failed. Please try again.");
     } finally {
@@ -53,7 +59,7 @@ const LoginForm = () => {
           Enter your credentials to access the PIDS Alarm Management System.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {displayError && <Alert variant="error">{displayError}</Alert>}
+          {error && <Alert variant="error">{error}</Alert>}
           <Input
             label="Email"
             type="email"
@@ -85,14 +91,6 @@ const LoginForm = () => {
         </form>
       </Card>
     </div>
-  );
-}
-
-const LoginPage = () => {
-  return (
-    <Suspense fallback={<div className="max-w-md mx-auto px-6 py-12 text-(--text-muted)">Loading...</div>}>
-      <LoginForm />
-    </Suspense>
   );
 };
 

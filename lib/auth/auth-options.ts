@@ -54,6 +54,7 @@ export const authOptions: NextAuthConfig = {
   },
   pages: {
     signIn: "/login",
+    error: "/auth/error",
   },
   callbacks: {
     jwt({ token, user }) {
@@ -79,11 +80,17 @@ export const authOptions: NextAuthConfig = {
       return session;
     },
     redirect({ url, baseUrl }) {
-      const u = url.startsWith("/") ? new URL(url, baseUrl) : new URL(url);
-      if (u.origin !== baseUrl) return baseUrl;
-      if (u.pathname === "/login" || u.pathname === "/")
-        return baseUrl + "/login";
-      return url;
+      // Standard same-origin redirect handling recommended by NextAuth
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+      try {
+        const u = new URL(url);
+        if (u.origin === baseUrl) return url;
+      } catch {
+        // fall through
+      }
+      return baseUrl;
     },
   },
 };
