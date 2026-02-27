@@ -4,15 +4,7 @@ import bcrypt from "bcrypt";
 
 import type { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
-
-const roleDashboard: Record<Role, string> = {
-  OPERATOR: "/operator",
-  SUPERVISOR: "/supervisor",
-  NIGHT_SUPERVISOR: "/supervisor",
-  RMP: "/rmp",
-  ER: "/rmp",
-  QRV_SUPERVISOR: "/qrv",
-};
+import { getDashboardPathForRole as getPath } from "./dashboard-paths";
 
 const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
 if (!secret && process.env.NODE_ENV !== "test") {
@@ -96,4 +88,4 @@ export const authOptions: NextAuthConfig = {
 };
 
 export const getDashboardPathForRole = (role: Role): string =>
-  roleDashboard[role] ?? "/auth/signin";
+  getPath(role);
