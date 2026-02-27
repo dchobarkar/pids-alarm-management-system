@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 import ScopedAlarmsTable from "@/components/alarms/ScopedAlarmsTable";
 import { selfAssignAlarm } from "@/app/(dashboard)/rmp/tasks/actions";
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
+import type { AlarmWithRelations } from "@/types/alarm";
 
 interface Props {
   alarms: AlarmWithRelations[];

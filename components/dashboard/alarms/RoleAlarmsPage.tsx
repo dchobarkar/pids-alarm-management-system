@@ -1,53 +1,19 @@
 import Link from "next/link";
-
+import type { RoleAlarmsPageProps } from "@/types/dashboard";
+import { ROLE_ALARMS_CONFIG } from "@/constants/dashboard";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
-import type { AlarmsSearchParams } from "@/lib/alarm/loadScopedAlarmsForCurrentUser";
 import SupervisorAlarmsClient from "./SupervisorAlarmsClient";
 import RmpAlarmsClient from "./RmpAlarmsClient";
 import QrvAlarmsClient from "./QrvAlarmsClient";
-
-type RoleKey = "supervisor" | "rmp" | "qrv";
-
-interface RoleAlarmsPageProps {
-  role: RoleKey;
-  alarms: AlarmWithRelations[];
-  searchParams: AlarmsSearchParams;
-}
-
-const ROLE_CONFIG: Record<
-  RoleKey,
-  {
-    breadcrumbLabel: string;
-    breadcrumbHref: string;
-    title: string;
-  }
-> = {
-  supervisor: {
-    breadcrumbLabel: "Supervisor",
-    breadcrumbHref: "/supervisor",
-    title: "Alarms (your chainages)",
-  },
-  rmp: {
-    breadcrumbLabel: "RMP",
-    breadcrumbHref: "/rmp",
-    title: "Alarms (your chainages)",
-  },
-  qrv: {
-    breadcrumbLabel: "QRV",
-    breadcrumbHref: "/qrv",
-    title: "Escalated alarms",
-  },
-};
 
 const RoleAlarmsPage = ({
   role,
   alarms,
   searchParams,
 }: RoleAlarmsPageProps) => {
-  const cfg = ROLE_CONFIG[role];
+  const cfg = ROLE_ALARMS_CONFIG[role];
 
   return (
     <div className="p-6">

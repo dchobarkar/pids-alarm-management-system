@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-
+import { SALT_ROUNDS } from "@/constants/auth";
 import { prisma } from "@/lib/db";
 import { Role } from "@/lib/generated/prisma";
-
-const SALT_ROUNDS = 10;
 
 export async function POST(request: Request) {
   try {

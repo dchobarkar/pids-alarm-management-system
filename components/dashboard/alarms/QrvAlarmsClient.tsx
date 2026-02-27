@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import Table from "@/components/ui/Table";
 import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
+import type { AlarmWithRelations } from "@/types/alarm";
 import {
   getRmpOptionsForEscalatedAlarm,
   reassignEscalatedAlarm,

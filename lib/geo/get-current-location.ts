@@ -1,8 +1,4 @@
-export type CurrentLocation = {
-  latitude: number;
-  longitude: number;
-  accuracy?: number;
-};
+import type { CurrentLocation } from "@/types/geo";
 
 /**
  * Browser-only: get current position via Geolocation API.

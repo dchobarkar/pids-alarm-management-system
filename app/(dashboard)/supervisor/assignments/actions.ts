@@ -7,6 +7,8 @@ import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { createAssignment } from "@/lib/assignment/assignment-repository";
 
+import type { AssignAlarmResult } from "@/types/actions";
+
 const RMP_ROLES = [Role.RMP, Role.ER] as const;
 const SUPERVISOR_ROLES: Role[] = [
   Role.SUPERVISOR,
@@ -14,9 +16,7 @@ const SUPERVISOR_ROLES: Role[] = [
   Role.QRV_SUPERVISOR,
 ];
 
-export type AssignAlarmResult =
-  | { success: true }
-  | { success: false; error: string };
+export type { AssignAlarmResult } from "@/types/actions";
 
 /**
  * Get RMPs that can be assigned to this alarm (same chainage). Subordinates first.

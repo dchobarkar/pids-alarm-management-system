@@ -1,11 +1,12 @@
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
-
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg"];
-const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png"];
+import {
+  ALLOWED_MIME_TYPES,
+  ALLOWED_EXTENSIONS,
+} from "@/constants/evidence";
 
 export const isAllowedEvidenceType = (mime: string): boolean =>
-  ALLOWED_TYPES.includes(mime);
+  ALLOWED_MIME_TYPES.includes(mime);
 
 export const isAllowedEvidenceName = (name: string): boolean =>
   ALLOWED_EXTENSIONS.includes(path.extname(name).toLowerCase());

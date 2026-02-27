@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 
+import { MD_BREAKPOINT_PX } from "@/constants/ui";
 import DBNavbar from "@/components/layout/DBNavbar";
 import DBSidebar from "@/components/layout/DBSidebar";
-
-const MD_BREAKPOINT = 768;
 
 const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -14,7 +13,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
     if (!sidebarOpen) return;
 
     const isMobile = () =>
-      typeof window !== "undefined" && window.innerWidth < MD_BREAKPOINT;
+      typeof window !== "undefined" && window.innerWidth < MD_BREAKPOINT_PX;
     if (isMobile()) document.body.style.overflow = "hidden";
 
     return () => {

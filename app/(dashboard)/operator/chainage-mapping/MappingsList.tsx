@@ -1,17 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-
+import type { ChainageMapping } from "@/types/chainage-mapping";
 import Table from "@/components/ui/Table";
 import { removeMapping } from "./actions";
 
-type Mapping = {
-  id: string;
-  user: { id: string; name: string; email: string };
-  chainage: { id: string; label: string; startKm: number; endKm: number };
-};
-
-const MappingsList = ({ mappings }: { mappings: Mapping[] }) => {
+const MappingsList = ({ mappings }: { mappings: ChainageMapping[] }) => {
   const router = useRouter();
 
   async function handleRemove(id: string) {
@@ -24,18 +18,18 @@ const MappingsList = ({ mappings }: { mappings: Mapping[] }) => {
     {
       header: "User",
       accessor: "user" as const,
-      render: (r: Mapping) => `${r.user.name} (${r.user.email})`,
+      render: (r: ChainageMapping) => `${r.user.name} (${r.user.email})`,
     },
     {
       header: "Chainage",
       accessor: "chainage" as const,
-      render: (r: Mapping) =>
+      render: (r: ChainageMapping) =>
         `${r.chainage.label} (${r.chainage.startKm}–${r.chainage.endKm} km)`,
     },
     {
       header: "Actions",
       accessor: "id" as const,
-      render: (r: Mapping) => (
+      render: (r: ChainageMapping) => (
         <button
           type="button"
           onClick={() => handleRemove(r.id)}

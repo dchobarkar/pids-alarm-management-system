@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { MAX_EVIDENCE_FILES } from "@/constants/evidence";
 import { getCurrentLocation } from "@/lib/geo/get-current-location";
 import { submitVerification } from "./actions";
 import Alert from "@/components/ui/Alert";
-
-const MAX_FILES = 5;
 
 interface Props {
   alarmId: string;
@@ -123,7 +122,7 @@ const VerifyAlarmForm = ({ alarmId }: Props) => {
 
       <div>
         <label className="block text-sm font-medium text-(--text-secondary) mb-1">
-          Evidence (images, max {MAX_FILES} files)
+          Evidence (images, max {MAX_EVIDENCE_FILES} files)
         </label>
         <input
           type="file"

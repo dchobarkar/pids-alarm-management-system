@@ -1,12 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import type { UpdateProfileResult } from "@/types/actions";
 import { getSession } from "@/lib/auth/get-session";
 import { prisma } from "@/lib/db";
 
-export type UpdateProfileResult =
-  | { success: true }
-  | { success: false; error: string };
+export type { UpdateProfileResult } from "@/types/actions";
 
 /**
  * Update current user's profile (name, phone). Email is read-only.

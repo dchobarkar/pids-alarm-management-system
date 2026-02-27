@@ -1,6 +1,7 @@
 import "dotenv/config";
 import bcrypt from "bcrypt";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { DEFAULT_PASSWORD, SALT_ROUNDS } from "../constants/auth";
 
 import {
   PrismaClient,
@@ -10,9 +11,6 @@ import {
   AlarmStatus,
   AssignmentStatus,
 } from "../lib/generated/prisma";
-
-const DEFAULT_PASSWORD = "Password@123";
-const SALT_ROUNDS = 10;
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) throw new Error("DATABASE_URL is not set");

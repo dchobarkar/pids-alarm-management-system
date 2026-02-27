@@ -1,5 +1,6 @@
 import Link from "next/link";
-
+import type { AlarmsSearchParams, AlarmWithRelations } from "@/types/alarm";
+import { PATHS, STATUS_BADGE_VARIANT, CRITICALITY_BADGE_VARIANT } from "@/constants";
 import DateInput from "@/components/form/DateInput";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Button from "@/components/ui/Button";
@@ -7,35 +8,10 @@ import Card from "@/components/ui/Card";
 import Table from "@/components/ui/Table";
 import Badge from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
-import {
-  loadScopedAlarmsForCurrentUser,
-  type AlarmsSearchParams,
-} from "@/lib/alarm/loadScopedAlarmsForCurrentUser";
+import { loadScopedAlarmsForCurrentUser } from "@/lib/alarm/loadScopedAlarmsForCurrentUser";
 import { getSlaInfo } from "@/lib/sla/elapsed";
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
 
-const BASE_PATH = "/operator/alarms";
-
-const STATUS_VARIANT: Record<
-  string,
-  "created" | "assigned" | "investigating" | "done" | "closed"
-> = {
-  CREATED: "created",
-  UNASSIGNED: "created",
-  ASSIGNED: "assigned",
-  IN_PROGRESS: "investigating",
-  VERIFIED: "done",
-  FALSE_ALARM: "closed",
-  ESCALATED: "investigating",
-  CLOSED: "closed",
-};
-
-const CRITICALITY_VARIANT = {
-  LOW: "low" as const,
-  MEDIUM: "medium" as const,
-  HIGH: "high" as const,
-  CRITICAL: "critical" as const,
-};
+const BASE_PATH = PATHS.operatorAlarms;
 
 const OPERATOR_ALARMS_COLUMNS = [
   {
@@ -64,8 +40,8 @@ const OPERATOR_ALARMS_COLUMNS = [
   {
     header: "Criticality",
     accessor: "criticality" as const,
-    render: (r: AlarmWithRelations) => (
-      <Badge variant={CRITICALITY_VARIANT[r.criticality]}>
+        render: (r: AlarmWithRelations) => (
+          <Badge variant={CRITICALITY_BADGE_VARIANT[r.criticality]}>
         {r.criticality}
       </Badge>
     ),
@@ -73,9 +49,9 @@ const OPERATOR_ALARMS_COLUMNS = [
   {
     header: "Status",
     accessor: "status" as const,
-    render: (r: AlarmWithRelations) => (
-      <Badge variant={STATUS_VARIANT[r.status] ?? "created"}>{r.status}</Badge>
-    ),
+        render: (r: AlarmWithRelations) => (
+          <Badge variant={STATUS_BADGE_VARIANT[r.status] ?? "created"}>{r.status}</Badge>
+        ),
   },
   {
     header: "Assigned RMP",
@@ -181,7 +157,7 @@ const Page = async ({
           ]}
         />
 
-        <Link href={`${BASE_PATH}/create`}>
+        <Link href={PATHS.operatorAlarmsCreate}>
           <Button>Create alarm</Button>
         </Link>
       </div>

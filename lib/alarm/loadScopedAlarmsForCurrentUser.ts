@@ -1,22 +1,14 @@
+import type { AlarmsSearchParams, LoadScopedAlarmsOptions } from "@/types/alarm";
+import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth/get-session";
 import { getAlarmsByScope } from "@/lib/alarm/alarm-repository";
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
 
-export type AlarmsSearchParams = {
-  status?: string;
-  criticality?: string;
-  dateFrom?: string;
-  dateTo?: string;
-};
-
-type LoadOptions = {
-  rmpStatusFilter?: boolean;
-};
+export type { AlarmsSearchParams } from "@/types/alarm";
 
 export const loadScopedAlarmsForCurrentUser = async (
   searchParams: Promise<AlarmsSearchParams>,
-  options: LoadOptions = {},
+  options: LoadScopedAlarmsOptions = {},
 ): Promise<{
   user:
     | (Awaited<ReturnType<typeof prisma.user.findUniqueOrThrow>> & {
@@ -64,10 +56,6 @@ export const loadScopedAlarmsForCurrentUser = async (
     filters,
     options.rmpStatusFilter ? { rmpStatusFilter: true } : undefined,
   );
-
-  console.log(user);
-  console.log(alarms);
-  console.log(params);
 
   return { user, alarms, params };
 };

@@ -16,12 +16,12 @@ import {
   isAllowedEvidenceType,
 } from "@/lib/evidence/upload-file";
 
+import type { SubmitVerificationResult } from "@/types/actions";
+
 const RMP_ROLES: Role[] = [Role.RMP, Role.ER];
 const MAX_EVIDENCE_FILES = 5;
 
-export type SubmitVerificationResult =
-  | { success: true }
-  | { success: false; error: string };
+export type { SubmitVerificationResult } from "@/types/actions";
 
 /**
  * RMP submits verification: geo, distance, remarks, evidence. Alarm status unchanged; operator reviews.

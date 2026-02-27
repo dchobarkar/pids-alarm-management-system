@@ -1,13 +1,4 @@
-type ChainageWithUsers = {
-  id: string;
-  label: string;
-  startKm: number;
-  endKm: number;
-  users: {
-    id: string;
-    user: { id: string; name: string; email: string };
-  }[];
-};
+import type { ChainageWithUsers } from "@/types/chainage-mapping";
 
 const MappedByChainage = ({
   chainages,

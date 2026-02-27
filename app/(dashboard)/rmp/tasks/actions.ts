@@ -10,11 +10,11 @@ import {
   acceptAssignment as repoAcceptAssignment,
 } from "@/lib/assignment/assignment-repository";
 
+import type { SelfAssignAlarmResult, AcceptAssignmentResult } from "@/types/actions";
+
 const RMP_ROLES: Role[] = [Role.RMP, Role.ER];
 
-export type SelfAssignAlarmResult =
-  | { success: true }
-  | { success: false; error: string };
+export type { SelfAssignAlarmResult, AcceptAssignmentResult } from "@/types/actions";
 
 /**
  * RMP self-assigns an UNASSIGNED alarm in their chainage.
@@ -53,10 +53,6 @@ export async function selfAssignAlarm(
   revalidatePath("/operator/alarms");
   return { success: true };
 }
-
-export type AcceptAssignmentResult =
-  | { success: true }
-  | { success: false; error: string };
 
 /**
  * RMP accepts a PENDING assignment. Sets assignment to ACCEPTED and alarm to IN_PROGRESS.

@@ -4,21 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import type { User } from "@/lib/generated/prisma";
+import { ROLE_OPTIONS } from "@/constants/roles";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/form/Input";
 import Select from "@/components/form/Select";
 import Alert from "@/components/ui/Alert";
 import { createUser } from "./actions";
-
-const ROLE_OPTIONS = [
-  { value: "OPERATOR", label: "Operator" },
-  { value: "SUPERVISOR", label: "Supervisor" },
-  { value: "NIGHT_SUPERVISOR", label: "Night Supervisor" },
-  { value: "RMP", label: "RMP" },
-  { value: "ER", label: "ER" },
-  { value: "QRV_SUPERVISOR", label: "QRV Supervisor" },
-];
 
 const UserCreateButton = ({ supervisors }: { supervisors: User[] }) => {
   const router = useRouter();

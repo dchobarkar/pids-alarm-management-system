@@ -4,14 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { EMAIL_REGEX, MIN_PASSWORD_LENGTH } from "@/constants/auth";
 import Input from "@/components/form/Input";
 import PasswordInput from "@/components/form/PasswordInput";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MIN_PASSWORD_LENGTH = 8;
 
 type FieldErrors = {
   name?: string;

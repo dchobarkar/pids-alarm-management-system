@@ -1,15 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-
+import type { OperatorDecisionResult } from "@/types/actions";
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 
-export type OperatorDecisionResult =
-  | { success: true }
-  | { success: false; error: string };
+export type { OperatorDecisionResult } from "@/types/actions";
 
 /**
  * Operator marks alarm as VERIFIED. Only Operator role; IN_PROGRESS → VERIFIED.

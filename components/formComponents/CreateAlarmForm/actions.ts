@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-
+import type { CreateAlarmResult } from "@/types/actions";
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
 import { createAlarmSchema } from "@/lib/validation/alarm-schema";
@@ -10,9 +10,7 @@ import {
   findChainageByValue,
 } from "@/lib/alarm/alarm-repository";
 
-export type CreateAlarmResult =
-  | { success: true; alarmId: string }
-  | { success: false; error: string };
+export type { CreateAlarmResult } from "@/types/actions";
 
 export async function createAlarm(
   formData: FormData,

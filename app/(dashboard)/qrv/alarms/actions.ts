@@ -7,11 +7,11 @@ import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { createReassignment } from "@/lib/assignment/assignment-repository";
 
+import type { ReassignAlarmResult } from "@/types/actions";
+
 const RMP_ROLES = [Role.RMP, Role.ER] as const;
 
-export type ReassignAlarmResult =
-  | { success: true }
-  | { success: false; error: string };
+export type { ReassignAlarmResult } from "@/types/actions";
 
 /**
  * Get RMPs that can be assigned to this escalated alarm (same chainage).

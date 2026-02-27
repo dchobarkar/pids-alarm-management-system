@@ -10,7 +10,7 @@ import Alert from "@/components/ui/Alert";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import { acceptAssignment } from "./actions";
-import type { AssignmentWithAlarm } from "@/lib/assignment/assignment-repository";
+import type { AssignmentWithAlarm } from "@/types/assignment";
 
 /** Open Google Maps directions to destination lat/lng. */
 function getDirectionsUrl(latitude: number, longitude: number): string {

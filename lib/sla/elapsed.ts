@@ -1,4 +1,5 @@
 import type { AlarmStatus } from "@/lib/generated/prisma";
+import type { SlaInfo, SlaStatus } from "@/types/sla";
 import {
   SLA_UNASSIGNED_MINUTES,
   SLA_ASSIGNED_MINUTES,
@@ -6,15 +7,7 @@ import {
   SLA_WARNING_THRESHOLD,
 } from "./config";
 
-export type SlaStatus = "ok" | "warning" | "breached";
-
-export interface SlaInfo {
-  elapsedMinutes: number;
-  limitMinutes: number;
-  fractionUsed: number;
-  status: SlaStatus;
-  label: string;
-}
+export type { SlaInfo, SlaStatus } from "@/types/sla";
 
 const getLimitMinutes = (status: AlarmStatus): number | null => {
   switch (status) {

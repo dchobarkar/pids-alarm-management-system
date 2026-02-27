@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import ScopedAlarmsTable from "@/components/alarms/ScopedAlarmsTable";
 import AssignAlarmModal from "@/components/alarms/AssignAlarmModal";
 import { escalateAlarm } from "@/app/(dashboard)/supervisor/assignments/escalate-actions";
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
+import type { AlarmWithRelations } from "@/types/alarm";
 
 interface Props {
   alarms: AlarmWithRelations[];

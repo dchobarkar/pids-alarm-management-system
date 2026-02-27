@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import type { User, Role } from "@/lib/generated/prisma";
-import type { Prisma } from "@/lib/generated/prisma";
+import type { User } from "@/lib/generated/prisma";
+import type { UserWithSupervisor } from "@/types/user";
+import { ROLE_OPTIONS } from "@/constants/roles";
 import Table from "@/components/ui/Table";
 import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
@@ -12,19 +13,6 @@ import Input from "@/components/form/Input";
 import Select from "@/components/form/Select";
 import Alert from "@/components/ui/Alert";
 import { updateUser, deleteUser } from "./actions";
-
-type UserWithSupervisor = Prisma.UserGetPayload<{
-  include: { supervisor: { select: { id: true; name: true; email: true } } };
-}>;
-
-const ROLE_OPTIONS: { value: Role; label: string }[] = [
-  { value: "OPERATOR", label: "Operator" },
-  { value: "SUPERVISOR", label: "Supervisor" },
-  { value: "NIGHT_SUPERVISOR", label: "Night Supervisor" },
-  { value: "RMP", label: "RMP" },
-  { value: "ER", label: "ER" },
-  { value: "QRV_SUPERVISOR", label: "QRV Supervisor" },
-];
 
 interface Props {
   users: UserWithSupervisor[];

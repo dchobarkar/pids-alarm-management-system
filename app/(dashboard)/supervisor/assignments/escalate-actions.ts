@@ -8,15 +8,15 @@ import { prisma } from "@/lib/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
 
+import type { EscalateAlarmResult } from "@/types/actions";
+
 const SUPERVISOR_ROLES: Role[] = [
   Role.SUPERVISOR,
   Role.NIGHT_SUPERVISOR,
   Role.QRV_SUPERVISOR,
 ];
 
-export type EscalateAlarmResult =
-  | { success: true }
-  | { success: false; error: string };
+export type { EscalateAlarmResult } from "@/types/actions";
 
 /**
  * Supervisor manually escalates alarm. Allowed when status is UNASSIGNED, ASSIGNED, or IN_PROGRESS.

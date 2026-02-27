@@ -1,15 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-
+import type { CloseAlarmResult } from "@/types/actions";
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 
-export type CloseAlarmResult =
-  | { success: true }
-  | { success: false; error: string };
+export type { CloseAlarmResult } from "@/types/actions";
 
 /**
  * Operator closes alarm. Allowed only when status is VERIFIED or FALSE_ALARM.

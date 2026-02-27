@@ -4,26 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+import {
+  ALARM_TYPE_OPTIONS,
+  CRITICALITY_OPTIONS,
+} from "@/constants/alarm";
 import Input from "@/components/form/Input";
 import Select from "@/components/form/Select";
 import Button from "@/components/ui/Button";
 import Alert from "@/components/ui/Alert";
 import { createAlarm } from "./actions";
-
-const ALARM_TYPE_OPTIONS = [
-  { value: "VIBRATION", label: "Vibration" },
-  { value: "DIGGING", label: "Digging" },
-  { value: "INTRUSION", label: "Intrusion" },
-  { value: "TAMPERING", label: "Tampering" },
-  { value: "UNKNOWN", label: "Unknown" },
-];
-
-const CRITICALITY_OPTIONS = [
-  { value: "LOW", label: "Low" },
-  { value: "MEDIUM", label: "Medium" },
-  { value: "HIGH", label: "High" },
-  { value: "CRITICAL", label: "Critical" },
-];
 
 const CreateAlarmForm = () => {
   const router = useRouter();

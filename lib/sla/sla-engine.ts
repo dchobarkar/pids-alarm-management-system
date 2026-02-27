@@ -1,12 +1,9 @@
+import type { SlaBreachResult } from "@/types/sla";
 import { prisma } from "@/lib/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { SLA_MINUTES } from "./config";
 
-export type SlaBreachResult = {
-  alarmId: string;
-  status: string;
-  elapsedMinutes: number;
-};
+export type { SlaBreachResult } from "@/types/sla";
 
 /**
  * Check all active alarms for SLA breach and auto-escalate.

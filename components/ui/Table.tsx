@@ -1,10 +1,5 @@
 import { cn } from "@/lib/utils";
-
-interface Column<T> {
-  header: string;
-  accessor: keyof T;
-  render?: (row: T) => React.ReactNode;
-}
+import type { Column } from "@/types/ui";
 
 interface Props<T> {
   data: T[];

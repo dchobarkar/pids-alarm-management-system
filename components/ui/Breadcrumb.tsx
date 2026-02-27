@@ -1,9 +1,5 @@
 import Link from "next/link";
-
-interface Crumb {
-  label: string;
-  href?: string;
-}
+import type { Crumb } from "@/types/ui";
 
 interface Props {
   crumbs: Crumb[];

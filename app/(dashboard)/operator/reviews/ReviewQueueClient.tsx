@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import Badge from "@/components/ui/Badge";
 import { markVerified, markFalseAlarm } from "./actions";
-import type { AlarmPendingReview } from "@/lib/verification/verification-repository";
+import type { AlarmPendingReview } from "@/types/verification";
 
 interface Props {
   alarms: AlarmPendingReview[];

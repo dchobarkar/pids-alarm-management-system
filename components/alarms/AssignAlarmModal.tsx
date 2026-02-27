@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 import Modal from "@/components/ui/Modal";
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
+import type { AlarmWithRelations } from "@/types/alarm";
 import { getRmpOptionsForAlarm } from "@/app/(dashboard)/supervisor/assignments/actions";
 import { assignAlarm } from "@/app/(dashboard)/supervisor/assignments/actions";
 

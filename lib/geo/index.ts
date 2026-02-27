@@ -1,4 +1,4 @@
-export type { CurrentLocation } from "./get-current-location";
+export type { CurrentLocation } from "@/types/geo";
 export {
   GEO_TOLERANCE_METERS,
   calculateDistanceMeters,
