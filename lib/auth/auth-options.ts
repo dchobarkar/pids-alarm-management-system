@@ -42,7 +42,9 @@ export const authOptions: NextAuthConfig = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    // 8 hour rolling session; refreshed while user is active
+    maxAge: 8 * 60 * 60, // 8 hours
+    updateAge: 30 * 60, // refresh token age every 30 minutes of activity
   },
   pages: {
     signIn: "/auth/signin",

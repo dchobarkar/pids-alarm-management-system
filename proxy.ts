@@ -17,9 +17,7 @@ export const proxy = auth((req) => {
   const isApiRoute = pathname.startsWith("/api");
 
   // Never interfere with API routes
-  if (isApiRoute) {
-    return NextResponse.next();
-  }
+  if (isApiRoute) return NextResponse.next();
 
   // If logged in, prevent visiting auth pages
   if (session && isAuthRoute) {
@@ -45,4 +43,3 @@ export const proxy = auth((req) => {
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
-
