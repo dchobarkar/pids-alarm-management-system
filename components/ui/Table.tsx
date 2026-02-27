@@ -1,13 +1,17 @@
 import { cn } from "@/lib/utils";
 import type { Column } from "@/types/ui";
 
-interface Props<T> {
+interface Props<T extends { id?: string | number }> {
   data: T[];
   columns: Column<T>[];
   className?: string;
 }
 
-const Table = <T,>({ data, columns, className }: Props<T>) => {
+const Table = <T extends { id?: string | number }>({
+  data,
+  columns,
+  className,
+}: Props<T>) => {
   return (
     <div
       className={cn(
@@ -30,18 +34,21 @@ const Table = <T,>({ data, columns, className }: Props<T>) => {
         </thead>
 
         <tbody>
-          {data.map((row, i) => (
-            <tr
-              key={i}
-              className="border-t border-(--border-default) hover:bg-(--bg-surface)"
-            >
-              {columns.map((col) => (
-                <td key={String(col.accessor)} className="px-3 py-2">
-                  {col.render ? col.render(row) : String(row[col.accessor])}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {data.map((row, i) => {
+            const rowKey = row.id ?? i;
+            return (
+              <tr
+                key={rowKey}
+                className="border-t border-(--border-default) hover:bg-(--bg-surface)"
+              >
+                {columns.map((col) => (
+                  <td key={String(col.accessor)} className="px-3 py-2">
+                    {col.render ? col.render(row) : String(row[col.accessor])}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
