@@ -6,37 +6,62 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 import Input from "@/components/form/Input";
+import PasswordInput from "@/components/form/PasswordInput";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type FieldErrors = {
+  email?: string;
+  password?: string;
+};
 
 const Page = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [submitError, setSubmitError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const validate = (): boolean => {
+    const errors: FieldErrors = {};
+    const trimmedEmail = email.trim();
+
+    if (!trimmedEmail) {
+      errors.email = "Email is required.";
+    } else if (!EMAIL_REGEX.test(trimmedEmail)) {
+      errors.email = "Please enter a valid email address.";
+    }
+
+    if (!password) {
+      errors.password = "Password is required.";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setSubmitError("");
+    setFieldErrors({});
 
-    if (!email || !password) {
-      setError("Email and password are required.");
-      return;
-    }
+    if (!validate()) return;
 
     setLoading(true);
     try {
       const result = await signIn("credentials", {
-        email,
+        email: email.trim(),
         password,
         callbackUrl: "/auth/redirect",
         redirect: false,
       });
 
       if (result?.error) {
-        setError("Invalid email or password.");
+        setSubmitError("Invalid email or password.");
         return;
       }
 
@@ -46,7 +71,7 @@ const Page = () => {
         router.push("/auth/redirect");
       }
     } catch {
-      setError("Sign in failed. Please try again.");
+      setSubmitError("Sign in failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -59,23 +84,32 @@ const Page = () => {
           Enter your credentials to access the PIDS Alarm Management System.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <Alert variant="error">{error}</Alert>}
+          {submitError && <Alert variant="error">{submitError}</Alert>}
           <Input
             label="Email"
             type="email"
             placeholder="you@company.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (fieldErrors.email)
+                setFieldErrors((prev) => ({ ...prev, email: undefined }));
+            }}
             autoComplete="email"
+            error={fieldErrors.email}
             required
           />
-          <Input
+          <PasswordInput
             label="Password"
-            type="password"
             placeholder="••••••••"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (fieldErrors.password)
+                setFieldErrors((prev) => ({ ...prev, password: undefined }));
+            }}
             autoComplete="current-password"
+            error={fieldErrors.password}
             required
           />
           <div className="flex flex-col sm:flex-row gap-3 pt-2">

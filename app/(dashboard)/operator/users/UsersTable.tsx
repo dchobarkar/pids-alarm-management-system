@@ -144,7 +144,6 @@ const UsersTable = ({ users, supervisors }: Props) => {
             type="email"
             defaultValue={editing?.email}
             required
-            disabled
           />
           {editing && (
             <Input

@@ -5,9 +5,20 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import Input from "@/components/form/Input";
+import PasswordInput from "@/components/form/PasswordInput";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MIN_PASSWORD_LENGTH = 8;
+
+type FieldErrors = {
+  name?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+};
 
 const Page = () => {
   const router = useRouter();
@@ -15,25 +26,49 @@ const Page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [submitError, setSubmitError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const validate = (): boolean => {
+    const errors: FieldErrors = {};
+    const trimmedName = name.trim();
+    const trimmedEmail = email.trim();
+
+    if (!trimmedName) {
+      errors.name = "Full name is required.";
+    } else if (trimmedName.length < 2) {
+      errors.name = "Name must be at least 2 characters.";
+    }
+
+    if (!trimmedEmail) {
+      errors.email = "Email is required.";
+    } else if (!EMAIL_REGEX.test(trimmedEmail)) {
+      errors.email = "Please enter a valid email address.";
+    }
+
+    if (!password) {
+      errors.password = "Password is required.";
+    } else if (password.length < MIN_PASSWORD_LENGTH) {
+      errors.password = `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
+    }
+
+    if (!confirmPassword) {
+      errors.confirmPassword = "Please confirm your password.";
+    } else if (password !== confirmPassword) {
+      errors.confirmPassword = "Passwords do not match.";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
+    setSubmitError("");
+    setFieldErrors({});
 
-    if (!name.trim() || !email.trim()) {
-      setError("Name and email are required.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
+    if (!validate()) return;
 
     setLoading(true);
     try {
@@ -54,13 +89,13 @@ const Page = () => {
       } | null;
 
       if (!res.ok || data?.error) {
-        setError(data?.error || "Registration failed. Please try again.");
+        setSubmitError(data?.error || "Registration failed. Please try again.");
         return;
       }
 
       router.push("/auth/signin");
     } catch {
-      setError("Registration failed. Please try again.");
+      setSubmitError("Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -73,14 +108,18 @@ const Page = () => {
           Register for access to the PIDS Alarm Management System.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <Alert variant="error">{error}</Alert>}
+          {submitError && <Alert variant="error">{submitError}</Alert>}
           <Input
             label="Full name"
             type="text"
             placeholder="Jane Doe"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: undefined }));
+            }}
             autoComplete="name"
+            error={fieldErrors.name}
             required
           />
           <Input
@@ -88,27 +127,40 @@ const Page = () => {
             type="email"
             placeholder="you@company.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }));
+            }}
             autoComplete="email"
+            error={fieldErrors.email}
             required
           />
-          <Input
+          <PasswordInput
             label="Password"
-            type="password"
             placeholder="••••••••"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
+              if (fieldErrors.confirmPassword && e.target.value === confirmPassword)
+                setFieldErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+            }}
             autoComplete="new-password"
             helperText="At least 8 characters"
+            error={fieldErrors.password}
             required
           />
-          <Input
+          <PasswordInput
             label="Confirm password"
-            type="password"
             placeholder="••••••••"
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (fieldErrors.confirmPassword)
+                setFieldErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+            }}
             autoComplete="new-password"
+            error={fieldErrors.confirmPassword}
             required
           />
           <div className="flex flex-col sm:flex-row gap-3 pt-2">

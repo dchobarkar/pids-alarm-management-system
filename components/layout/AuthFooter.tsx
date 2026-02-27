@@ -1,18 +1,10 @@
-import Link from "next/link";
-
 const AuthFooter = () => {
   return (
-    <footer className="mt-auto border-t border-(--border-default) bg-(--bg-surface)">
-      <div className="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-(--text-muted)">
-        <span>© PIDS Alarm Management System. Internal use only.</span>
-        <nav className="flex items-center gap-6">
-          <Link href="/auth/signin" className="hover:text-(--text-secondary)">
-            Sign in
-          </Link>
-          <Link href="/auth/register" className="hover:text-(--text-secondary)">
-            Register
-          </Link>
-        </nav>
+    <footer className="mt-auto border-t border-slate-200 bg-white/90 backdrop-blur-sm">
+      <div className="mx-auto flex items-center justify-center px-6 py-4">
+        <span className="text-sm tracking-tight text-center text-slate-500">
+          © PIDS Alarm Management System. Internal use only.
+        </span>
       </div>
     </footer>
   );

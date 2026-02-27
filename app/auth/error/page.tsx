@@ -25,11 +25,13 @@ const Page = () => {
   const message = getErrorMessage(errorCode);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 bg-(--bg-app)">
+    <div className="flex items-center justify-center min-h-screen bg-(--bg-app)">
       <div className="max-w-md w-full">
         <Card title="Authentication error">
-          <p className="text-(--text-secondary) mb-6">{message}</p>
-          <div className="flex gap-3">
+          <p className="text-(--text-secondary) text-center pt-10 mb-6">
+            {message}
+          </p>
+          <div className="flex justify-between w-full">
             <Link href="/auth/signin">
               <Button>Back to sign in</Button>
             </Link>
