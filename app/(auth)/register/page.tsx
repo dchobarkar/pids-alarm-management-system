@@ -21,6 +21,11 @@ const Page = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!name.trim() || !email.trim()) {
+      setError("Name and email are required.");
+      return;
+    }
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -29,10 +34,30 @@ const Page = () => {
       setError("Password must be at least 8 characters.");
       return;
     }
+
     setLoading(true);
     try {
-      // Placeholder: replace with real registration API
-      await new Promise((r) => setTimeout(r, 600));
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          password,
+        }),
+      });
+
+      const data = (await res.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+
+      if (!res.ok || data?.error) {
+        setError(data?.error || "Registration failed. Please try again.");
+        return;
+      }
+
       router.push("/login");
     } catch {
       setError("Registration failed. Please try again.");
