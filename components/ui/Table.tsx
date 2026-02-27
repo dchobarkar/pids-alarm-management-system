@@ -35,7 +35,9 @@ const Table = <T extends { id?: string | number }>({
 
         <tbody>
           {data.map((row, i) => {
-            const rowKey = row.id ?? i;
+            const baseId = row.id ?? i;
+            const rowKey =
+              typeof baseId === "string" ? `${baseId}-${i}` : `${String(baseId)}-${i}`;
             return (
               <tr
                 key={rowKey}
