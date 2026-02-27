@@ -9,13 +9,13 @@ const AuthNavbar = () => {
         </Link>
         <nav className="flex items-center gap-6">
           <Link
-            href="/login"
+            href="/auth/signin"
             className="text-sm text-(--text-secondary) hover:text-(--text-primary)"
           >
             Sign in
           </Link>
           <Link
-            href="/register"
+            href="/auth/register"
             className="text-sm font-medium text-(--brand-primary) hover:underline"
           >
             Register

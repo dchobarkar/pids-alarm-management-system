@@ -53,7 +53,7 @@ export const authOptions: NextAuthConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: "/login",
+    signIn: "/auth/signin",
     error: "/auth/error",
   },
   callbacks: {
@@ -96,4 +96,4 @@ export const authOptions: NextAuthConfig = {
 };
 
 export const getDashboardPathForRole = (role: Role): string =>
-  roleDashboard[role] ?? "/login";
+  roleDashboard[role] ?? "/auth/signin";

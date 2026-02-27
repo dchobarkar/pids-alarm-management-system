@@ -9,7 +9,7 @@ import Card from "@/components/ui/Card";
 const ERROR_MESSAGES: Record<string, string> = {
   CredentialsSignin: "Invalid email or password.",
   SessionRequired: "You must be signed in to view this page.",
-  AccessDenied: "You do not have permission to sign in with those credentials.",
+  AccessDenied: "You do not have permission to view this page.",
   Configuration: "There is a problem with the server configuration.",
   Default: "An unexpected authentication error occurred. Please try again.",
 };
@@ -30,7 +30,7 @@ const AuthErrorPage = () => {
         <Card title="Authentication error">
           <p className="text-(--text-secondary) mb-6">{message}</p>
           <div className="flex gap-3">
-            <Link href="/login">
+            <Link href="/auth/signin">
               <Button>Back to sign in</Button>
             </Link>
             <Link href="/">

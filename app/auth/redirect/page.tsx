@@ -6,7 +6,7 @@ import type { Role } from "@/lib/generated/prisma";
 
 const AuthRedirectPage = async () => {
   const session = await getSession();
-  if (!session?.user?.role) redirect("/login");
+  if (!session?.user?.role) redirect("/auth/signin");
   const path = getDashboardPathForRole(session.user.role as Role);
   redirect(path);
 };

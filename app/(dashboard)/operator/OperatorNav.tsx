@@ -29,7 +29,7 @@ const OperatorNav = () => {
         </Link>
         <button
           type="button"
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={() => signOut({ callbackUrl: "/auth/signin" })}
           className="text-sm text-(--text-secondary) hover:text-(--text-primary)"
         >
           Sign out

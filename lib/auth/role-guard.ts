@@ -5,10 +5,11 @@ import { getSession } from "./get-session";
 
 export const requireRole = async (allowedRole: Role | Role[]) => {
   const session = await getSession();
-  if (!session?.user) redirect("/login");
+  if (!session?.user) redirect("/auth/error?error=SessionRequired");
 
   const allowed = Array.isArray(allowedRole) ? allowedRole : [allowedRole];
-  if (!allowed.includes(session.user.role as Role)) redirect("/unauthorized");
+  if (!allowed.includes(session.user.role as Role))
+    redirect("/auth/error?error=AccessDenied");
 
   return session;
 };

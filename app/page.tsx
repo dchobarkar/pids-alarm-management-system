@@ -28,10 +28,10 @@ const Page = async () => {
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center">
-          <Link href="/login">
+          <Link href="/auth/signin">
             <Button>Sign in</Button>
           </Link>
-          <Link href="/register">
+          <Link href="/auth/register">
             <Button variant="secondary">Create account</Button>
           </Link>
         </div>

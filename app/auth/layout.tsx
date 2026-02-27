@@ -1,7 +1,7 @@
 import AuthFooter from "@/components/layout/AuthFooter";
 import AuthNavbar from "@/components/layout/AuthNavbar";
 
-const Layout = ({
+const AuthLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -15,4 +15,5 @@ const Layout = ({
   );
 };
 
-export default Layout;
+export default AuthLayout;
+

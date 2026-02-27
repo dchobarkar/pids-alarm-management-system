@@ -3,18 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 import Input from "@/components/form/Input";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
 
-const Page = () => {
+const SignInPage = () => {
   const router = useRouter();
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,45 +21,32 @@ const Page = () => {
     e.preventDefault();
     setError("");
 
-    if (!name.trim() || !email.trim()) {
-      setError("Name and email are required.");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (!email || !password) {
+      setError("Email and password are required.");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          password,
-        }),
+      const result = await signIn("credentials", {
+        email,
+        password,
+        callbackUrl: "/auth/redirect",
+        redirect: false,
       });
 
-      const data = (await res.json().catch(() => null)) as
-        | { error?: string }
-        | null;
-
-      if (!res.ok || data?.error) {
-        setError(data?.error || "Registration failed. Please try again.");
+      if (result?.error) {
+        setError("Invalid email or password.");
         return;
       }
 
-      router.push("/login");
+      if (result?.url) {
+        router.push(result.url);
+      } else {
+        router.push("/auth/redirect");
+      }
     } catch {
-      setError("Registration failed. Please try again.");
+      setError("Sign in failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -68,21 +54,12 @@ const Page = () => {
 
   return (
     <div className="max-w-md mx-auto px-6 py-12">
-      <Card title="Create account">
+      <Card title="Sign in">
         <p className="text-(--text-secondary) mb-4">
-          Register for access to the PIDS Alarm Management System.
+          Enter your credentials to access the PIDS Alarm Management System.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && <Alert variant="error">{error}</Alert>}
-          <Input
-            label="Full name"
-            type="text"
-            placeholder="Jane Doe"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            autoComplete="name"
-            required
-          />
           <Input
             label="Email"
             type="email"
@@ -98,26 +75,16 @@ const Page = () => {
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-            helperText="At least 8 characters"
-            required
-          />
-          <Input
-            label="Confirm password"
-            type="password"
-            placeholder="••••••••"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            autoComplete="new-password"
+            autoComplete="current-password"
             required
           />
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
             <Button type="submit" className="flex-1" loading={loading}>
-              Register
+              Sign in
             </Button>
-            <Link href="/login" className="flex-1">
+            <Link href="/" className="flex-1">
               <Button type="button" variant="secondary" className="w-full">
-                Back to sign in
+                Back
               </Button>
             </Link>
           </div>
@@ -127,4 +94,5 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default SignInPage;
+
