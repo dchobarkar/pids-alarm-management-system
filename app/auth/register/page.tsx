@@ -9,7 +9,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
 
-const RegisterPage = () => {
+const Page = () => {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -49,9 +49,9 @@ const RegisterPage = () => {
         }),
       });
 
-      const data = (await res.json().catch(() => null)) as
-        | { error?: string }
-        | null;
+      const data = (await res.json().catch(() => null)) as {
+        error?: string;
+      } | null;
 
       if (!res.ok || data?.error) {
         setError(data?.error || "Registration failed. Please try again.");
@@ -127,5 +127,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
-
+export default Page;

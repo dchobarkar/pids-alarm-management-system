@@ -10,7 +10,7 @@ import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
 
-const SignInPage = () => {
+const Page = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -94,5 +94,4 @@ const SignInPage = () => {
   );
 };
 
-export default SignInPage;
-
+export default Page;

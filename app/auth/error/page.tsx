@@ -19,7 +19,7 @@ const getErrorMessage = (code: string | null): string => {
   return ERROR_MESSAGES[code] ?? ERROR_MESSAGES.Default;
 };
 
-const AuthErrorPage = () => {
+const Page = () => {
   const searchParams = useSearchParams();
   const errorCode = searchParams.get("error");
   const message = getErrorMessage(errorCode);
@@ -43,4 +43,4 @@ const AuthErrorPage = () => {
   );
 };
 
-export default AuthErrorPage;
+export default Page;

@@ -32,3 +32,4 @@ const RmpAlarmsClient = ({ alarms, searchParams }: Props) => {
 };
 
 export default RmpAlarmsClient;
+

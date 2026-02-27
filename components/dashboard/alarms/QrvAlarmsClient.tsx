@@ -10,7 +10,7 @@ import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
 import {
   getRmpOptionsForEscalatedAlarm,
   reassignEscalatedAlarm,
-} from "./actions";
+} from "@/app/(dashboard)/qrv/alarms/actions";
 
 const STATUS_VARIANT: Record<
   string,

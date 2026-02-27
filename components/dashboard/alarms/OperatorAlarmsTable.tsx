@@ -36,9 +36,11 @@ interface Props {
     dateFrom?: string;
     dateTo?: string;
   };
+  basePath: "/operator/alarms" | "/supervisor/alarms" | "/rmp/alarms";
+  showCreateLink?: boolean;
 }
 
-const OperatorAlarmsTable = ({ alarms, searchParams }: Props) => {
+const OperatorAlarmsTable = ({ alarms, searchParams, basePath }: Props) => {
   const columns = [
     {
       header: "ID",
@@ -150,7 +152,7 @@ const OperatorAlarmsTable = ({ alarms, searchParams }: Props) => {
     },
   ];
 
-  const base = "/operator/alarms";
+  const base = basePath;
   const q = (overrides: Record<string, string>) => {
     const p = { ...searchParams, ...overrides };
     const s = new URLSearchParams();
