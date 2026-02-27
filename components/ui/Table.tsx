@@ -12,7 +12,7 @@ interface Props<T> {
   className?: string;
 }
 
-function Table<T>({ data, columns, className }: Props<T>) {
+const Table = <T,>({ data, columns, className }: Props<T>) => {
   return (
     <div
       className={cn(
@@ -51,6 +51,6 @@ function Table<T>({ data, columns, className }: Props<T>) {
       </table>
     </div>
   );
-}
+};
 
 export default Table;

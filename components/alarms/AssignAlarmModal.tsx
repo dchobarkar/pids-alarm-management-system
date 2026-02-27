@@ -56,7 +56,7 @@ const AssignAlarmModal = ({ open, onClose, alarm, onSuccess }: Props) => {
         {loading ? (
           <p className="text-(--text-muted)">Loading RMPs…</p>
         ) : error ? (
-          <p className="text-red-500 text-sm">{error}</p>
+          <p className="text-(--alarm-critical) text-sm">{error}</p>
         ) : rmps.length === 0 ? (
           <p className="text-(--text-muted)">
             No RMPs mapped to this alarm&apos;s chainage.
