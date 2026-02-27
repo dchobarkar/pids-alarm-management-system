@@ -1,51 +1,74 @@
 @import "tailwindcss";
 
-/* Root Theme Tokens  */
+/* ==========================================================================
+   PIDS Alarm Management System — Light theme (production)
+   Single theme; no dark mode.
+   ========================================================================== */
+
 :root {
-  /* Base Surfaces */
-  --bg-app: #0b1220;
-  --bg-surface: #111827;
-  --bg-card: #1f2937;
-  --bg-elevated: #374151;
+  /* -------------------------------------------------------------------------
+     Base surfaces
+     ------------------------------------------------------------------------- */
+  --bg-app: #f1f5f9;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-elevated: #f8fafc;
 
-  /* Borders */
-  --border-default: #374151;
-  --border-strong: #4b5563;
+  /* -------------------------------------------------------------------------
+     Borders
+     ------------------------------------------------------------------------- */
+  --border-default: #e2e8f0;
+  --border-strong: #cbd5e1;
 
-  /* Text */
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  /* -------------------------------------------------------------------------
+     Text
+     ------------------------------------------------------------------------- */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
 
-  /* Brand */
+  /* -------------------------------------------------------------------------
+     Brand (primary actions, links)
+     ------------------------------------------------------------------------- */
   --brand-primary: #2563eb;
   --brand-secondary: #1d4ed8;
 
-  /* Alarm Criticality */
-  --alarm-critical: #dc2626;
-  --alarm-high: #ea580c;
-  --alarm-medium: #d97706;
-  --alarm-low: #2563eb;
-  --alarm-closed: #16a34a;
+  /* -------------------------------------------------------------------------
+     Alarm criticality (semantic; readable on light)
+     ------------------------------------------------------------------------- */
+  --alarm-critical: #b91c1c;
+  --alarm-high: #c2410c;
+  --alarm-medium: #b45309;
+  --alarm-low: #1d4ed8;
+  --alarm-closed: #15803d;
 
-  /* Status */
-  --status-created: #64748b;
+  /* -------------------------------------------------------------------------
+     Status indicators
+     ------------------------------------------------------------------------- */
+  --status-created: #475569;
   --status-assigned: #2563eb;
-  --status-investigating: #ea580c;
-  --status-done: #7c3aed;
-  --status-closed: #16a34a;
+  --status-investigating: #c2410c;
+  --status-done: #6d28d9;
+  --status-closed: #15803d;
 
-  /* Typography */
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  /* -------------------------------------------------------------------------
+     Typography (align with app layout: Geist from next/font)
+     ------------------------------------------------------------------------- */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
-  /* Radius */
+  /* -------------------------------------------------------------------------
+     Radius
+     ------------------------------------------------------------------------- */
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
 
-  /* Shadows */
-  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.4);
+  /* -------------------------------------------------------------------------
+     Shadows (light theme: soft, low-contrast)
+     ------------------------------------------------------------------------- */
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-focus: 0 0 0 2px var(--brand-primary);
 }
 
 /* Base Layer Resets */
@@ -66,25 +89,24 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Smooth rendering */
 body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Links */
 a {
   color: inherit;
   text-decoration: none;
 }
 
-/* Images */
 img {
   max-width: 100%;
   height: auto;
 }
 
-/* Layout Helpers */
+/* -------------------------------------------------------------------------
+   Layout helpers
+   ------------------------------------------------------------------------- */
 .app-shell {
   display: flex;
   min-height: 100vh;
@@ -102,7 +124,9 @@ img {
   box-shadow: var(--shadow-card);
 }
 
-/* Typography Utilities */
+/* -------------------------------------------------------------------------
+   Typography utilities
+   ------------------------------------------------------------------------- */
 .text-muted {
   color: var(--text-muted);
 }
@@ -115,33 +139,37 @@ img {
   font-family: var(--font-mono);
 }
 
-/* Alarm Criticality Badges */
+/* -------------------------------------------------------------------------
+   Alarm criticality badges (light backgrounds: tinted fill + solid text)
+   ------------------------------------------------------------------------- */
 .badge-critical {
-  background: color-mix(in srgb, var(--alarm-critical) 20%, transparent);
+  background: color-mix(in srgb, var(--alarm-critical) 14%, transparent);
   color: var(--alarm-critical);
 }
 
 .badge-high {
-  background: color-mix(in srgb, var(--alarm-high) 20%, transparent);
+  background: color-mix(in srgb, var(--alarm-high) 14%, transparent);
   color: var(--alarm-high);
 }
 
 .badge-medium {
-  background: color-mix(in srgb, var(--alarm-medium) 20%, transparent);
+  background: color-mix(in srgb, var(--alarm-medium) 14%, transparent);
   color: var(--alarm-medium);
 }
 
 .badge-low {
-  background: color-mix(in srgb, var(--alarm-low) 20%, transparent);
+  background: color-mix(in srgb, var(--alarm-low) 14%, transparent);
   color: var(--alarm-low);
 }
 
 .badge-closed {
-  background: color-mix(in srgb, var(--alarm-closed) 20%, transparent);
+  background: color-mix(in srgb, var(--alarm-closed) 14%, transparent);
   color: var(--alarm-closed);
 }
 
-/* Status Indicators */
+/* -------------------------------------------------------------------------
+   Status indicators
+   ------------------------------------------------------------------------- */
 .status-created {
   color: var(--status-created);
 }
@@ -162,7 +190,9 @@ img {
   color: var(--status-closed);
 }
 
-/* Form Styling (Ops Friendly) */
+/* -------------------------------------------------------------------------
+   Form controls
+   ------------------------------------------------------------------------- */
 input,
 select,
 textarea {
@@ -175,21 +205,28 @@ textarea {
   width: 100%;
 }
 
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
 input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--brand-primary);
-  box-shadow: 0 0 0 1px var(--brand-primary);
+  box-shadow: var(--shadow-focus);
 }
 
-/* Scrollbar (Dark Ops Theme) */
+/* -------------------------------------------------------------------------
+   Scrollbar (light theme)
+   ------------------------------------------------------------------------- */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-surface);
+  background: var(--bg-app);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -201,7 +238,9 @@ textarea:focus {
   background: var(--text-muted);
 }
 
-/* Map Container Helper */
+/* -------------------------------------------------------------------------
+   Map container
+   ------------------------------------------------------------------------- */
 .map-container {
   width: 100%;
   height: 100%;
@@ -210,7 +249,9 @@ textarea:focus {
   border: 1px solid var(--border-default);
 }
 
-/* Utility Helpers */
+/* -------------------------------------------------------------------------
+   Utility helpers
+   ------------------------------------------------------------------------- */
 .border-default {
   border: 1px solid var(--border-default);
 }
@@ -223,16 +264,18 @@ textarea:focus {
   background: var(--bg-card);
 }
 
-/* Animations (Subtle Ops Feedback) */
+/* -------------------------------------------------------------------------
+   Animations (subtle ops feedback)
+   ------------------------------------------------------------------------- */
 @keyframes pulse-critical {
   0% {
-    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.5);
   }
   70% {
-    box-shadow: 0 0 0 12px rgba(220, 38, 38, 0);
+    box-shadow: 0 0 0 12px rgba(185, 28, 28, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    box-shadow: 0 0 0 0 rgba(185, 28, 28, 0);
   }
 }
 

@@ -3,26 +3,24 @@ import path from "path";
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg"];
+const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png"];
 
-export function isAllowedEvidenceType(mime: string): boolean {
-  return ALLOWED_TYPES.includes(mime);
-}
+export const isAllowedEvidenceType = (mime: string): boolean =>
+  ALLOWED_TYPES.includes(mime);
 
-export function isAllowedEvidenceName(name: string): boolean {
-  const ext = path.extname(name).toLowerCase();
-  return [".jpg", ".jpeg", ".png"].includes(ext);
-}
+export const isAllowedEvidenceName = (name: string): boolean =>
+  ALLOWED_EXTENSIONS.includes(path.extname(name).toLowerCase());
 
 /**
  * Validate and store one evidence file under uploads/alarms/{alarmId}/.
  * Returns URL path like /uploads/alarms/{alarmId}/timestamp_originalname.ext
  * Uses public dir so URL is served by Next.js.
  */
-export async function uploadEvidenceFile(
+export const uploadEvidenceFile = async (
   alarmId: string,
   file: File,
   baseDir: string = process.cwd(),
-): Promise<{ url: string; fileType: string }> {
+): Promise<{ url: string; fileType: string }> => {
   if (file.size > MAX_FILE_SIZE_BYTES) {
     throw new Error(`File too large (max 5MB): ${file.name}`);
   }
@@ -42,7 +40,8 @@ export async function uploadEvidenceFile(
   const filePath = path.join(dir, safeName);
   const bytes = await file.arrayBuffer();
   await writeFile(filePath, Buffer.from(bytes));
-  const url = `/uploads/alarms/${alarmId}/${safeName}`;
-  const fileType = "image";
-  return { url, fileType };
-}
+  return {
+    url: `/uploads/alarms/${alarmId}/${safeName}`,
+    fileType: "image",
+  };
+};

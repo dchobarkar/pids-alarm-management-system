@@ -40,13 +40,10 @@ type UserWithChainages = Prisma.UserGetPayload<{
  * OPERATOR: all alarms.
  * SUPERVISOR / RMP / ER: only alarms in user's mapped chainages.
  */
-function getScopeWhere(user: UserWithChainages): Prisma.AlarmWhereInput {
-  if (user.role === Role.OPERATOR) {
-    return {};
-  }
-  const chainageIds = user.chainages.map((c) => c.chainageId);
-  return { chainageId: { in: chainageIds } };
-}
+const getScopeWhere = (user: UserWithChainages): Prisma.AlarmWhereInput =>
+  user.role === Role.OPERATOR
+    ? {}
+    : { chainageId: { in: user.chainages.map((c) => c.chainageId) } };
 
 /**
  * Fetch alarms scoped to the current user's role and chainage mapping.
@@ -54,16 +51,16 @@ function getScopeWhere(user: UserWithChainages): Prisma.AlarmWhereInput {
  * SUPERVISOR / RMP / ER: only alarms where chainageId is in user's chainages.
  * For RMP: optionally filter by status UNASSIGNED | ASSIGNED (future-ready).
  */
-export async function getScopedAlarms(
+export const getScopedAlarms = async (
   user: UserWithChainages,
   filters: GetAlarmsFilters = {},
   options: { sortNewestFirst?: boolean; rmpStatusFilter?: boolean } = {},
-): Promise<AlarmWithRelations[]> {
-  const where: Prisma.AlarmWhereInput = getScopeWhere(user);
+): Promise<AlarmWithRelations[]> => {
+  const where: Prisma.AlarmWhereInput = { ...getScopeWhere(user) };
 
   if (filters.status) where.status = filters.status;
   if (filters.criticality) where.criticality = filters.criticality;
-  if (filters.dateFrom || filters.dateTo) {
+  if (filters.dateFrom ?? filters.dateTo) {
     where.incidentTime = {};
     if (filters.dateFrom) where.incidentTime.gte = filters.dateFrom;
     if (filters.dateTo) where.incidentTime.lte = filters.dateTo;
@@ -88,4 +85,4 @@ export async function getScopedAlarms(
   });
 
   return alarms as AlarmWithRelations[];
-}
+};

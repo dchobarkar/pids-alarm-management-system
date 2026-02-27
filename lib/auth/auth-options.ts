@@ -88,6 +88,5 @@ export const authOptions: NextAuthConfig = {
   },
 };
 
-export function getDashboardPathForRole(role: Role): string {
-  return roleDashboard[role] ?? "/login";
-}
+export const getDashboardPathForRole = (role: Role): string =>
+  roleDashboard[role] ?? "/login";

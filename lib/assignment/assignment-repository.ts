@@ -23,13 +23,13 @@ export type AssignmentWithRmp = Prisma.AlarmAssignmentGetPayload<{
  * Create assignment record, set alarm status to ASSIGNED, and log.
  * Caller must ensure: alarm is UNASSIGNED, RMP is in alarm chainage, supervisor (if any) is valid.
  */
-export async function createAssignment(params: {
+export const createAssignment = async (params: {
   alarmId: string;
   rmpId: string;
   supervisorId: string | null;
   actorId: string;
   logAction: "ASSIGNED_BY_SUPERVISOR" | "SELF_ASSIGNED";
-}): Promise<AssignmentWithRmp> {
+}): Promise<AssignmentWithRmp> => {
   const alarm = await prisma.alarm.findUniqueOrThrow({
     where: { id: params.alarmId },
     select: { status: true },
@@ -50,31 +50,32 @@ export async function createAssignment(params: {
     },
   });
 
-  await prisma.alarm.update({
-    where: { id: params.alarmId },
-    data: { status: "ASSIGNED" },
-  });
-
-  await prisma.alarmLog.create({
-    data: {
-      alarmId: params.alarmId,
-      action: params.logAction,
-      actorId: params.actorId,
-      meta: {
-        assignedTo: params.rmpId,
-        assignedBy: params.supervisorId ?? undefined,
-      } as object,
-    },
-  });
+  await prisma.$transaction([
+    prisma.alarm.update({
+      where: { id: params.alarmId },
+      data: { status: "ASSIGNED" },
+    }),
+    prisma.alarmLog.create({
+      data: {
+        alarmId: params.alarmId,
+        action: params.logAction,
+        actorId: params.actorId,
+        meta: {
+          assignedTo: params.rmpId,
+          assignedBy: params.supervisorId ?? undefined,
+        } as object,
+      },
+    }),
+  ]);
 
   return assignment as AssignmentWithRmp;
-}
+};
 
 /**
  * All assignments for an alarm (for history/display).
  */
-export async function getAssignmentsByAlarm(alarmId: string) {
-  return prisma.alarmAssignment.findMany({
+export const getAssignmentsByAlarm = (alarmId: string) =>
+  prisma.alarmAssignment.findMany({
     where: { alarmId },
     orderBy: { assignedAt: "desc" },
     include: {
@@ -82,24 +83,22 @@ export async function getAssignmentsByAlarm(alarmId: string) {
       supervisor: { select: { id: true, name: true } },
     },
   });
-}
 
 /**
  * Active assignment for an alarm (ACCEPTED), if any. Used to verify RMP ownership for verification.
  */
-export async function getActiveAssignmentForAlarm(alarmId: string) {
-  return prisma.alarmAssignment.findFirst({
+export const getActiveAssignmentForAlarm = (alarmId: string) =>
+  prisma.alarmAssignment.findFirst({
     where: { alarmId, status: AssignmentStatus.ACCEPTED },
     orderBy: { acceptedAt: "desc" },
   });
-}
 
 /**
  * Assignments for an RMP (for /rmp/tasks). PENDING and ACCEPTED.
  */
-export async function getRmpAssignments(
+export const getRmpAssignments = async (
   rmpId: string,
-): Promise<AssignmentWithAlarm[]> {
+): Promise<AssignmentWithAlarm[]> => {
   const list = await prisma.alarmAssignment.findMany({
     where: {
       rmpId,
@@ -113,16 +112,16 @@ export async function getRmpAssignments(
     },
   });
   return list as AssignmentWithAlarm[];
-}
+};
 
 /**
  * Accept assignment: set status ACCEPTED, acceptedAt, and alarm to IN_PROGRESS.
  * Caller must ensure assignment belongs to current RMP and status is PENDING.
  */
-export async function acceptAssignment(
+export const acceptAssignment = async (
   assignmentId: string,
   rmpId: string,
-): Promise<{ success: true } | { success: false; error: string }> {
+): Promise<{ success: true } | { success: false; error: string }> => {
   const assignment = await prisma.alarmAssignment.findUnique({
     where: { id: assignmentId },
     include: { alarm: { select: { id: true, status: true } } },
@@ -163,16 +162,16 @@ export async function acceptAssignment(
   ]);
 
   return { success: true };
-}
+};
 
 /**
  * QRV Supervisor reassigns an ESCALATED alarm. Creates new assignment, status → ASSIGNED, log ALARM_REASSIGNED.
  */
-export async function createReassignment(params: {
+export const createReassignment = async (params: {
   alarmId: string;
   rmpId: string;
   actorId: string;
-}): Promise<AssignmentWithRmp> {
+}): Promise<AssignmentWithRmp> => {
   const alarm = await prisma.alarm.findUniqueOrThrow({
     where: { id: params.alarmId },
     select: { status: true },
@@ -193,22 +192,23 @@ export async function createReassignment(params: {
     },
   });
 
-  await prisma.alarm.update({
-    where: { id: params.alarmId },
-    data: { status: "ASSIGNED" },
-  });
-
-  await prisma.alarmLog.create({
-    data: {
-      alarmId: params.alarmId,
-      action: "ALARM_REASSIGNED",
-      actorId: params.actorId,
-      meta: {
-        assignedTo: params.rmpId,
-        assignedBy: params.actorId,
-      } as object,
-    },
-  });
+  await prisma.$transaction([
+    prisma.alarm.update({
+      where: { id: params.alarmId },
+      data: { status: "ASSIGNED" },
+    }),
+    prisma.alarmLog.create({
+      data: {
+        alarmId: params.alarmId,
+        action: "ALARM_REASSIGNED",
+        actorId: params.actorId,
+        meta: {
+          assignedTo: params.rmpId,
+          assignedBy: params.actorId,
+        } as object,
+      },
+    }),
+  ]);
 
   return assignment as AssignmentWithRmp;
-}
+};

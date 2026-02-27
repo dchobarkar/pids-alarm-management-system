@@ -38,9 +38,7 @@ async function main() {
   // --------------------------------------------------
   // USERS
   // --------------------------------------------------
-
   const hashedPassword = await bcrypt.hash(DEFAULT_PASSWORD, SALT_ROUNDS);
-
   const operator = await prisma.user.create({
     data: {
       name: "PIDS Operator",
@@ -49,7 +47,6 @@ async function main() {
       role: Role.OPERATOR,
     },
   });
-
   const supervisor = await prisma.user.create({
     data: {
       name: "Supervisor 1",
@@ -58,7 +55,6 @@ async function main() {
       role: Role.SUPERVISOR,
     },
   });
-
   const rmp1 = await prisma.user.create({
     data: {
       name: "RMP Alpha",
@@ -68,7 +64,6 @@ async function main() {
       supervisorId: supervisor.id,
     },
   });
-
   const rmp2 = await prisma.user.create({
     data: {
       name: "RMP Beta",
@@ -78,7 +73,6 @@ async function main() {
       supervisorId: supervisor.id,
     },
   });
-
   const er = await prisma.user.create({
     data: {
       name: "Emergency Responder",
@@ -92,7 +86,6 @@ async function main() {
   // --------------------------------------------------
   // CHAINAGES
   // --------------------------------------------------
-
   const chainage1 = await prisma.chainage.create({
     data: {
       label: "0-10",
@@ -102,7 +95,6 @@ async function main() {
       longitude: 72.8777,
     },
   });
-
   const chainage2 = await prisma.chainage.create({
     data: {
       label: "11-20",
@@ -114,7 +106,6 @@ async function main() {
   });
 
   // Map users to chainages
-
   await prisma.chainageUser.createMany({
     data: [
       { userId: supervisor.id, chainageId: chainage1.id },
@@ -127,7 +118,6 @@ async function main() {
   // --------------------------------------------------
   // ALARMS
   // --------------------------------------------------
-
   const alarm1 = await prisma.alarm.create({
     data: {
       latitude: 19.08,
@@ -141,7 +131,6 @@ async function main() {
       status: AlarmStatus.ASSIGNED,
     },
   });
-
   const alarm2 = await prisma.alarm.create({
     data: {
       latitude: 19.09,
@@ -159,7 +148,6 @@ async function main() {
   // --------------------------------------------------
   // ASSIGNMENTS
   // --------------------------------------------------
-
   await prisma.alarmAssignment.create({
     data: {
       alarmId: alarm1.id,
@@ -169,7 +157,6 @@ async function main() {
       acceptedAt: new Date(),
     },
   });
-
   await prisma.alarmAssignment.create({
     data: {
       alarmId: alarm2.id,
@@ -184,7 +171,6 @@ async function main() {
   // --------------------------------------------------
   // VERIFICATIONS
   // --------------------------------------------------
-
   await prisma.verification.create({
     data: {
       alarmId: alarm2.id,
@@ -199,7 +185,6 @@ async function main() {
   // --------------------------------------------------
   // EVIDENCE
   // --------------------------------------------------
-
   await prisma.evidence.create({
     data: {
       alarmId: alarm2.id,

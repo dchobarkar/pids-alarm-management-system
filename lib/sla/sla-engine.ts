@@ -2,19 +2,17 @@ import { prisma } from "@/lib/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { SLA_MINUTES } from "./config";
 
+export type SlaBreachResult = {
+  alarmId: string;
+  status: string;
+  elapsedMinutes: number;
+};
+
 /**
  * Check all active alarms for SLA breach and auto-escalate.
  * Call from cron / timer (e.g. API route or Azure Function).
  */
-export async function checkSlaBreaches(): Promise<
-  { alarmId: string; status: string; elapsedMinutes: number }[]
-> {
-  const breached: {
-    alarmId: string;
-    status: string;
-    elapsedMinutes: number;
-  }[] = [];
-
+export const checkSlaBreaches = async (): Promise<SlaBreachResult[]> => {
   const alarms = await prisma.alarm.findMany({
     where: {
       status: { in: ["UNASSIGNED", "ASSIGNED", "IN_PROGRESS"] },
@@ -29,6 +27,7 @@ export async function checkSlaBreaches(): Promise<
   });
 
   const now = Date.now();
+  const breached: SlaBreachResult[] = [];
 
   for (const alarm of alarms) {
     const limitMinutes = SLA_MINUTES[alarm.status as keyof typeof SLA_MINUTES];
@@ -82,4 +81,4 @@ export async function checkSlaBreaches(): Promise<
   }
 
   return breached;
-}
+};

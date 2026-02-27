@@ -1,5 +1,3 @@
 import { auth } from "./index";
 
-export async function getSession() {
-  return auth();
-}
+export const getSession = async () => auth();

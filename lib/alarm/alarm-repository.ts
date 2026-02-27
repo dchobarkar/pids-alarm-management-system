@@ -19,23 +19,22 @@ type UserWithChainages = Prisma.UserGetPayload<{
  * Find chainage where startKm <= chainageValue <= endKm.
  * Returns null if no matching chainage.
  */
-export async function findChainageByValue(chainageValue: number) {
-  return prisma.chainage.findFirst({
+export const findChainageByValue = (chainageValue: number) =>
+  prisma.chainage.findFirst({
     where: {
       startKm: { lte: chainageValue },
       endKm: { gte: chainageValue },
     },
   });
-}
 
 /**
  * Create alarm: CREATED then immediately UNASSIGNED.
  * Chainage must be resolved from chainageValue (caller should use findChainageByValue first).
  * Creates AlarmLog entry ALARM_CREATED.
  */
-export async function createAlarm(
+export const createAlarm = async (
   data: CreateAlarmInput & { chainageId: string; createdById: string },
-): Promise<AlarmWithRelations> {
+): Promise<AlarmWithRelations> => {
   const { chainageId, createdById, ...rest } = data;
 
   const alarm = await prisma.alarm.create({
@@ -47,38 +46,37 @@ export async function createAlarm(
     },
   });
 
-  await prisma.alarm.update({
-    where: { id: alarm.id },
-    data: { status: AlarmStatusEnum.UNASSIGNED },
-  });
-
-  await prisma.alarmLog.create({
-    data: {
-      alarmId: alarm.id,
-      action: "ALARM_CREATED",
-      actorId: createdById,
-      meta: {
-        createdBy: createdById,
-        chainageValue: data.chainageValue,
-      } as object,
-    },
-  });
+  await prisma.$transaction([
+    prisma.alarm.update({
+      where: { id: alarm.id },
+      data: { status: AlarmStatusEnum.UNASSIGNED },
+    }),
+    prisma.alarmLog.create({
+      data: {
+        alarmId: alarm.id,
+        action: "ALARM_CREATED",
+        actorId: createdById,
+        meta: {
+          createdBy: createdById,
+          chainageValue: data.chainageValue,
+        } as object,
+      },
+    }),
+  ]);
 
   const created = await getAlarmById(alarm.id);
   if (!created) throw new Error("Alarm not found after create");
   return created;
-}
+};
 
 /**
  * Get alarms scoped to user (Operator: all; Supervisor/RMP/ER: by chainage mapping).
  */
-export async function getAlarmsByScope(
+export const getAlarmsByScope = (
   user: UserWithChainages,
   filters: GetAlarmsFilters = {},
   options?: { sortNewestFirst?: boolean; rmpStatusFilter?: boolean },
-): Promise<AlarmWithRelations[]> {
-  return getScopedAlarms(user, filters, options);
-}
+): Promise<AlarmWithRelations[]> => getScopedAlarms(user, filters, options);
 
 const activeAssignmentInclude = {
   where: {
@@ -95,9 +93,9 @@ const activeAssignmentInclude = {
 /**
  * Get single alarm by id. Returns null if not found. Includes active assignment if any.
  */
-export async function getAlarmById(
+export const getAlarmById = async (
   id: string,
-): Promise<AlarmWithRelations | null> {
+): Promise<AlarmWithRelations | null> => {
   const alarm = await prisma.alarm.findUnique({
     where: { id },
     include: {
@@ -107,12 +105,12 @@ export async function getAlarmById(
     },
   });
   return alarm as AlarmWithRelations | null;
-}
+};
 
 /**
  * All alarms with status ESCALATED (for QRV dashboard). No chainage scope.
  */
-export async function getEscalatedAlarms(): Promise<AlarmWithRelations[]> {
+export const getEscalatedAlarms = async (): Promise<AlarmWithRelations[]> => {
   const alarms = await prisma.alarm.findMany({
     where: { status: "ESCALATED" },
     include: {
@@ -123,4 +121,4 @@ export async function getEscalatedAlarms(): Promise<AlarmWithRelations[]> {
     orderBy: { updatedAt: "desc" },
   });
   return alarms as AlarmWithRelations[];
-}
+};

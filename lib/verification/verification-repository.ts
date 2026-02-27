@@ -21,10 +21,7 @@ export type AlarmPendingReview = Prisma.AlarmGetPayload<{
   };
 }>;
 
-/**
- * Create verification record. Caller must validate RMP ownership and IN_PROGRESS.
- */
-export async function createVerification(params: {
+export const createVerification = async (params: {
   alarmId: string;
   verifiedById: string;
   latitude: number;
@@ -32,7 +29,7 @@ export async function createVerification(params: {
   distance: number;
   geoMismatch: boolean;
   remarks?: string | null;
-}): Promise<VerificationWithVerifier> {
+}): Promise<VerificationWithVerifier> => {
   const alarm = await prisma.alarm.findUnique({
     where: { id: params.alarmId },
     select: { status: true },
@@ -54,22 +51,23 @@ export async function createVerification(params: {
     },
   });
   return v as VerificationWithVerifier;
-}
+};
 
-export async function getVerificationsByAlarm(alarmId: string) {
-  return prisma.verification.findMany({
+export const getVerificationsByAlarm = (alarmId: string) =>
+  prisma.verification.findMany({
     where: { alarmId },
     orderBy: { verifiedAt: "desc" },
     include: {
       verifiedBy: { select: { id: true, name: true } },
     },
   });
-}
 
 /**
  * Alarms with status IN_PROGRESS that have at least one verification (for operator review queue).
  */
-export async function getAlarmsPendingReview(): Promise<AlarmPendingReview[]> {
+export const getAlarmsPendingReview = async (): Promise<
+  AlarmPendingReview[]
+> => {
   const alarms = await prisma.alarm.findMany({
     where: {
       status: "IN_PROGRESS",
@@ -87,4 +85,4 @@ export async function getAlarmsPendingReview(): Promise<AlarmPendingReview[]> {
     },
   });
   return alarms as AlarmPendingReview[];
-}
+};
