@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { closeAlarm } from "@/lib/alarm/operator-alarm-actions";
+import { closeAlarm } from "@/api/alarm/operator-alarm-actions";
 
 const CloseAlarmButton = ({ alarmId }: { alarmId: string }) => {
   const router = useRouter();

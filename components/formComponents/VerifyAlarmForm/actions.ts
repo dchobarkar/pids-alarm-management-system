@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/role-guard";
 import { AssignmentStatus } from "@/lib/generated/prisma";
-import { prisma } from "@/lib/db";
-import { getActiveAssignmentForAlarm } from "@/lib/assignment/assignment-repository";
-import { createVerification } from "@/lib/verification/verification-repository";
+import { prisma } from "@/api/db";
+import { getActiveAssignmentForAlarm } from "@/api/assignment";
+import { createVerification } from "@/api/verification";
 import {
   calculateDistanceMeters,
   isWithinGeoRadius,
@@ -14,7 +14,7 @@ import {
 import {
   uploadEvidenceFile,
   isAllowedEvidenceType,
-} from "@/lib/evidence/upload-file";
+} from "@/api/evidence";
 
 import type { ActionResult } from "@/types/actions";
 import { RMP_ROLES } from "@/constants/roles";

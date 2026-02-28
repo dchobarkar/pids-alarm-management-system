@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 
 export async function assignChainages(formData: FormData) {
   const userId = formData.get("userId") as string;

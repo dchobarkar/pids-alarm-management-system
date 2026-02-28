@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { getSession } from "@/lib/auth/get-session";
-import { getAlarmById } from "@/lib/alarm/alarm-repository";
-import { getVerificationsByAlarm } from "@/lib/verification/verification-repository";
+import { getAlarmById } from "@/api/alarm";
+import { getVerificationsByAlarm } from "@/api/verification";
 import { getSlaInfo } from "@/lib/sla/elapsed";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";

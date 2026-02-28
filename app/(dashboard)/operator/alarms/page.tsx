@@ -9,7 +9,7 @@ import Card from "@/components/ui/Card";
 import Table from "@/components/ui/Table";
 import Badge from "@/components/ui/Badge";
 import { cn } from "@/lib/utils";
-import { loadScopedAlarmsForCurrentUser } from "@/lib/alarm/loadScopedAlarmsForCurrentUser";
+import { loadScopedAlarmsForCurrentUser } from "@/api/alarm";
 import { getSlaInfo } from "@/lib/sla/elapsed";
 
 const BASE_PATH = PATHS.operatorAlarms;

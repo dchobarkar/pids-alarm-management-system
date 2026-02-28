@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcrypt";
 import { SALT_ROUNDS } from "@/constants/auth";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import { Role } from "@/lib/generated/prisma";
 
 export async function createUser(formData: FormData) {

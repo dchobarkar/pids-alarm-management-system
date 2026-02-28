@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
 import type { Role } from "@/lib/generated/prisma";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import { getDashboardPathForRole as getPath } from "./dashboard-paths";
 
 const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;

@@ -1,5 +1,5 @@
 import { AssignmentStatus } from "@/lib/generated/prisma";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
 import type { AssignmentWithAlarm, AssignmentWithRmp } from "@/types/assignment";

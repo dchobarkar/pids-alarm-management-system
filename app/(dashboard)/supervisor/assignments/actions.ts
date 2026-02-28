@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { RMP_ROLES, SUPERVISOR_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
-import { prisma } from "@/lib/db";
-import { createAssignment } from "@/lib/assignment/assignment-repository";
+import { prisma } from "@/api/db";
+import { createAssignment } from "@/api/assignment";
 
 import type { ActionResult } from "@/types/actions";
 

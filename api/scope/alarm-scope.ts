@@ -1,5 +1,5 @@
 import type { Prisma } from "@/lib/generated/prisma";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import { Role } from "@/lib/generated/prisma";
 import { AssignmentStatus } from "@/lib/generated/prisma";
 import { RMP_ROLES } from "@/constants/roles";

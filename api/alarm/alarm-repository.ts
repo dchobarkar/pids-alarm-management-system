@@ -2,11 +2,11 @@ import {
   AlarmStatus as AlarmStatusEnum,
   AssignmentStatus,
 } from "@/lib/generated/prisma";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import type { CreateAlarmInput } from "@/types/validation";
 import type { AlarmWithRelations, GetAlarmsFilters } from "@/types/alarm";
 import type { UserWithChainages } from "@/types/user";
-import { getScopedAlarms } from "@/lib/scope/alarm-scope";
+import { getScopedAlarms } from "@/api/scope/alarm-scope";
 
 /**
  * Find chainage where startKm <= chainageValue <= endKm.

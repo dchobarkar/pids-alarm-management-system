@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 
 export async function createChainage(formData: FormData) {
   const label = formData.get("label") as string;

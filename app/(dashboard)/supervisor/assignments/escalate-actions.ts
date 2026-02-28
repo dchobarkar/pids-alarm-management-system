@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
 

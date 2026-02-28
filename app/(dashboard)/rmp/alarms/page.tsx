@@ -1,5 +1,5 @@
 import type { AlarmsSearchParams } from "@/types/alarm";
-import { loadScopedAlarmsForCurrentUser } from "@/lib/alarm/loadScopedAlarmsForCurrentUser";
+import { loadScopedAlarmsForCurrentUser } from "@/api/alarm";
 import RoleAlarmsPage from "@/components/dashboard/alarms/RoleAlarmsPage";
 
 type SearchParams = Pick<

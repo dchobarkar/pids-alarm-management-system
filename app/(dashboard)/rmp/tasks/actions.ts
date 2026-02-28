@@ -4,11 +4,11 @@ import { revalidatePath } from "next/cache";
 
 import { RMP_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import {
   createAssignment,
   acceptAssignment as repoAcceptAssignment,
-} from "@/lib/assignment/assignment-repository";
+} from "@/api/assignment";
 
 import type { ActionResult } from "@/types/actions";
 

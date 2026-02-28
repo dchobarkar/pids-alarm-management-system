@@ -1,6 +1,6 @@
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import AssignForm from "@/components/formComponents/ChainageMappingForm/AssignForm";
 import MappingsList from "./MappingsList";
 import MappedByChainage from "./MappedByChainage";

@@ -3,9 +3,9 @@ import type {
   AlarmWithRelations,
   LoadScopedAlarmsOptions,
 } from "@/types/alarm";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import { getSession } from "@/lib/auth/get-session";
-import { getAlarmsByScope } from "@/lib/alarm/alarm-repository";
+import { getAlarmsByScope } from "@/api/alarm/alarm-repository";
 
 export const loadScopedAlarmsForCurrentUser = async (
   searchParams: Promise<AlarmsSearchParams>,

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
 import type { AlarmPendingReview, VerificationWithVerifier } from "@/types/verification";
 

@@ -1,6 +1,6 @@
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 import UsersTable from "./UsersTable";
 import UserCreateButton from "./UserCreateButton";
 

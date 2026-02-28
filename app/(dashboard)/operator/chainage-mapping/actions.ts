@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 
 export async function removeMapping(chainageUserId: string) {
   if (!chainageUserId) return { error: "ID required." };

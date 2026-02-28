@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import type { ActionResult } from "@/types/actions";
 import { getSession } from "@/lib/auth/get-session";
-import { prisma } from "@/lib/db";
+import { prisma } from "@/api/db";
 
 /**
  * Update current user's profile (name, phone). Email is read-only.
