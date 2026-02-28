@@ -1,7 +1,9 @@
+import type { Role } from "@/lib/generated/prisma";
+
 /** A single user–chainage mapping with user and chainage details. */
 export type ChainageMapping = {
   id: string;
-  user: { id: string; name: string; email: string };
+  user: { id: string; name: string; email: string; role: Role };
   chainage: { id: string; label: string; startKm: number; endKm: number };
 };
 
@@ -13,6 +15,6 @@ export type ChainageWithUsers = {
   endKm: number;
   users: {
     id: string;
-    user: { id: string; name: string; email: string };
+    user: { id: string; name: string; email: string; role: Role };
   }[];
 };

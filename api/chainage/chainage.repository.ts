@@ -21,7 +21,9 @@ export const findChainagesWithUsers = () =>
     orderBy: { startKm: "asc" },
     include: {
       users: {
-        include: { user: { select: { id: true, name: true, email: true } } },
+        include: {
+          user: { select: { id: true, name: true, email: true, role: true } },
+        },
       },
     },
   });

@@ -1,17 +1,36 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Chainage } from "@/lib/generated/prisma";
 
 interface MultiSelectProps {
   chainages: Chainage[];
+  /** When a user is selected, pass chainage IDs they are already assigned to so only unassigned chainages are shown. */
+  excludeChainageIds?: string[];
 }
 
-export default function ChainageMultiSelect({ chainages }: MultiSelectProps) {
+const ChainageMultiSelect = ({
+  chainages,
+  excludeChainageIds = [],
+}: MultiSelectProps) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const availableChainages = excludeChainageIds.length
+    ? chainages.filter((c) => !excludeChainageIds.includes(c.id))
+    : chainages;
+
+  // when excluded list changes, drop any selected IDs that are now excluded (already assigned to this user)
+  useEffect(() => {
+    if (excludeChainageIds.length === 0) return;
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedIds((prev) =>
+      prev.filter((id) => !excludeChainageIds.includes(id)),
+    );
+  }, [excludeChainageIds]);
 
   // close on outside click
   useEffect(() => {
@@ -24,7 +43,7 @@ export default function ChainageMultiSelect({ chainages }: MultiSelectProps) {
     return () => document.removeEventListener("mousedown", handleOutside);
   }, []);
 
-  const filtered = chainages.filter((c) =>
+  const filtered = availableChainages.filter((c) =>
     c.label.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -67,13 +86,13 @@ export default function ChainageMultiSelect({ chainages }: MultiSelectProps) {
             {filtered.map((c) => (
               <label
                 key={c.id}
-                className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer max-w-60"
               >
                 <input
                   type="checkbox"
                   checked={selectedIds.includes(c.id)}
                   onChange={() => toggleSelect(c.id)}
-                  className="max-w-2.5"
+                  className="max-w-5"
                 />
 
                 <span className="text-sm min-w-30">
@@ -83,7 +102,9 @@ export default function ChainageMultiSelect({ chainages }: MultiSelectProps) {
             ))}
             {filtered.length === 0 && (
               <div className="p-2 text-xs text-center text-(--text-secondary)">
-                No matches
+                {availableChainages.length === 0
+                  ? "No unassigned chainages for this user"
+                  : "No matches"}
               </div>
             )}
           </div>
@@ -96,4 +117,6 @@ export default function ChainageMultiSelect({ chainages }: MultiSelectProps) {
       ))}
     </div>
   );
-}
+};
+
+export default ChainageMultiSelect;

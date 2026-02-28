@@ -20,7 +20,7 @@ export const findChainageUserByUserAndChainage = (
 export const findChainageUsersWithDetails = () =>
   prisma.chainageUser.findMany({
     include: {
-      user: { select: { id: true, name: true, email: true } },
+      user: { select: { id: true, name: true, email: true, role: true } },
       chainage: {
         select: { id: true, label: true, startKm: true, endKm: true },
       },
