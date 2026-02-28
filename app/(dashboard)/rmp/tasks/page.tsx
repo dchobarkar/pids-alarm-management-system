@@ -6,7 +6,7 @@ import RmpTasksClient from "./RmpTasksClient";
 
 type Props = { searchParams: Promise<{ verification_submitted?: string }> };
 
-export default async function RmpTasksPage({ searchParams }: Props) {
+const Page = async ({ searchParams }: Props) => {
   const session = await getSession();
   if (!session?.user?.id) return null;
 
@@ -18,15 +18,21 @@ export default async function RmpTasksPage({ searchParams }: Props) {
       <Breadcrumb
         crumbs={[{ label: "RMP", href: "/rmp" }, { label: "Tasks" }]}
       />
-      <h1 className="text-xl font-semibold text-(--text-primary) mb-6">
-        My assignments
-      </h1>
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-(--text-primary)">
+          My assignments
+        </h1>
+      </div>
       <Card>
         <RmpTasksClient
           assignments={assignments}
-          showVerificationSubmittedMessage={params.verification_submitted === "1"}
+          showVerificationSubmittedMessage={
+            params.verification_submitted === "1"
+          }
         />
       </Card>
     </div>
   );
-}
+};
+
+export default Page;

@@ -3,7 +3,6 @@ import { ROLE_ALARMS_CONFIG } from "@/constants/dashboard";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import SupervisorAlarmsClient from "./SupervisorAlarmsClient";
-import RmpAlarmsClient from "./RmpAlarmsClient";
 
 const RoleAlarmsPage = ({
   role,
@@ -28,15 +27,6 @@ const RoleAlarmsPage = ({
       <Card>
         {role === "supervisor" && (
           <SupervisorAlarmsClient
-            alarms={alarms}
-            searchParams={{
-              status: searchParams.status,
-              criticality: searchParams.criticality,
-            }}
-          />
-        )}
-        {role === "rmp" && (
-          <RmpAlarmsClient
             alarms={alarms}
             searchParams={{
               status: searchParams.status,

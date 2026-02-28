@@ -1,6 +1,8 @@
 import type { AlarmsSearchParams } from "@/types/alarm";
 import { loadScopedAlarmsForCurrentUser } from "@/api/alarm/loadScopedAlarmsForCurrentUser";
-import RoleAlarmsPage from "@/components/dashboard/alarms/RoleAlarmsPage";
+import Breadcrumb from "@/components/ui/Breadcrumb";
+import Card from "@/components/ui/Card";
+import RmpAlarmsClient from "@/components/dashboard/alarms/RmpAlarmsClient";
 
 type SearchParams = Pick<
   AlarmsSearchParams,
@@ -18,7 +20,22 @@ const RmpAlarmsPage = async ({
   );
   if (!user) return null;
 
-  return <RoleAlarmsPage role="rmp" alarms={alarms} searchParams={params} />;
+  return (
+    <div className="p-6">
+      <Breadcrumb
+        crumbs={[{ label: "RMP", href: "/rmp" }, { label: "Alarms" }]}
+      />
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-(--text-primary)">
+          Alarms (your chainages)
+        </h1>
+      </div>
+
+      <Card>
+        <RmpAlarmsClient alarms={alarms} params={params} />
+      </Card>
+    </div>
+  );
 };
 
 export default RmpAlarmsPage;
