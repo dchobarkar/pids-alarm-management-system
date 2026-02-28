@@ -3,17 +3,10 @@ import {
   AssignmentStatus,
 } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
-import type { CreateAlarmInput } from "@/lib/validation/alarm-schema";
-import type {
-  AlarmWithRelations,
-  GetAlarmsFilters,
-} from "@/lib/scope/alarm-scope";
+import type { CreateAlarmInput } from "@/types/validation";
+import type { AlarmWithRelations, GetAlarmsFilters } from "@/types/alarm";
+import type { UserWithChainages } from "@/types/user";
 import { getScopedAlarms } from "@/lib/scope/alarm-scope";
-import type { Prisma } from "@/lib/generated/prisma";
-
-type UserWithChainages = Prisma.UserGetPayload<{
-  include: { chainages: { select: { chainageId: true } } };
-}>;
 
 /**
  * Find chainage where startKm <= chainageValue <= endKm.

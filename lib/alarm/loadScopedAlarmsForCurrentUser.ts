@@ -1,10 +1,11 @@
-import type { AlarmsSearchParams, LoadScopedAlarmsOptions } from "@/types/alarm";
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
+import type {
+  AlarmsSearchParams,
+  AlarmWithRelations,
+  LoadScopedAlarmsOptions,
+} from "@/types/alarm";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth/get-session";
 import { getAlarmsByScope } from "@/lib/alarm/alarm-repository";
-
-export type { AlarmsSearchParams } from "@/types/alarm";
 
 export const loadScopedAlarmsForCurrentUser = async (
   searchParams: Promise<AlarmsSearchParams>,

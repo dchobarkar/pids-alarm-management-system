@@ -10,18 +10,14 @@ import {
   acceptAssignment as repoAcceptAssignment,
 } from "@/lib/assignment/assignment-repository";
 
-import type { SelfAssignAlarmResult, AcceptAssignmentResult } from "@/types/actions";
+import type { ActionResult } from "@/types/actions";
 
 const RMP_ROLES: Role[] = [Role.RMP, Role.ER];
-
-export type { SelfAssignAlarmResult, AcceptAssignmentResult } from "@/types/actions";
 
 /**
  * RMP self-assigns an UNASSIGNED alarm in their chainage.
  */
-export async function selfAssignAlarm(
-  alarmId: string,
-): Promise<SelfAssignAlarmResult> {
+export async function selfAssignAlarm(alarmId: string): Promise<ActionResult> {
   const session = await requireRole(RMP_ROLES);
   const rmpId = session.user.id;
 
@@ -59,7 +55,7 @@ export async function selfAssignAlarm(
  */
 export async function acceptAssignment(
   assignmentId: string,
-): Promise<AcceptAssignmentResult> {
+): Promise<ActionResult> {
   const session = await requireRole(RMP_ROLES);
   const rmpId = session.user.id;
 

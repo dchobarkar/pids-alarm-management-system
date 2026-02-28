@@ -1,8 +1,9 @@
-import type { AlarmStatus } from "@/lib/generated/prisma";
 import type { Prisma } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { Role } from "@/lib/generated/prisma";
 import { AssignmentStatus } from "@/lib/generated/prisma";
+import type { AlarmWithRelations, GetAlarmsFilters } from "@/types/alarm";
+import type { UserWithChainages } from "@/types/user";
 
 const activeAssignmentInclude = {
   where: {
@@ -15,25 +16,6 @@ const activeAssignmentInclude = {
     supervisor: { select: { id: true, name: true } },
   },
 };
-
-export type AlarmWithRelations = Prisma.AlarmGetPayload<{
-  include: {
-    chainage: true;
-    createdBy: { select: { id: true; name: true; email: true } };
-    assignments: typeof activeAssignmentInclude;
-  };
-}>;
-
-export type GetAlarmsFilters = {
-  status?: AlarmStatus;
-  criticality?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  dateFrom?: Date;
-  dateTo?: Date;
-};
-
-type UserWithChainages = Prisma.UserGetPayload<{
-  include: { chainages: { select: { chainageId: true } } };
-}>;
 
 /**
  * Returns Prisma where clause for alarms visible to the given user.

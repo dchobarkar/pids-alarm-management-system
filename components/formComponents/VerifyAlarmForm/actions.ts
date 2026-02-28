@@ -16,12 +16,10 @@ import {
   isAllowedEvidenceType,
 } from "@/lib/evidence/upload-file";
 
-import type { SubmitVerificationResult } from "@/types/actions";
+import type { ActionResult } from "@/types/actions";
 
 const RMP_ROLES: Role[] = [Role.RMP, Role.ER];
 const MAX_EVIDENCE_FILES = 5;
-
-export type { SubmitVerificationResult } from "@/types/actions";
 
 /**
  * RMP submits verification: geo, distance, remarks, evidence. Alarm status unchanged; operator reviews.
@@ -29,7 +27,7 @@ export type { SubmitVerificationResult } from "@/types/actions";
 export async function submitVerification(
   alarmId: string,
   formData: FormData,
-): Promise<SubmitVerificationResult> {
+): Promise<ActionResult> {
   const session = await requireRole(RMP_ROLES);
   const rmpId = session.user.id;
 
@@ -60,7 +58,8 @@ export async function submitVerification(
   ) {
     return {
       success: false,
-      error: "Alarm has no valid coordinates; cannot compute verification distance.",
+      error:
+        "Alarm has no valid coordinates; cannot compute verification distance.",
     };
   }
 
@@ -143,4 +142,3 @@ export async function submitVerification(
   revalidatePath("/operator/reviews");
   return { success: true };
 }
-

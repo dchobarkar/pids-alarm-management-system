@@ -7,11 +7,9 @@ import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { createReassignment } from "@/lib/assignment/assignment-repository";
 
-import type { ReassignAlarmResult } from "@/types/actions";
+import type { ActionResult } from "@/types/actions";
 
 const RMP_ROLES = [Role.RMP, Role.ER] as const;
-
-export type { ReassignAlarmResult } from "@/types/actions";
 
 /**
  * Get RMPs that can be assigned to this escalated alarm (same chainage).
@@ -60,7 +58,7 @@ export async function getRmpOptionsForEscalatedAlarm(
 export async function reassignEscalatedAlarm(
   alarmId: string,
   rmpId: string,
-): Promise<ReassignAlarmResult> {
+): Promise<ActionResult> {
   const session = await requireRole(Role.QRV_SUPERVISOR);
 
   const alarm = await prisma.alarm.findUnique({

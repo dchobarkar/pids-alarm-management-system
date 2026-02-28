@@ -37,5 +37,3 @@ export const createAlarmSchema = z.object({
       "Incident time cannot be in the future",
     ),
 });
-
-export type CreateAlarmInput = z.infer<typeof createAlarmSchema>;

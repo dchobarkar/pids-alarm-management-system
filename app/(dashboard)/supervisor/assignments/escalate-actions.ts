@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
 
-import type { EscalateAlarmResult } from "@/types/actions";
+import type { ActionResult } from "@/types/actions";
 
 const SUPERVISOR_ROLES: Role[] = [
   Role.SUPERVISOR,
@@ -16,14 +16,10 @@ const SUPERVISOR_ROLES: Role[] = [
   Role.QRV_SUPERVISOR,
 ];
 
-export type { EscalateAlarmResult } from "@/types/actions";
-
 /**
  * Supervisor manually escalates alarm. Allowed when status is UNASSIGNED, ASSIGNED, or IN_PROGRESS.
  */
-export async function escalateAlarm(
-  alarmId: string,
-): Promise<EscalateAlarmResult> {
+export async function escalateAlarm(alarmId: string): Promise<ActionResult> {
   const session = await requireRole(SUPERVISOR_ROLES);
   const supervisorId = session.user.id;
 

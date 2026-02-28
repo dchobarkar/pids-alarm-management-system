@@ -2,22 +2,7 @@ import { AssignmentStatus } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
-import type { Prisma } from "@/lib/generated/prisma";
-
-export type AssignmentWithAlarm = Prisma.AlarmAssignmentGetPayload<{
-  include: {
-    alarm: { include: { chainage: true } };
-    rmp: { select: { id: true; name: true } };
-    supervisor: { select: { id: true; name: true } | null };
-  };
-}>;
-
-export type AssignmentWithRmp = Prisma.AlarmAssignmentGetPayload<{
-  include: {
-    rmp: { select: { id: true; name: true } };
-    supervisor: { select: { id: true; name: true } | null };
-  };
-}>;
+import type { AssignmentWithAlarm, AssignmentWithRmp } from "@/types/assignment";
 
 /**
  * Create assignment record, set alarm status to ASSIGNED, and log.

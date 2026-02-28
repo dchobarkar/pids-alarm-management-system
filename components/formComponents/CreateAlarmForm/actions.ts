@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { CreateAlarmResult } from "@/types/actions";
+import type { ActionResultWithData } from "@/types/actions";
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
 import { createAlarmSchema } from "@/lib/validation/alarm-schema";
@@ -10,11 +10,9 @@ import {
   findChainageByValue,
 } from "@/lib/alarm/alarm-repository";
 
-export type { CreateAlarmResult } from "@/types/actions";
-
 export async function createAlarm(
   formData: FormData,
-): Promise<CreateAlarmResult> {
+): Promise<ActionResultWithData<{ alarmId: string }>> {
   const session = await requireRole(Role.OPERATOR);
   const userId = session.user.id;
 

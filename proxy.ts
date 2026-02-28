@@ -12,9 +12,9 @@ export const proxy = auth((req) => {
     pathname === "/auth/signin" ||
     pathname === "/auth/register" ||
     pathname === "/auth/error";
-
   const isHome = pathname === "/";
   const isApiRoute = pathname.startsWith("/api");
+  const isPublicRoute = isAuthRoute || isHome;
 
   // Never interfere with API routes
   if (isApiRoute) return NextResponse.next();
@@ -27,7 +27,6 @@ export const proxy = auth((req) => {
   }
 
   // If not logged in, block non-auth, non-home pages
-  const isPublicRoute = isAuthRoute || isHome;
   if (!session && !isPublicRoute) {
     const signinUrl = new URL("/auth/signin", nextUrl);
     signinUrl.searchParams.set(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { MAX_EVIDENCE_FILES } from "@/constants/evidence";
@@ -20,6 +20,8 @@ const VerifyAlarmForm = ({ alarmId }: Props) => {
   const [capturing, setCapturing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [remarks, setRemarks] = useState("");
+  const [fileCount, setFileCount] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleCaptureLocation = async () => {
     setError(null);
@@ -68,6 +70,13 @@ const VerifyAlarmForm = ({ alarmId }: Props) => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleEvidenceChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): void => {
+    const files = e.target.files;
+    setFileCount(files ? files.length : 0);
   };
 
   return (
@@ -124,12 +133,30 @@ const VerifyAlarmForm = ({ alarmId }: Props) => {
         <label className="block text-sm font-medium text-(--text-secondary) mb-1">
           Evidence (images, max {MAX_EVIDENCE_FILES} files)
         </label>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="px-3 py-1.5 text-sm bg-(--bg-surface) border border-(--border-default) rounded hover:bg-(--bg-card)"
+          >
+            {fileCount > 0 ? "Capture another photo" : "Capture photo"}
+          </button>
+          {fileCount > 0 && (
+            <span className="text-xs text-(--text-muted)">
+              {fileCount} photo{fileCount > 1 ? "s" : ""} selected (max{" "}
+              {MAX_EVIDENCE_FILES})
+            </span>
+          )}
+        </div>
         <input
+          ref={fileInputRef}
           type="file"
           name="evidence"
-          accept="image/jpeg,image/png,image/jpg"
+          accept="image/*"
+          capture="environment"
           multiple
-          className="w-full text-sm text-(--text-secondary)"
+          className="sr-only"
+          onChange={handleEvidenceChange}
         />
       </div>
 

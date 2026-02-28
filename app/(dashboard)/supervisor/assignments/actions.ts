@@ -7,7 +7,7 @@ import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { createAssignment } from "@/lib/assignment/assignment-repository";
 
-import type { AssignAlarmResult } from "@/types/actions";
+import type { ActionResult } from "@/types/actions";
 
 const RMP_ROLES = [Role.RMP, Role.ER] as const;
 const SUPERVISOR_ROLES: Role[] = [
@@ -15,8 +15,6 @@ const SUPERVISOR_ROLES: Role[] = [
   Role.NIGHT_SUPERVISOR,
   Role.QRV_SUPERVISOR,
 ];
-
-export type { AssignAlarmResult } from "@/types/actions";
 
 /**
  * Get RMPs that can be assigned to this alarm (same chainage). Subordinates first.
@@ -76,7 +74,7 @@ export async function getRmpOptionsForAlarm(
 export async function assignAlarm(
   alarmId: string,
   rmpId: string,
-): Promise<AssignAlarmResult> {
+): Promise<ActionResult> {
   const session = await requireRole(SUPERVISOR_ROLES);
   const supervisorId = session.user.id;
 

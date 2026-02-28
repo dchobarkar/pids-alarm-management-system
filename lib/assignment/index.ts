@@ -1,7 +1,3 @@
-export type {
-  AssignmentWithAlarm,
-  AssignmentWithRmp,
-} from "./assignment-repository";
 export {
   createAssignment,
   getAssignmentsByAlarm,

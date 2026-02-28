@@ -1,18 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { UpdateProfileResult } from "@/types/actions";
+import type { ActionResult } from "@/types/actions";
 import { getSession } from "@/lib/auth/get-session";
 import { prisma } from "@/lib/db";
-
-export type { UpdateProfileResult } from "@/types/actions";
 
 /**
  * Update current user's profile (name, phone). Email is read-only.
  */
-export async function updateProfile(
-  formData: FormData,
-): Promise<UpdateProfileResult> {
+export async function updateProfile(formData: FormData): Promise<ActionResult> {
   const session = await getSession();
   if (!session?.user?.id) {
     return {
@@ -36,4 +32,3 @@ export async function updateProfile(
   revalidatePath("/profile");
   return { success: true };
 }
-

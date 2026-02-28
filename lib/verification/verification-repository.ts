@@ -1,25 +1,6 @@
 import { prisma } from "@/lib/db";
-import type { Prisma } from "@/lib/generated/prisma";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
-
-export type VerificationWithVerifier = Prisma.VerificationGetPayload<{
-  include: {
-    verifiedBy: { select: { id: true; name: true } };
-  };
-}>;
-
-export type AlarmPendingReview = Prisma.AlarmGetPayload<{
-  include: {
-    chainage: true;
-    createdBy: { select: { id: true; name: true } };
-    verifications: {
-      orderBy: { verifiedAt: "desc" };
-      take: 1;
-      include: { verifiedBy: { select: { id: true; name: true } } };
-    };
-    evidences: true;
-  };
-}>;
+import type { AlarmPendingReview, VerificationWithVerifier } from "@/types/verification";
 
 export const createVerification = async (params: {
   alarmId: string;
