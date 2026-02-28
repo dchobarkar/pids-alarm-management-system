@@ -10,6 +10,7 @@ export const getCurrentLocation = (): Promise<CurrentLocation> =>
       reject(new Error("Geolocation is not supported"));
       return;
     }
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
         resolve({

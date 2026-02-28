@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import type { Role } from "@/lib/generated/prisma";
 import { getSession } from "./get-session";
 
+/** Ensures user is signed in and has one of the allowed roles; redirects otherwise. */
 export const requireRole = async (allowedRole: Role | Role[]) => {
   const session = await getSession();
   if (!session?.user) redirect("/auth/error?error=SessionRequired");

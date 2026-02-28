@@ -1,22 +1,11 @@
 import type { AlarmStatus } from "@/lib/generated/prisma";
 
-const ALLOWED_TRANSITIONS: [AlarmStatus, AlarmStatus][] = [
-  ["UNASSIGNED", "ASSIGNED"],
-  ["ASSIGNED", "IN_PROGRESS"],
-  ["IN_PROGRESS", "VERIFIED"],
-  ["IN_PROGRESS", "FALSE_ALARM"],
-  ["VERIFIED", "CLOSED"],
-  ["FALSE_ALARM", "CLOSED"],
-  ["UNASSIGNED", "ESCALATED"],
-  ["ASSIGNED", "ESCALATED"],
-  ["IN_PROGRESS", "ESCALATED"],
-  ["ESCALATED", "ASSIGNED"],
-];
+import { ALLOWED_ALARM_TRANSITIONS } from "@/constants/alarm-state-machine";
 
 /** CLOSED is terminal; no transitions allowed from it. */
 export const canTransition = (from: AlarmStatus, to: AlarmStatus): boolean =>
   from !== "CLOSED" &&
-  ALLOWED_TRANSITIONS.some(([f, t]) => f === from && t === to);
+  ALLOWED_ALARM_TRANSITIONS.some(([f, t]) => f === from && t === to);
 
 /**
  * Throws if the transition is not allowed. Use before updating alarm status.

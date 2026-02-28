@@ -1,15 +1,10 @@
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+
 import {
-  ALLOWED_MIME_TYPES,
-  ALLOWED_EXTENSIONS,
-} from "@/constants/evidence";
-
-export const isAllowedEvidenceType = (mime: string): boolean =>
-  ALLOWED_MIME_TYPES.includes(mime);
-
-export const isAllowedEvidenceName = (name: string): boolean =>
-  ALLOWED_EXTENSIONS.includes(path.extname(name).toLowerCase());
+  isAllowedEvidenceMimeType,
+  isAllowedEvidenceFileName,
+} from "@/lib/validation/evidence";
 
 /**
  * Validate and store one evidence file under uploads/alarms/{alarmId}/.
@@ -22,7 +17,7 @@ export const uploadEvidenceFile = async (
   baseDir: string = process.cwd(),
 ): Promise<{ url: string; fileType: string }> => {
   const mime = file.type.toLowerCase();
-  if (!isAllowedEvidenceType(mime) && !isAllowedEvidenceName(file.name)) {
+  if (!isAllowedEvidenceMimeType(mime) && !isAllowedEvidenceFileName(file.name)) {
     throw new Error("Only JPEG and PNG images are allowed");
   }
   const ext =

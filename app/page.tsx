@@ -2,8 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import Button from "@/components/ui/Button";
-import { auth } from "@/lib/auth";
-import { getDashboardPathForRole } from "@/lib/auth/auth-options";
+import { getDashboardPathForRole } from "@/lib/auth/dashboard-paths";
+import { auth } from "@/lib/auth/nextauth";
 import type { Role } from "@/lib/generated/prisma";
 
 const Page = async () => {

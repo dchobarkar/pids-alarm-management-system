@@ -1,5 +1,1 @@
-export {
-  isAllowedEvidenceType,
-  isAllowedEvidenceName,
-  uploadEvidenceFile,
-} from "./upload-file";
+export { uploadEvidenceFile } from "./upload-file";

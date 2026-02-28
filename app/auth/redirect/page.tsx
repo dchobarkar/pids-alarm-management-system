@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getSession } from "@/lib/auth/get-session";
-import { getDashboardPathForRole } from "@/lib/auth/auth-options";
+import { getDashboardPathForRole } from "@/lib/auth/dashboard-paths";
 import type { Role } from "@/lib/generated/prisma";
 
 const Page = async () => {

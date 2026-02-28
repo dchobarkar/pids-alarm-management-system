@@ -7,8 +7,7 @@ import {
   SLA_WARNING_THRESHOLD,
 } from "@/constants/sla";
 
-export type { SlaInfo, SlaStatus } from "@/types/sla";
-
+/** Returns SLA limit in minutes for status, or null if status has no limit. */
 const getLimitMinutes = (status: AlarmStatus): number | null => {
   switch (status) {
     case "UNASSIGNED":
@@ -33,21 +32,35 @@ export const getSlaInfo = (
   const limitMinutes = getLimitMinutes(alarmStatus);
   if (limitMinutes == null) return null;
 
-  const startMs =
-    alarmStatus === "UNASSIGNED" || !assignment
-      ? new Date(alarmCreatedAt).getTime()
-      : alarmStatus === "IN_PROGRESS" && assignment.acceptedAt
-        ? new Date(assignment.acceptedAt).getTime()
-        : new Date(assignment.assignedAt).getTime();
+  let startMs: number;
+  switch (alarmStatus) {
+    case "UNASSIGNED":
+      startMs = new Date(alarmCreatedAt).getTime();
+      break;
+
+    case "ASSIGNED":
+      if (assignment) startMs = new Date(assignment.assignedAt).getTime();
+      else startMs = new Date(alarmCreatedAt).getTime();
+      break;
+
+    case "IN_PROGRESS":
+      if (assignment?.acceptedAt != null)
+        startMs = new Date(assignment.acceptedAt).getTime();
+      else if (assignment) startMs = new Date(assignment.assignedAt).getTime();
+      else startMs = new Date(alarmCreatedAt).getTime();
+      break;
+
+    default:
+      startMs = new Date(alarmCreatedAt).getTime();
+  }
 
   const elapsedMinutes = (Date.now() - startMs) / (60 * 1000);
   const fractionUsed = elapsedMinutes / limitMinutes;
-  const status: SlaStatus =
-    fractionUsed >= 1
-      ? "breached"
-      : fractionUsed >= SLA_WARNING_THRESHOLD
-        ? "warning"
-        : "ok";
+
+  let status: SlaStatus;
+  if (fractionUsed >= 1) status = "breached";
+  else if (fractionUsed >= SLA_WARNING_THRESHOLD) status = "warning";
+  else status = "ok";
 
   return {
     elapsedMinutes,

@@ -11,10 +11,8 @@ import {
   calculateDistanceMeters,
   isWithinGeoRadius,
 } from "@/lib/geo/calculate-distance";
-import {
-  uploadEvidenceFile,
-  isAllowedEvidenceType,
-} from "@/api/evidence";
+import { uploadEvidenceFile } from "@/api/evidence";
+import { isAllowedEvidenceMimeType } from "@/lib/validation/evidence";
 
 import type { ActionResult } from "@/types/actions";
 import { RMP_ROLES } from "@/constants/roles";
@@ -93,7 +91,7 @@ export async function submitVerification(
 
   const files = formData.getAll("evidence") as File[];
   const validFiles = files.filter(
-    (f) => f.size > 0 && isAllowedEvidenceType(f.type),
+    (f) => f.size > 0 && isAllowedEvidenceMimeType(f.type),
   );
   if (validFiles.length > MAX_EVIDENCE_FILES) {
     return {

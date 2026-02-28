@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/nextauth";
 import { getDashboardPathForRole } from "@/lib/auth/dashboard-paths";
 
 export const proxy = auth((req) => {
