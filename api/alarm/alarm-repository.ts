@@ -2,10 +2,10 @@ import {
   AlarmStatus as AlarmStatusEnum,
   AssignmentStatus,
 } from "@/lib/generated/prisma";
-import { prisma } from "@/api/db";
 import type { CreateAlarmInput } from "@/types/validation";
 import type { AlarmWithRelations, GetAlarmsFilters } from "@/types/alarm";
 import type { UserWithChainages } from "@/types/user";
+import { prisma } from "@/api/db";
 import { getScopedAlarms } from "@/api/scope/alarm-scope";
 
 /**
@@ -115,3 +115,42 @@ export const getEscalatedAlarms = async (): Promise<AlarmWithRelations[]> => {
   });
   return alarms as AlarmWithRelations[];
 };
+
+/** Update alarm status and append an alarm log entry in a single transaction. */
+export const updateAlarmStatusWithLog = (
+  alarmId: string,
+  newStatus: AlarmStatusEnum,
+  logAction: string,
+  actorId: string | null,
+  meta?: object,
+) =>
+  prisma.$transaction([
+    prisma.alarm.update({
+      where: { id: alarmId },
+      data: { status: newStatus },
+    }),
+    prisma.alarmLog.create({
+      data: {
+        alarmId,
+        action: logAction,
+        actorId,
+        meta: (meta ?? {}) as object,
+      },
+    }),
+  ]);
+
+/** Create a single alarm log entry (e.g. VERIFICATION_SUBMITTED). */
+export const createAlarmLog = (
+  alarmId: string,
+  action: string,
+  actorId: string,
+  meta?: object,
+) =>
+  prisma.alarmLog.create({
+    data: {
+      alarmId,
+      action,
+      actorId,
+      meta: (meta ?? {}) as object,
+    },
+  });

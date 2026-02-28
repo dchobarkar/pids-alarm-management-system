@@ -1,8 +1,11 @@
 import { AssignmentStatus } from "@/lib/generated/prisma";
+import type {
+  AssignmentWithAlarm,
+  AssignmentWithRmp,
+} from "@/types/assignment";
 import { prisma } from "@/api/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
-import type { AssignmentWithAlarm, AssignmentWithRmp } from "@/types/assignment";
 
 /**
  * Create assignment record, set alarm status to ASSIGNED, and log.
@@ -197,3 +200,13 @@ export const createReassignment = async (params: {
 
   return assignment as AssignmentWithRmp;
 };
+
+/** Mark assignment as COMPLETED (e.g. after RMP submits verification). */
+export const completeAssignment = (assignmentId: string) =>
+  prisma.alarmAssignment.update({
+    where: { id: assignmentId },
+    data: {
+      status: AssignmentStatus.COMPLETED,
+      completedAt: new Date(),
+    },
+  });

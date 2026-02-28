@@ -8,7 +8,7 @@ import { createAlarmSchema } from "@/lib/validation/alarm-schema";
 import {
   createAlarm as repoCreateAlarm,
   findChainageByValue,
-} from "@/api/alarm";
+} from "@/api/alarm/alarm-repository";
 
 export async function createAlarm(
   formData: FormData,

@@ -3,19 +3,15 @@ import type {
   AlarmWithRelations,
   LoadScopedAlarmsOptions,
 } from "@/types/alarm";
-import { prisma } from "@/api/db";
 import { getSession } from "@/lib/auth/get-session";
+import { findUserByIdWithChainages } from "@/api/user/user-repository";
 import { getAlarmsByScope } from "@/api/alarm/alarm-repository";
 
 export const loadScopedAlarmsForCurrentUser = async (
   searchParams: Promise<AlarmsSearchParams>,
   options: LoadScopedAlarmsOptions = {},
 ): Promise<{
-  user:
-    | (Awaited<ReturnType<typeof prisma.user.findUniqueOrThrow>> & {
-        chainages: { chainageId: string }[];
-      })
-    | null;
+  user: Awaited<ReturnType<typeof findUserByIdWithChainages>> | null;
   alarms: AlarmWithRelations[];
   params: AlarmsSearchParams;
 }> => {
@@ -26,10 +22,7 @@ export const loadScopedAlarmsForCurrentUser = async (
     return { user: null, alarms: [], params };
   }
 
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { id: session.user.id },
-    include: { chainages: { select: { chainageId: true } } },
-  });
+  const user = await findUserByIdWithChainages(session.user.id);
 
   const filters = {
     status: params.status as

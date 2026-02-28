@@ -3,12 +3,12 @@
 import { revalidatePath } from "next/cache";
 import type { ActionResult } from "@/types/actions";
 import { getSession } from "@/lib/auth/get-session";
-import { prisma } from "@/api/db";
+import { updateUserProfile } from "@/api/user/user-repository";
 
-/**
- * Update current user's profile (name, phone). Email is read-only.
- */
-export async function updateProfile(formData: FormData): Promise<ActionResult> {
+/** Update current user's profile (name, phone). Email is read-only. */
+export const updateProfile = async (
+  formData: FormData,
+): Promise<ActionResult> => {
   const session = await getSession();
   if (!session?.user?.id) {
     return {
@@ -24,11 +24,8 @@ export async function updateProfile(formData: FormData): Promise<ActionResult> {
     return { success: false, error: "Name is required." };
   }
 
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { name, phone },
-  });
+  await updateUserProfile(session.user.id, { name, phone });
 
   revalidatePath("/profile");
   return { success: true };
-}
+};

@@ -3,28 +3,27 @@
 import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/role-guard";
-import { AssignmentStatus } from "@/lib/generated/prisma";
-import { prisma } from "@/api/db";
-import { getActiveAssignmentForAlarm } from "@/api/assignment";
-import { createVerification } from "@/api/verification";
+import { getAlarmById } from "@/api/alarm/alarm-repository";
+import { getActiveAssignmentForAlarm, completeAssignment } from "@/api/assignment/assignment-repository";
+import { createVerification } from "@/api/verification/verification-repository";
+import { createEvidence } from "@/api/evidence/evidence-repository";
+import { createAlarmLog } from "@/api/alarm/alarm-repository";
 import {
   calculateDistanceMeters,
   isWithinGeoRadius,
 } from "@/lib/geo/calculate-distance";
-import { uploadEvidenceFile } from "@/api/evidence";
+import { uploadEvidenceFile } from "@/api/evidence/upload-file";
 import { isAllowedEvidenceMimeType } from "@/lib/validation/evidence";
 
 import type { ActionResult } from "@/types/actions";
 import { RMP_ROLES } from "@/constants/roles";
 import { MAX_EVIDENCE_FILES } from "@/constants/evidence";
 
-/**
- * RMP submits verification: geo, distance, remarks, evidence. Alarm status unchanged; operator reviews.
- */
-export async function submitVerification(
+/** RMP submits verification: geo, distance, remarks, evidence. Alarm status unchanged; operator reviews. */
+export const submitVerification = async (
   alarmId: string,
   formData: FormData,
-): Promise<ActionResult> {
+): Promise<ActionResult> => {
   const session = await requireRole(RMP_ROLES);
   const rmpId = session.user.id;
 
@@ -36,10 +35,7 @@ export async function submitVerification(
     };
   }
 
-  const alarm = await prisma.alarm.findUnique({
-    where: { id: alarmId },
-    select: { status: true, latitude: true, longitude: true },
-  });
+  const alarm = await getAlarmById(alarmId);
   if (!alarm) return { success: false, error: "Alarm not found." };
   if (alarm.status !== "IN_PROGRESS") {
     return {
@@ -102,40 +98,25 @@ export async function submitVerification(
 
   for (const file of validFiles) {
     const { url, fileType } = await uploadEvidenceFile(alarmId, file);
-    await prisma.evidence.create({
-      data: {
-        alarmId,
-        uploadedById: rmpId,
-        fileUrl: url,
-        fileType,
-      },
+    await createEvidence({
+      alarmId,
+      uploadedById: rmpId,
+      fileUrl: url,
+      fileType,
     });
   }
 
-  await prisma.alarmLog.create({
-    data: {
-      alarmId,
-      action: "VERIFICATION_SUBMITTED",
-      actorId: rmpId,
-      meta: {
-        distance,
-        verifiedBy: rmpId,
-        verificationId: verification.id,
-        geoMismatch,
-      } as object,
-    },
+  await createAlarmLog(alarmId, "VERIFICATION_SUBMITTED", rmpId, {
+    distance,
+    verifiedBy: rmpId,
+    verificationId: verification.id,
+    geoMismatch,
   });
 
-  await prisma.alarmAssignment.update({
-    where: { id: assignment.id },
-    data: {
-      status: AssignmentStatus.COMPLETED,
-      completedAt: new Date(),
-    },
-  });
+  await completeAssignment(assignment.id);
 
   revalidatePath("/rmp/tasks");
   revalidatePath(`/rmp/tasks/${alarmId}/verify`);
   revalidatePath("/operator/reviews");
   return { success: true };
-}
+};

@@ -10,7 +10,7 @@ import Modal from "@/components/ui/Modal";
 import Input from "@/components/form/Input";
 import Select from "@/components/form/Select";
 import Alert from "@/components/ui/Alert";
-import { createUser } from "./actions";
+import { createUserAction } from "./actions";
 
 const UserCreateButton = ({ supervisors }: { supervisors: User[] }) => {
   const router = useRouter();
@@ -29,7 +29,7 @@ const UserCreateButton = ({ supervisors }: { supervisors: User[] }) => {
   async function handleSubmit(formData: FormData) {
     setError("");
     setLoading(true);
-    const result = await createUser(formData);
+    const result = await createUserAction(formData);
     setLoading(false);
     if (result?.error) {
       setError(result.error);

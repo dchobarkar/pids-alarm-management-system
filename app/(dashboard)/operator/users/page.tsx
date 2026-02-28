@@ -1,23 +1,19 @@
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import { prisma } from "@/api/db";
+import {
+  findUsers,
+  findUsersByRoles,
+} from "@/api/user/user-repository";
+import { SUPERVISOR_ROLES } from "@/constants/roles";
+import type { UserWithSupervisor } from "@/types/user";
 import UsersTable from "./UsersTable";
 import UserCreateButton from "./UserCreateButton";
 
 const OperatorUsersPage = async () => {
-  const users = await prisma.user.findMany({
-    orderBy: { name: "asc" },
-    include: {
-      supervisor: { select: { id: true, name: true, email: true } },
-    },
-  });
-
-  const supervisors = await prisma.user.findMany({
-    where: {
-      role: { in: ["SUPERVISOR", "NIGHT_SUPERVISOR", "QRV_SUPERVISOR"] },
-    },
-    orderBy: { name: "asc" },
-  });
+  const [users, supervisors] = await Promise.all([
+    findUsers({ includeSupervisor: true }),
+    findUsersByRoles(SUPERVISOR_ROLES),
+  ]);
 
   return (
     <div className="p-6">
@@ -31,7 +27,7 @@ const OperatorUsersPage = async () => {
         <UserCreateButton supervisors={supervisors} />
       </div>
       <Card>
-        <UsersTable users={users} supervisors={supervisors} />
+        <UsersTable users={users as UserWithSupervisor[]} supervisors={supervisors} />
       </Card>
     </div>
   );

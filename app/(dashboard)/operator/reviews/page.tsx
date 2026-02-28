@@ -1,5 +1,5 @@
 import { getSession } from "@/lib/auth/get-session";
-import { getAlarmsPendingReview } from "@/api/verification";
+import { getAlarmsPendingReview } from "@/api/verification/verification-repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import ReviewQueueClient from "./ReviewQueueClient";

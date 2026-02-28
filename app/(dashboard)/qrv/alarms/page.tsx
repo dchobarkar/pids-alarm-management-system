@@ -1,5 +1,5 @@
 import { getSession } from "@/lib/auth/get-session";
-import { getEscalatedAlarms } from "@/api/alarm";
+import { getEscalatedAlarms } from "@/api/alarm/alarm-repository";
 import RoleAlarmsPage from "@/components/dashboard/alarms/RoleAlarmsPage";
 
 const QrvAlarmsPage = async () => {

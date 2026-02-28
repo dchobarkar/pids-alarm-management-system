@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { getSession } from "@/lib/auth/get-session";
-import { getAlarmById } from "@/api/alarm";
-import { getVerificationsByAlarm } from "@/api/verification";
+import { getAlarmById } from "@/api/alarm/alarm-repository";
+import { getVerificationsByAlarm } from "@/api/verification/verification-repository";
 import { getSlaInfo } from "@/lib/sla/elapsed";
-import { prisma } from "@/api/db";
+import { findEvidenceByAlarmId } from "@/api/evidence/evidence-repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -21,10 +21,7 @@ export default async function Page({ params }: Props) {
   if (!alarm) redirect("/operator/alarms");
 
   const verifications = await getVerificationsByAlarm(alarmId);
-  const evidences = await prisma.evidence.findMany({
-    where: { alarmId },
-    orderBy: { uploadedAt: "desc" },
-  });
+  const evidences = await findEvidenceByAlarmId(alarmId);
 
   const slaInfo = getSlaInfo(
     alarm.status as "UNASSIGNED" | "ASSIGNED" | "IN_PROGRESS",

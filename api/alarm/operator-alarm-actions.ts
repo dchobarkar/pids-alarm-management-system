@@ -7,10 +7,8 @@ import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/api/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 
-/**
- * Operator closes alarm. Allowed only when status is VERIFIED or FALSE_ALARM.
- */
-export async function closeAlarm(alarmId: string): Promise<ActionResult> {
+/** Operator closes alarm. Allowed only when status is VERIFIED or FALSE_ALARM. */
+export const closeAlarm = async (alarmId: string): Promise<ActionResult> => {
   const session = await requireRole(Role.OPERATOR);
   const operatorId = session.user.id;
 
@@ -48,4 +46,4 @@ export async function closeAlarm(alarmId: string): Promise<ActionResult> {
   revalidatePath("/supervisor/alarms");
   revalidatePath("/rmp/alarms");
   return { success: true };
-}
+};

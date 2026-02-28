@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/get-session";
-import { prisma } from "@/api/db";
+import { findUserProfileById } from "@/api/user/user-repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import ProfileForm from "@/components/formComponents/ProfileForm/ProfileForm";
@@ -9,10 +9,7 @@ export default async function ProfilePage() {
   const session = await getSession();
   if (!session?.user?.id) redirect("/auth/signin");
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { name: true, email: true, phone: true },
-  });
+  const user = await findUserProfileById(session.user.id);
   if (!user) redirect("/auth/signin");
 
   return (

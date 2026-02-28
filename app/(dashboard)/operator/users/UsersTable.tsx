@@ -12,7 +12,7 @@ import Modal from "@/components/ui/Modal";
 import Input from "@/components/form/Input";
 import Select from "@/components/form/Select";
 import Alert from "@/components/ui/Alert";
-import { updateUser, deleteUser } from "./actions";
+import { updateUserAction, deleteUserAction } from "./actions";
 
 interface Props {
   users: UserWithSupervisor[];
@@ -37,7 +37,7 @@ const UsersTable = ({ users, supervisors }: Props) => {
     if (!editing) return;
     setError("");
     setLoading(true);
-    const result = await updateUser(formData);
+    const result = await updateUserAction(formData);
     setLoading(false);
     if (result?.error) {
       setError(result.error);
@@ -49,7 +49,7 @@ const UsersTable = ({ users, supervisors }: Props) => {
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this user?")) return;
-    await deleteUser(id);
+    await deleteUserAction(id);
     router.refresh();
   }
 

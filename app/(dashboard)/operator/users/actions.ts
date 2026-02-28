@@ -3,10 +3,17 @@
 import { revalidatePath } from "next/cache";
 import bcrypt from "bcrypt";
 import { SALT_ROUNDS } from "@/constants/auth";
-import { prisma } from "@/api/db";
+import {
+  findUserByEmail,
+  findUserById,
+  findUserByEmailExcludingId,
+  createUser,
+  updateUser,
+  deleteUser as deleteUserRepo,
+} from "@/api/user/user-repository";
 import { Role } from "@/lib/generated/prisma";
 
-export async function createUser(formData: FormData) {
+export const createUserAction = async (formData: FormData) => {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -21,27 +28,23 @@ export async function createUser(formData: FormData) {
     return { error: "Password must be at least 8 characters." };
   }
 
-  const existing = await prisma.user.findUnique({
-    where: { email: email.trim() },
-  });
+  const existing = await findUserByEmail(email);
   if (existing) return { error: "A user with this email already exists." };
 
   const hashed = await bcrypt.hash(password, SALT_ROUNDS);
-  await prisma.user.create({
-    data: {
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      password: hashed,
-      role,
-      phone: phone?.trim() || null,
-      supervisorId: supervisorId || null,
-    },
+  await createUser({
+    name,
+    email,
+    password: hashed,
+    role,
+    phone,
+    supervisorId,
   });
   revalidatePath("/operator/users");
   return { success: true };
-}
+};
 
-export async function updateUser(formData: FormData) {
+export const updateUserAction = async (formData: FormData) => {
   const id = formData.get("id") as string;
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
@@ -54,33 +57,31 @@ export async function updateUser(formData: FormData) {
     return { error: "ID, name, email and role are required." };
   }
 
-  const existing = await prisma.user.findUnique({ where: { id } });
+  const existing = await findUserById(id);
   if (!existing) return { error: "User not found." };
 
-  const emailConflict = await prisma.user.findFirst({
-    where: { email: email.trim().toLowerCase(), NOT: { id } },
-  });
+  const emailConflict = await findUserByEmailExcludingId(email, id);
   if (emailConflict) return { error: "A user with this email already exists." };
 
-  const data: Parameters<typeof prisma.user.update>[0]["data"] = {
-    name: name.trim(),
-    email: email.trim().toLowerCase(),
+  const password = newPassword && newPassword.length >= 8
+    ? await bcrypt.hash(newPassword, SALT_ROUNDS)
+    : undefined;
+
+  await updateUser(id, {
+    name,
+    email,
     role,
-    phone: phone?.trim() || null,
-    supervisorId: supervisorId || null,
-  };
-  if (newPassword && newPassword.length >= 8) {
-    data.password = await bcrypt.hash(newPassword, SALT_ROUNDS);
-  }
-
-  await prisma.user.update({ where: { id }, data });
+    phone,
+    supervisorId,
+    password,
+  });
   revalidatePath("/operator/users");
   return { success: true };
-}
+};
 
-export async function deleteUser(id: string) {
+export const deleteUserAction = async (id: string) => {
   if (!id) return { error: "ID required." };
-  await prisma.user.delete({ where: { id } });
+  await deleteUserRepo(id);
   revalidatePath("/operator/users");
   return { success: true };
-}
+};

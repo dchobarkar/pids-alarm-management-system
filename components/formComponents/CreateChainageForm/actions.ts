@@ -1,9 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/api/db";
+import {
+  createChainage as createChainageRepo,
+  updateChainage as updateChainageRepo,
+  deleteChainage as deleteChainageRepo,
+} from "@/api/chainage/chainage-repository";
 
-export async function createChainage(formData: FormData) {
+export const createChainage = async (formData: FormData) => {
   const label = formData.get("label") as string;
   const startKm = Number(formData.get("startKm"));
   const endKm = Number(formData.get("endKm"));
@@ -19,20 +23,18 @@ export async function createChainage(formData: FormData) {
     return { error: "Start KM and End KM must be numbers." };
   if (startKm >= endKm) return { error: "Start KM must be less than End KM." };
 
-  await prisma.chainage.create({
-    data: {
-      label: label.trim(),
-      startKm,
-      endKm,
-      latitude,
-      longitude,
-    },
+  await createChainageRepo({
+    label,
+    startKm,
+    endKm,
+    latitude,
+    longitude,
   });
   revalidatePath("/operator/chainages");
   return { success: true };
-}
+};
 
-export async function updateChainage(formData: FormData) {
+export const updateChainage = async (formData: FormData) => {
   const id = formData.get("id") as string;
   const label = formData.get("label") as string;
   const startKm = Number(formData.get("startKm"));
@@ -49,17 +51,20 @@ export async function updateChainage(formData: FormData) {
     return { error: "Start KM and End KM must be numbers." };
   if (startKm >= endKm) return { error: "Start KM must be less than End KM." };
 
-  await prisma.chainage.update({
-    where: { id },
-    data: { label: label.trim(), startKm, endKm, latitude, longitude },
+  await updateChainageRepo(id, {
+    label,
+    startKm,
+    endKm,
+    latitude,
+    longitude,
   });
   revalidatePath("/operator/chainages");
   return { success: true };
-}
+};
 
-export async function deleteChainage(id: string) {
+export const deleteChainage = async (id: string) => {
   if (!id) return { error: "ID required." };
-  await prisma.chainage.delete({ where: { id } });
+  await deleteChainageRepo(id);
   revalidatePath("/operator/chainages");
   return { success: true };
-}
+};

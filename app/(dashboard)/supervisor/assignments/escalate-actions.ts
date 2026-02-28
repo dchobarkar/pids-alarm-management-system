@@ -2,31 +2,20 @@
 
 import { revalidatePath } from "next/cache";
 
+import { SUPERVISOR_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
-import { Role } from "@/lib/generated/prisma";
-import { prisma } from "@/api/db";
+import { getAlarmById, updateAlarmStatusWithLog } from "@/api/alarm/alarm-repository";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
 
 import type { ActionResult } from "@/types/actions";
 
-const SUPERVISOR_ROLES: Role[] = [
-  Role.SUPERVISOR,
-  Role.NIGHT_SUPERVISOR,
-  Role.QRV_SUPERVISOR,
-];
-
-/**
- * Supervisor manually escalates alarm. Allowed when status is UNASSIGNED, ASSIGNED, or IN_PROGRESS.
- */
-export async function escalateAlarm(alarmId: string): Promise<ActionResult> {
+/** Supervisor manually escalates alarm. Allowed when UNASSIGNED, ASSIGNED, or IN_PROGRESS. */
+export const escalateAlarm = async (alarmId: string): Promise<ActionResult> => {
   const session = await requireRole(SUPERVISOR_ROLES);
   const supervisorId = session.user.id;
 
-  const alarm = await prisma.alarm.findUnique({
-    where: { id: alarmId },
-    select: { status: true },
-  });
+  const alarm = await getAlarmById(alarmId);
   if (!alarm) return { success: false, error: "Alarm not found." };
   assertAlarmNotClosed(alarm.status);
   if (
@@ -42,23 +31,16 @@ export async function escalateAlarm(alarmId: string): Promise<ActionResult> {
   }
   assertTransition(alarm.status, "ESCALATED");
 
-  await prisma.$transaction([
-    prisma.alarm.update({
-      where: { id: alarmId },
-      data: { status: "ESCALATED" },
-    }),
-    prisma.alarmLog.create({
-      data: {
-        alarmId,
-        action: "ALARM_ESCALATED",
-        actorId: supervisorId,
-        meta: { escalatedBy: supervisorId } as object,
-      },
-    }),
-  ]);
+  await updateAlarmStatusWithLog(
+    alarmId,
+    "ESCALATED",
+    "ALARM_ESCALATED",
+    supervisorId,
+    { escalatedBy: supervisorId },
+  );
 
   revalidatePath("/supervisor/alarms");
   revalidatePath("/operator/alarms");
   revalidatePath("/qrv/alarms");
   return { success: true };
-}
+};

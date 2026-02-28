@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { SALT_ROUNDS } from "@/constants/auth";
-import { prisma } from "@/api/db";
+import { findUserByEmail, createUser } from "@/api/user/user-repository";
 import { Role } from "@/lib/generated/prisma";
 
 export async function POST(request: Request) {
@@ -28,9 +28,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const existing = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existing = await findUserByEmail(email);
 
     if (existing) {
       return NextResponse.json(
@@ -41,13 +39,11 @@ export async function POST(request: Request) {
 
     const hashed = await bcrypt.hash(password, SALT_ROUNDS);
 
-    await prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashed,
-        role: Role.OPERATOR,
-      },
+    await createUser({
+      name,
+      email,
+      password: hashed,
+      role: Role.OPERATOR,
     });
 
     return NextResponse.json({ success: true }, { status: 201 });

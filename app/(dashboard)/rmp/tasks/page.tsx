@@ -1,5 +1,5 @@
 import { getSession } from "@/lib/auth/get-session";
-import { getRmpAssignments } from "@/api/assignment";
+import { getRmpAssignments } from "@/api/assignment/assignment-repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import RmpTasksClient from "./RmpTasksClient";

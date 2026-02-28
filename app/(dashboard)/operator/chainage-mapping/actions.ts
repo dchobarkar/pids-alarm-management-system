@@ -2,11 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 
-import { prisma } from "@/api/db";
+import { deleteChainageUser } from "@/api/chainage-user/chainage-user-repository";
 
-export async function removeMapping(chainageUserId: string) {
+export const removeMapping = async (chainageUserId: string) => {
   if (!chainageUserId) return { error: "ID required." };
-  await prisma.chainageUser.delete({ where: { id: chainageUserId } });
+  await deleteChainageUser(chainageUserId);
   revalidatePath("/operator/chainage-mapping");
   return { success: true };
-}
+};

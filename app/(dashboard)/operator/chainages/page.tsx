@@ -1,13 +1,11 @@
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import { prisma } from "@/api/db";
+import { findChainages } from "@/api/chainage/chainage-repository";
 import ChainagesTable from "./ChainagesTable";
 import ChainageCreateButton from "@/components/formComponents/CreateChainageForm/form";
 
 const Page = async () => {
-  const chainages = await prisma.chainage.findMany({
-    orderBy: { startKm: "asc" },
-  });
+  const chainages = await findChainages();
 
   return (
     <div className="p-6">

@@ -3,7 +3,7 @@ import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
-import { prisma } from "@/api/db";
+import { findUserByEmail } from "@/api/user/user-repository";
 import {
   AUTH_ERROR_PATH,
   AUTH_SIGN_IN_PATH,
@@ -36,7 +36,7 @@ export const authOptions: NextAuthConfig = {
         const email = String(credentials.email).trim().toLowerCase();
         const password = String(credentials.password);
 
-        const user = await prisma.user.findUnique({ where: { email } });
+        const user = await findUserByEmail(email);
         if (!user || !user.password) return null;
 
         const ok = await bcrypt.compare(password, user.password);

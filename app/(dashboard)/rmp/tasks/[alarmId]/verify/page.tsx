@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
 import { getSession } from "@/lib/auth/get-session";
-import { getAlarmById } from "@/api/alarm";
-import { getActiveAssignmentForAlarm } from "@/api/assignment";
+import { getAlarmById } from "@/api/alarm/alarm-repository";
+import { getActiveAssignmentForAlarm } from "@/api/assignment/assignment-repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import VerifyAlarmForm from "@/components/formComponents/VerifyAlarmForm/VerifyAlarmForm";

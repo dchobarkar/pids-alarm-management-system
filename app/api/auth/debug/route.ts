@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { prisma } from "@/api/db";
+import { findUserByEmail } from "@/api/user/user-repository";
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +19,7 @@ export async function GET() {
   };
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: "operator@pids.com" },
-    });
+    const user = await findUserByEmail("operator@pids.com");
     checks.userExists = !!user;
     if (user?.password) {
       checks.passwordHashOk = await bcrypt.compare(
