@@ -1,3 +1,7 @@
+// =============================================================================
+// PIDS Alarm Management System — Prisma schema
+// PostgreSQL. Prisma 7: datasource URL lives in prisma.config.ts.
+// =============================================================================
 
 generator client {
   provider = "prisma-client-js"
@@ -8,9 +12,9 @@ datasource db {
   provider = "postgresql"
 }
 
-// ---------------------------------------------------------------------------
-// Enums
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Enums — Domain values for roles, alarm lifecycle, and assignments
+// -----------------------------------------------------------------------------
 enum Role {
   OPERATOR
   SUPERVISOR
@@ -53,37 +57,37 @@ enum AssignmentStatus {
   COMPLETED
 }
 
-// ---------------------------------------------------------------------------
-// User
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// User — Auth + role; optional supervisor (for RMP/ER); chainage mappings
+// -----------------------------------------------------------------------------
 model User {
-  id           String   @id @default(uuid())
-  name         String
-  email        String   @unique
-  password     String
-  phone        String?
-  role         Role
+  id       String  @id @default(uuid())
+  name     String
+  email    String  @unique
+  password String
+  phone    String?
+  role     Role
 
   supervisorId String?
-  supervisor   User?    @relation("SupervisorToRMP", fields: [supervisorId], references: [id])
+  supervisor   User?   @relation("SupervisorToRMP", fields: [supervisorId], references: [id])
   subordinates User[]  @relation("SupervisorToRMP")
 
   chainages ChainageUser[]
 
-  assignments          AlarmAssignment[] @relation("RmpAssignments")
-  supervisedAssignments AlarmAssignment[] @relation("SupervisorAssignments")
+  assignments           AlarmAssignment[] @relation("RmpAssignments")
+  supervisedAssignments AlarmAssignment[]  @relation("SupervisorAssignments")
   verifications        Verification[]
   evidences            Evidence[]
-  alarmsCreated        Alarm[]           @relation("AlarmCreatedBy")
+  alarmsCreated        Alarm[]            @relation("AlarmCreatedBy")
   alarmLogs            AlarmLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-// ---------------------------------------------------------------------------
-// Chainage & ChainageUser
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Chainage & ChainageUser — Pipeline segments and user–segment mapping
+// -----------------------------------------------------------------------------
 model Chainage {
   id        String  @id @default(uuid())
   startKm   Float
@@ -113,11 +117,11 @@ model ChainageUser {
   @@index([chainageId])
 }
 
-// ---------------------------------------------------------------------------
-// Alarm
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Alarm — Core entity: location, type, criticality, status, creator
+// -----------------------------------------------------------------------------
 model Alarm {
-  id            String       @id @default(uuid())
+  id            String   @id @default(uuid())
   latitude      Float
   longitude     Float
   chainageValue Float
@@ -147,9 +151,9 @@ model Alarm {
   @@index([createdById])
 }
 
-// ---------------------------------------------------------------------------
-// AlarmAssignment
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// AlarmAssignment — RMP assigned to alarm; optional supervisor; lifecycle
+// -----------------------------------------------------------------------------
 model AlarmAssignment {
   id            String   @id @default(uuid())
   alarmId       String
@@ -160,23 +164,24 @@ model AlarmAssignment {
   rmp        User  @relation("RmpAssignments", fields: [rmpId], references: [id])
   supervisor User? @relation("SupervisorAssignments", fields: [supervisorId], references: [id])
 
-  assignedAt  DateTime  @default(now())
-  acceptedAt  DateTime?
-  completedAt DateTime?
+  assignedAt   DateTime  @default(now())
+  acceptedAt   DateTime?
+  completedAt  DateTime?
 
   status AssignmentStatus @default(PENDING)
 
   @@index([alarmId])
+  @@index([alarmId, status])
   @@index([rmpId])
 }
 
-// ---------------------------------------------------------------------------
-// Verification
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Verification — RMP site check: coords, distance, geo mismatch, remarks
+// -----------------------------------------------------------------------------
 model Verification {
-  id            String   @id @default(uuid())
-  alarmId       String
-  verifiedById  String
+  id           String   @id @default(uuid())
+  alarmId      String
+  verifiedById String
 
   latitude    Float
   longitude   Float
@@ -192,13 +197,13 @@ model Verification {
   @@index([alarmId])
 }
 
-// ---------------------------------------------------------------------------
-// Evidence
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Evidence — File upload linked to alarm and uploader
+// -----------------------------------------------------------------------------
 model Evidence {
-  id            String   @id @default(uuid())
-  alarmId       String
-  uploadedById  String
+  id           String   @id @default(uuid())
+  alarmId      String
+  uploadedById String
 
   fileUrl    String
   fileType   String
@@ -210,9 +215,9 @@ model Evidence {
   @@index([alarmId])
 }
 
-// ---------------------------------------------------------------------------
-// AlarmLog (Audit Trail)
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// AlarmLog — Audit trail: action, actor, optional JSON meta
+// -----------------------------------------------------------------------------
 model AlarmLog {
   id        String   @id @default(uuid())
   alarmId   String
