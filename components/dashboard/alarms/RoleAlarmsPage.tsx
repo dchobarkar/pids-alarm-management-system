@@ -1,12 +1,9 @@
-import Link from "next/link";
 import type { RoleAlarmsPageProps } from "@/types/dashboard";
 import { ROLE_ALARMS_CONFIG } from "@/constants/dashboard";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import Button from "@/components/ui/Button";
 import SupervisorAlarmsClient from "./SupervisorAlarmsClient";
 import RmpAlarmsClient from "./RmpAlarmsClient";
-import QrvAlarmsClient from "./QrvAlarmsClient";
 
 const RoleAlarmsPage = ({
   role,
@@ -23,7 +20,7 @@ const RoleAlarmsPage = ({
           { label: "Alarms" },
         ]}
       />
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6">
         <h1 className="text-xl font-semibold text-(--text-primary)">
           {cfg.title}
         </h1>
@@ -47,7 +44,6 @@ const RoleAlarmsPage = ({
             }}
           />
         )}
-        {role === "qrv" && <QrvAlarmsClient alarms={alarms} />}
       </Card>
     </div>
   );

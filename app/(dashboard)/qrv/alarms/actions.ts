@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import type { ActionResult } from "@/types/actions";
 import { RMP_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
@@ -12,8 +13,6 @@ import {
 } from "@/api/chainage-user/chainage-user.repository";
 import { findUsersByIds, findUserById } from "@/api/user/user.repository";
 import { createReassignment } from "@/api/assignment/assignment.service";
-
-import type { ActionResult } from "@/types/actions";
 
 /** Get RMPs that can be assigned to this escalated alarm (same chainage). */
 export const getRmpOptionsForEscalatedAlarm = async (
