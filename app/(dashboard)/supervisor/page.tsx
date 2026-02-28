@@ -1,7 +1,7 @@
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 
-const Page = () => {
+const SupervisorDashboardPage = () => {
   return (
     <div className="p-6">
       <Breadcrumb crumbs={[{ label: "Supervisor dashboard" }]} />
@@ -18,4 +18,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default SupervisorDashboardPage;

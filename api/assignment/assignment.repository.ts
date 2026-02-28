@@ -58,6 +58,25 @@ export const findRmpAssignments = async (
   return list as AssignmentWithAlarm[];
 };
 
+/** Assignments for alarms in the given chainages (e.g. supervisor's scope). Active (PENDING/ACCEPTED) only. */
+export const findAssignmentsForChainages = (
+  chainageIds: string[],
+): Promise<AssignmentWithAlarm[]> => {
+  if (chainageIds.length === 0) return Promise.resolve([]);
+  return prisma.alarmAssignment.findMany({
+    where: {
+      alarm: { chainageId: { in: chainageIds } },
+      status: { in: [AssignmentStatus.PENDING, AssignmentStatus.ACCEPTED] },
+    },
+    orderBy: { assignedAt: "desc" },
+    include: {
+      alarm: { include: { chainage: true } },
+      rmp: { select: { id: true, name: true } },
+      supervisor: { select: { id: true, name: true } },
+    },
+  }) as Promise<AssignmentWithAlarm[]>;
+};
+
 export const updateAssignmentAccepted = (assignmentId: string) =>
   prisma.alarmAssignment.update({
     where: { id: assignmentId },

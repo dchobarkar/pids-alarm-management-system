@@ -45,10 +45,12 @@ const SIDEBAR_LINKS_BY_ROLE: Record<Role, NavItem[]> = {
   SUPERVISOR: [
     { label: "Dashboard", href: "/supervisor", icon: LayoutDashboard },
     { label: "Alarms", href: "/supervisor/alarms", icon: AlarmClock },
+    { label: "Assignments", href: "/supervisor/assignments", icon: ListChecks },
   ],
   NIGHT_SUPERVISOR: [
     { label: "Dashboard", href: "/supervisor", icon: LayoutDashboard },
     { label: "Alarms", href: "/supervisor/alarms", icon: AlarmClock },
+    { label: "Assignments", href: "/supervisor/assignments", icon: ListChecks },
   ],
   RMP: [
     { label: "Dashboard", href: "/rmp", icon: LayoutDashboard },

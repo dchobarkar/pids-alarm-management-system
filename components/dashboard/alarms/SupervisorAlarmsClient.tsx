@@ -1,46 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import ScopedAlarmsTable from "@/components/alarms/ScopedAlarmsTable";
+import type { AlarmWithRelations } from "@/types/alarm";
+import type { AlarmsSearchParams } from "@/types/alarm";
+import Table from "@/components/ui/Table";
+import OperatorAlarmsFilters from "@/components/alarms/OperatorAlarmsFilters";
 import AssignAlarmModal from "@/components/alarms/AssignAlarmModal";
 import { escalateAlarm } from "@/app/(dashboard)/supervisor/assignments/escalate-actions";
-import type { AlarmWithRelations } from "@/types/alarm";
+import { getSupervisorAlarmsColumns } from "@/config/supervisor-alarms-columns";
 
 interface Props {
   alarms: AlarmWithRelations[];
-  searchParams: { status?: string; criticality?: string };
+  params: AlarmsSearchParams;
 }
 
-const SupervisorAlarmsClient = ({ alarms, searchParams }: Props) => {
+const SupervisorAlarmsClient = ({ alarms, params }: Props) => {
   const router = useRouter();
   const [assignModalAlarm, setAssignModalAlarm] =
     useState<AlarmWithRelations | null>(null);
 
-  const handleAssignSuccess = () => {
+  const handleAssignSuccess = useCallback(() => {
     router.refresh();
-  };
+  }, [router]);
 
-  const handleEscalate = async (alarmId: string) => {
-    const result = await escalateAlarm(alarmId);
-    if (result.success) router.refresh();
-    else alert(result.error);
-  };
+  const handleEscalate = useCallback(
+    async (alarmId: string) => {
+      const result = await escalateAlarm(alarmId);
+      if (result?.success) router.refresh();
+      else if (result?.error) alert(result.error);
+    },
+    [router],
+  );
+
+  const handleAssignClick = useCallback((alarm: AlarmWithRelations) => {
+    setAssignModalAlarm(alarm);
+  }, []);
+
+  const columns = useMemo(
+    () =>
+      getSupervisorAlarmsColumns({
+        onAssignClick: handleAssignClick,
+        onEscalate: handleEscalate,
+      }),
+    [handleAssignClick, handleEscalate],
+  );
 
   return (
     <>
-      <ScopedAlarmsTable
-        alarms={alarms}
-        basePath="/supervisor/alarms"
-        searchParams={searchParams}
-        showAssignmentColumns
-        showSlaColumn
-        assignMode="supervisor"
-        escalateMode
-        onAssignClick={setAssignModalAlarm}
-        onEscalate={handleEscalate}
-      />
+      <div className="space-y-5">
+        <OperatorAlarmsFilters basePath="/supervisor/alarms" params={params} />
+
+        {alarms.length === 0 ? (
+          <p className="py-4 text-(--text-muted)">
+            No alarms match the filters.
+          </p>
+        ) : (
+          <Table data={alarms} columns={columns} />
+        )}
+      </div>
       <AssignAlarmModal
         open={assignModalAlarm != null}
         onClose={() => setAssignModalAlarm(null)}
