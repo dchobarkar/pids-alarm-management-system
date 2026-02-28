@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { AlarmsSearchParams, AlarmWithRelations } from "@/types/alarm";
-import { PATHS, STATUS_BADGE_VARIANT, CRITICALITY_BADGE_VARIANT } from "@/constants";
+import { PATHS } from "@/constants/paths";
+import { STATUS_BADGE_VARIANT, CRITICALITY_BADGE_VARIANT } from "@/constants/badge-variants";
 import DateInput from "@/components/form/DateInput";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Button from "@/components/ui/Button";

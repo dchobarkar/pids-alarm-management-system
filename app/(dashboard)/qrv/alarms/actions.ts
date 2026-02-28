@@ -2,14 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 
+import { RMP_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { createReassignment } from "@/lib/assignment/assignment-repository";
 
 import type { ActionResult } from "@/types/actions";
-
-const RMP_ROLES = [Role.RMP, Role.ER] as const;
 
 /**
  * Get RMPs that can be assigned to this escalated alarm (same chainage).
@@ -40,7 +39,7 @@ export async function getRmpOptionsForEscalatedAlarm(
   const users = await prisma.user.findMany({
     where: {
       id: { in: userIds },
-      role: { in: [...RMP_ROLES] },
+      role: { in: RMP_ROLES },
     },
     select: { id: true, name: true },
     orderBy: { name: "asc" },
@@ -84,7 +83,7 @@ export async function reassignEscalatedAlarm(
   });
   if (
     !rmpUser ||
-    !RMP_ROLES.includes(rmpUser.role as (typeof RMP_ROLES)[number])
+    !RMP_ROLES.includes(rmpUser.role)
   )
     return { success: false, error: "User is not an RMP/ER." };
 

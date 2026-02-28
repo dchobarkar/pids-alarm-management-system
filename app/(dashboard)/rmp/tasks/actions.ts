@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 
+import { RMP_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
-import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import {
   createAssignment,
@@ -11,8 +11,6 @@ import {
 } from "@/lib/assignment/assignment-repository";
 
 import type { ActionResult } from "@/types/actions";
-
-const RMP_ROLES: Role[] = [Role.RMP, Role.ER];
 
 /**
  * RMP self-assigns an UNASSIGNED alarm in their chainage.

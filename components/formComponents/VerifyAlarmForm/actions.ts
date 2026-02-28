@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/role-guard";
-import { Role, AssignmentStatus } from "@/lib/generated/prisma";
+import { AssignmentStatus } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { getActiveAssignmentForAlarm } from "@/lib/assignment/assignment-repository";
 import { createVerification } from "@/lib/verification/verification-repository";
@@ -17,9 +17,8 @@ import {
 } from "@/lib/evidence/upload-file";
 
 import type { ActionResult } from "@/types/actions";
-
-const RMP_ROLES: Role[] = [Role.RMP, Role.ER];
-const MAX_EVIDENCE_FILES = 5;
+import { RMP_ROLES } from "@/constants/roles";
+import { MAX_EVIDENCE_FILES } from "@/constants/evidence";
 
 /**
  * RMP submits verification: geo, distance, remarks, evidence. Alarm status unchanged; operator reviews.

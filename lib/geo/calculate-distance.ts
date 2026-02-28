@@ -1,6 +1,6 @@
 import { getDistance } from "geolib";
 
-export const GEO_TOLERANCE_METERS = 100;
+import { GEO_TOLERANCE_METERS } from "@/constants/geo";
 
 /** Distance between two points in meters (Haversine). */
 export const calculateDistanceMeters = (

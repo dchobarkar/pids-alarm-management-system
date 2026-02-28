@@ -2,19 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 
+import { RMP_ROLES, SUPERVISOR_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
-import { Role } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { createAssignment } from "@/lib/assignment/assignment-repository";
 
 import type { ActionResult } from "@/types/actions";
-
-const RMP_ROLES = [Role.RMP, Role.ER] as const;
-const SUPERVISOR_ROLES: Role[] = [
-  Role.SUPERVISOR,
-  Role.NIGHT_SUPERVISOR,
-  Role.QRV_SUPERVISOR,
-];
 
 /**
  * Get RMPs that can be assigned to this alarm (same chainage). Subordinates first.
@@ -46,7 +39,7 @@ export async function getRmpOptionsForAlarm(
   const users = await prisma.user.findMany({
     where: {
       id: { in: userIds },
-      role: { in: [...RMP_ROLES] },
+      role: { in: RMP_ROLES },
     },
     select: { id: true, name: true, supervisorId: true },
     orderBy: [{ supervisorId: "asc" }, { name: "asc" }],
@@ -99,10 +92,7 @@ export async function assignAlarm(
     where: { id: rmpId },
     select: { role: true },
   });
-  if (
-    !rmpUser ||
-    !RMP_ROLES.includes(rmpUser.role as (typeof RMP_ROLES)[number])
-  )
+  if (!rmpUser || !RMP_ROLES.includes(rmpUser.role))
     return { success: false, error: "User is not an RMP/ER." };
 
   await createAssignment({

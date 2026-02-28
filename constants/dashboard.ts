@@ -1,5 +1,6 @@
 import type { RoleKey } from "@/types/dashboard";
 
+/** Breadcrumb label, href, and title for each role's alarms page. */
 export const ROLE_ALARMS_CONFIG: Record<
   RoleKey,
   { breadcrumbLabel: string; breadcrumbHref: string; title: string }

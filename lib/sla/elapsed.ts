@@ -5,7 +5,7 @@ import {
   SLA_ASSIGNED_MINUTES,
   SLA_IN_PROGRESS_MINUTES,
   SLA_WARNING_THRESHOLD,
-} from "./config";
+} from "@/constants/sla";
 
 export type { SlaInfo, SlaStatus } from "@/types/sla";
 

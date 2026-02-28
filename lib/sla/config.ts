@@ -1,22 +1,18 @@
 import type { AlarmStatus } from "@/lib/generated/prisma";
+import {
+  SLA_UNASSIGNED_MINUTES,
+  SLA_ASSIGNED_MINUTES,
+  SLA_IN_PROGRESS_MINUTES,
+} from "@/constants/sla";
 
-/**
- * SLA limits in minutes. Breach triggers auto-escalation.
- */
+/** SLA limits per alarm status (minutes). Breach triggers auto-escalation. */
 export const SLA_MINUTES: Record<AlarmStatus, number | null> = {
   CREATED: null,
-  UNASSIGNED: 15,
-  ASSIGNED: 20,
-  IN_PROGRESS: 30,
+  UNASSIGNED: SLA_UNASSIGNED_MINUTES,
+  ASSIGNED: SLA_ASSIGNED_MINUTES,
+  IN_PROGRESS: SLA_IN_PROGRESS_MINUTES,
   VERIFIED: null,
   FALSE_ALARM: null,
   ESCALATED: null,
   CLOSED: null,
 };
-
-export const SLA_UNASSIGNED_MINUTES = 15;
-export const SLA_ASSIGNED_MINUTES = 20;
-export const SLA_IN_PROGRESS_MINUTES = 30;
-
-/** Threshold (0–1) at which to show warning color (e.g. 0.8 = orange at 80%). */
-export const SLA_WARNING_THRESHOLD = 0.8;

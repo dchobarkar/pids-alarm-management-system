@@ -2,6 +2,7 @@ import type { Prisma } from "@/lib/generated/prisma";
 import { prisma } from "@/lib/db";
 import { Role } from "@/lib/generated/prisma";
 import { AssignmentStatus } from "@/lib/generated/prisma";
+import { RMP_ROLES } from "@/constants/roles";
 import type { AlarmWithRelations, GetAlarmsFilters } from "@/types/alarm";
 import type { UserWithChainages } from "@/types/user";
 
@@ -48,10 +49,7 @@ export const getScopedAlarms = async (
     if (filters.dateTo) where.incidentTime.lte = filters.dateTo;
   }
 
-  if (
-    options.rmpStatusFilter &&
-    (user.role === Role.RMP || user.role === Role.ER)
-  ) {
+  if (options.rmpStatusFilter && RMP_ROLES.includes(user.role)) {
     where.status = { in: ["UNASSIGNED", "ASSIGNED"] };
   }
 
