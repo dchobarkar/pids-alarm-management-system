@@ -1,22 +1,14 @@
 import type { AlarmStatus } from "@/lib/generated/prisma";
+import type { SlaInfo, SlaStatus } from "@/types/sla";
 import {
   SLA_UNASSIGNED_MINUTES,
   SLA_ASSIGNED_MINUTES,
   SLA_IN_PROGRESS_MINUTES,
   SLA_WARNING_THRESHOLD,
-} from "./config";
+} from "@/constants/sla";
 
-export type SlaStatus = "ok" | "warning" | "breached";
-
-export interface SlaInfo {
-  elapsedMinutes: number;
-  limitMinutes: number;
-  fractionUsed: number;
-  status: SlaStatus;
-  label: string;
-}
-
-function getLimitMinutes(status: AlarmStatus): number | null {
+/** Returns SLA limit in minutes for status, or null if status has no limit. */
+const getLimitMinutes = (status: AlarmStatus): number | null => {
   switch (status) {
     case "UNASSIGNED":
       return SLA_UNASSIGNED_MINUTES;
@@ -27,46 +19,54 @@ function getLimitMinutes(status: AlarmStatus): number | null {
     default:
       return null;
   }
-}
+};
 
 /**
  * Compute SLA elapsed and status for display. Uses same rules as server.
  */
-export function getSlaInfo(
+export const getSlaInfo = (
   alarmStatus: AlarmStatus,
   alarmCreatedAt: Date,
   assignment?: { assignedAt: Date; acceptedAt: Date | null } | null,
-): SlaInfo | null {
+): SlaInfo | null => {
   const limitMinutes = getLimitMinutes(alarmStatus);
   if (limitMinutes == null) return null;
 
   let startMs: number;
-  if (alarmStatus === "UNASSIGNED") {
-    startMs = new Date(alarmCreatedAt).getTime();
-  } else if (assignment) {
-    startMs =
-      alarmStatus === "IN_PROGRESS" && assignment.acceptedAt
-        ? new Date(assignment.acceptedAt).getTime()
-        : new Date(assignment.assignedAt).getTime();
-  } else {
-    startMs = new Date(alarmCreatedAt).getTime();
+  switch (alarmStatus) {
+    case "UNASSIGNED":
+      startMs = new Date(alarmCreatedAt).getTime();
+      break;
+
+    case "ASSIGNED":
+      if (assignment) startMs = new Date(assignment.assignedAt).getTime();
+      else startMs = new Date(alarmCreatedAt).getTime();
+      break;
+
+    case "IN_PROGRESS":
+      if (assignment?.acceptedAt != null)
+        startMs = new Date(assignment.acceptedAt).getTime();
+      else if (assignment) startMs = new Date(assignment.assignedAt).getTime();
+      else startMs = new Date(alarmCreatedAt).getTime();
+      break;
+
+    default:
+      startMs = new Date(alarmCreatedAt).getTime();
   }
 
   const elapsedMinutes = (Date.now() - startMs) / (60 * 1000);
   const fractionUsed = elapsedMinutes / limitMinutes;
-  const status: SlaStatus =
-    fractionUsed >= 1
-      ? "breached"
-      : fractionUsed >= SLA_WARNING_THRESHOLD
-        ? "warning"
-        : "ok";
-  const label = `${Math.round(elapsedMinutes)}m / ${limitMinutes}m`;
+
+  let status: SlaStatus;
+  if (fractionUsed >= 1) status = "breached";
+  else if (fractionUsed >= SLA_WARNING_THRESHOLD) status = "warning";
+  else status = "ok";
 
   return {
     elapsedMinutes,
     limitMinutes,
     fractionUsed,
     status,
-    label,
+    label: `${Math.round(elapsedMinutes)}m / ${limitMinutes}m`,
   };
-}
+};

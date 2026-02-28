@@ -2,92 +2,69 @@
 
 import { revalidatePath } from "next/cache";
 
+import type { ActionResult } from "@/types/actions";
+import { RMP_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
-import { prisma } from "@/lib/db";
-import { createReassignment } from "@/lib/assignment/assignment-repository";
+import { getAlarmById } from "@/api/alarm/alarm.repository";
+import {
+  findChainageUsersByChainageId,
+  findChainageUserByUserAndChainage,
+} from "@/api/chainage-user/chainage-user.repository";
+import { findUsersByIds, findUserById } from "@/api/user/user.repository";
+import { createReassignment } from "@/api/assignment/assignment.service";
 
-const RMP_ROLES = [Role.RMP, Role.ER] as const;
-
-export type ReassignAlarmResult =
-  | { success: true }
-  | { success: false; error: string };
-
-/**
- * Get RMPs that can be assigned to this escalated alarm (same chainage).
- */
-export async function getRmpOptionsForEscalatedAlarm(
+/** Get RMPs that can be assigned to this escalated alarm (same chainage). */
+export const getRmpOptionsForEscalatedAlarm = async (
   alarmId: string,
 ): Promise<
   | { success: true; rmps: { id: string; name: string }[] }
   | { success: false; error: string }
-> {
+> => {
   await requireRole(Role.QRV_SUPERVISOR);
 
-  const alarm = await prisma.alarm.findUnique({
-    where: { id: alarmId },
-    select: { chainageId: true, status: true },
-  });
+  const alarm = await getAlarmById(alarmId);
   if (!alarm) return { success: false, error: "Alarm not found." };
   if (alarm.status !== "ESCALATED")
     return { success: false, error: "Alarm is not ESCALATED." };
 
-  const chainageUserIds = await prisma.chainageUser.findMany({
-    where: { chainageId: alarm.chainageId },
-    select: { userId: true },
-  });
-  const userIds = chainageUserIds.map((c) => c.userId);
+  const chainageUsers = await findChainageUsersByChainageId(alarm.chainageId);
+  const userIds = chainageUsers.map((c) => c.userId);
   if (userIds.length === 0) return { success: true, rmps: [] };
 
-  const users = await prisma.user.findMany({
-    where: {
-      id: { in: userIds },
-      role: { in: [...RMP_ROLES] },
-    },
-    select: { id: true, name: true },
-    orderBy: { name: "asc" },
-  });
+  const users = await findUsersByIds(userIds);
+  const rmps = users.filter((u) => RMP_ROLES.includes(u.role));
 
   return {
     success: true,
-    rmps: users.map((u) => ({ id: u.id, name: u.name })),
+    rmps: rmps.map((u) => ({ id: u.id, name: u.name })),
   };
-}
+};
 
-/**
- * QRV Supervisor reassigns escalated alarm to RMP.
- */
-export async function reassignEscalatedAlarm(
+/** QRV Supervisor reassigns escalated alarm to RMP. */
+export const reassignEscalatedAlarm = async (
   alarmId: string,
   rmpId: string,
-): Promise<ReassignAlarmResult> {
+): Promise<ActionResult> => {
   const session = await requireRole(Role.QRV_SUPERVISOR);
 
-  const alarm = await prisma.alarm.findUnique({
-    where: { id: alarmId },
-    include: { chainage: true },
-  });
+  const alarm = await getAlarmById(alarmId);
   if (!alarm) return { success: false, error: "Alarm not found." };
   if (alarm.status !== "ESCALATED")
     return { success: false, error: "Alarm is not ESCALATED." };
 
-  const rmpInChainage = await prisma.chainageUser.findFirst({
-    where: { chainageId: alarm.chainageId, userId: rmpId },
-  });
+  const rmpInChainage = await findChainageUserByUserAndChainage(
+    rmpId,
+    alarm.chainageId,
+  );
   if (!rmpInChainage)
     return {
       success: false,
       error: "RMP is not mapped to this alarm's chainage.",
     };
 
-  const rmpUser = await prisma.user.findUnique({
-    where: { id: rmpId },
-    select: { role: true },
-  });
-  if (
-    !rmpUser ||
-    !RMP_ROLES.includes(rmpUser.role as (typeof RMP_ROLES)[number])
-  )
+  const rmpUser = await findUserById(rmpId);
+  if (!rmpUser || !RMP_ROLES.includes(rmpUser.role))
     return { success: false, error: "User is not an RMP/ER." };
 
   await createReassignment({
@@ -102,4 +79,4 @@ export async function reassignEscalatedAlarm(
   revalidatePath("/rmp/alarms");
   revalidatePath("/rmp/tasks");
   return { success: true };
-}
+};

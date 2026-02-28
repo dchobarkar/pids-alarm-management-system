@@ -16,7 +16,7 @@ const Modal = ({ open, onClose, title, children }: Props) => {
             <h2 className="text-sm font-semibold">{title}</h2>
             <button
               onClick={onClose}
-              className="text-(--text-muted) hover:text-white"
+              className="text-(--text-muted) hover:text-(--text-primary)"
             >
               ✕
             </button>

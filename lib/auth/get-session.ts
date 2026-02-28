@@ -1,5 +1,4 @@
-import { auth } from "./index";
+import { auth } from "./nextauth";
 
-export async function getSession() {
-  return auth();
-}
+/** Returns the current session or null if unauthenticated. */
+export const getSession = async () => auth();

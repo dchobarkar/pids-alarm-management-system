@@ -1,18 +1,17 @@
 import { cn } from "@/lib/utils";
+import type { Column } from "@/types/ui";
 
-interface Column<T> {
-  header: string;
-  accessor: keyof T;
-  render?: (row: T) => React.ReactNode;
-}
-
-interface Props<T> {
+interface Props<T extends { id?: string | number }> {
   data: T[];
   columns: Column<T>[];
   className?: string;
 }
 
-function Table<T>({ data, columns, className }: Props<T>) {
+const Table = <T extends { id?: string | number }>({
+  data,
+  columns,
+  className,
+}: Props<T>) => {
   return (
     <div
       className={cn(
@@ -25,7 +24,7 @@ function Table<T>({ data, columns, className }: Props<T>) {
           <tr>
             {columns.map((col) => (
               <th
-                key={String(col.accessor)}
+                key={col.key ?? String(col.accessor)}
                 className="text-left px-3 py-2 font-medium"
               >
                 {col.header}
@@ -35,22 +34,32 @@ function Table<T>({ data, columns, className }: Props<T>) {
         </thead>
 
         <tbody>
-          {data.map((row, i) => (
-            <tr
-              key={i}
-              className="border-t border-(--border-default) hover:bg-(--bg-surface)"
-            >
-              {columns.map((col) => (
-                <td key={String(col.accessor)} className="px-3 py-2">
-                  {col.render ? col.render(row) : String(row[col.accessor])}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {data.map((row, i) => {
+            const baseId = row.id ?? i;
+            const rowKey =
+              typeof baseId === "string"
+                ? `${baseId}-${i}`
+                : `${String(baseId)}-${i}`;
+            return (
+              <tr
+                key={rowKey}
+                className="border-t border-(--border-default) hover:bg-(--bg-surface)"
+              >
+                {columns.map((col) => (
+                  <td
+                    key={col.key ?? String(col.accessor)}
+                    className="px-3 py-2"
+                  >
+                    {col.render ? col.render(row) : String(row[col.accessor])}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
   );
-}
+};
 
 export default Table;

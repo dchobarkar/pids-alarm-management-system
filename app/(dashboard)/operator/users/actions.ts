@@ -1,88 +1,91 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import bcrypt from "bcrypt";
 
-import { prisma } from "@/lib/db";
 import { Role } from "@/lib/generated/prisma";
+import {
+  createUser as createUserService,
+  updateUser as updateUserService,
+  changePassword as changePasswordService,
+  deleteUser as deleteUserService,
+} from "@/api/user/user.service";
+import { requireRole } from "@/lib/auth/role-guard";
+import { PATHS } from "@/constants/paths";
 
-const SALT_ROUNDS = 10;
+const revalidateUsers = () => {
+  revalidatePath(PATHS.operatorUsers);
+};
 
-export async function createUser(formData: FormData) {
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
+export const createUserAction = async (formData: FormData) => {
+  await requireRole(Role.OPERATOR);
+
+  const name = (formData.get("name") as string)?.trim();
+  const email = (formData.get("email") as string)?.trim();
   const password = formData.get("password") as string;
   const role = formData.get("role") as Role;
-  const phone = (formData.get("phone") as string) || null;
+  const phone = (formData.get("phone") as string)?.trim() || null;
   const supervisorId = (formData.get("supervisorId") as string) || null;
 
-  if (!name?.trim() || !email?.trim() || !password || !role) {
-    return { error: "Name, email, password and role are required." };
-  }
-  if (password.length < 8) {
-    return { error: "Password must be at least 8 characters." };
-  }
-
-  const existing = await prisma.user.findUnique({
-    where: { email: email.trim() },
+  const result = await createUserService({
+    name: name ?? "",
+    email: email ?? "",
+    password: password ?? "",
+    role: role!,
+    phone,
+    supervisorId,
   });
-  if (existing) return { error: "A user with this email already exists." };
 
-  const hashed = await bcrypt.hash(password, SALT_ROUNDS);
-  await prisma.user.create({
-    data: {
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      password: hashed,
-      role,
-      phone: phone?.trim() || null,
-      supervisorId: supervisorId || null,
-    },
-  });
-  revalidatePath("/operator/users");
+  if (!result.success) return { error: result.error };
+  revalidateUsers();
+
   return { success: true };
-}
+};
 
-export async function updateUser(formData: FormData) {
+export const updateUserAction = async (formData: FormData) => {
+  await requireRole(Role.OPERATOR);
+
   const id = formData.get("id") as string;
-  const name = formData.get("name") as string;
-  const email = formData.get("email") as string;
+  const name = (formData.get("name") as string)?.trim();
   const role = formData.get("role") as Role;
-  const phone = (formData.get("phone") as string) || null;
+  const phone = (formData.get("phone") as string)?.trim() || null;
   const supervisorId = (formData.get("supervisorId") as string) || null;
-  const newPassword = formData.get("newPassword") as string | null;
+  const newPassword = (formData.get("newPassword") as string) || null;
 
-  if (!id || !name?.trim() || !email?.trim() || !role) {
-    return { error: "ID, name, email and role are required." };
-  }
-
-  const existing = await prisma.user.findUnique({ where: { id } });
-  if (!existing) return { error: "User not found." };
-
-  const emailConflict = await prisma.user.findFirst({
-    where: { email: email.trim().toLowerCase(), NOT: { id } },
+  const result = await updateUserService(id, {
+    name: name ?? "",
+    role: role!,
+    phone,
+    supervisorId,
+    newPassword: newPassword && newPassword.length > 0 ? newPassword : null,
   });
-  if (emailConflict) return { error: "A user with this email already exists." };
 
-  const data: Parameters<typeof prisma.user.update>[0]["data"] = {
-    name: name.trim(),
-    email: email.trim().toLowerCase(),
-    role,
-    phone: phone?.trim() || null,
-    supervisorId: supervisorId || null,
-  };
-  if (newPassword && newPassword.length >= 8) {
-    data.password = await bcrypt.hash(newPassword, SALT_ROUNDS);
-  }
+  if (!result.success) return { error: result.error };
+  revalidateUsers();
+  revalidatePath(`${PATHS.operatorUsers}/${id}`);
 
-  await prisma.user.update({ where: { id }, data });
-  revalidatePath("/operator/users");
   return { success: true };
-}
+};
 
-export async function deleteUser(id: string) {
-  if (!id) return { error: "ID required." };
-  await prisma.user.delete({ where: { id } });
-  revalidatePath("/operator/users");
-  return { success: true };
-}
+export const changePasswordAction = async (
+  userId: string,
+  newPassword: string,
+) => {
+  await requireRole(Role.OPERATOR);
+
+  const result = await changePasswordService(userId, newPassword);
+  if (!result.success) return { error: result.error };
+  revalidateUsers();
+  revalidatePath(`${PATHS.operatorUsers}/${userId}`);
+
+  return { success: true } as const;
+};
+
+export const deleteUserAction = async (id: string) => {
+  await requireRole(Role.OPERATOR);
+
+  const result = await deleteUserService(id);
+  if (!result.success) return { error: result.error };
+  revalidateUsers();
+
+  return { success: true } as const;
+};

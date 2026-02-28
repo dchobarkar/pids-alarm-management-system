@@ -5,6 +5,7 @@ const Page = () => {
   return (
     <div className="p-6">
       <Breadcrumb crumbs={[{ label: "RMP dashboard" }]} />
+
       <h1 className="text-xl font-semibold text-(--text-primary) mb-6">
         RMP dashboard
       </h1>

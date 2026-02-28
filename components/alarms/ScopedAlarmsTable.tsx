@@ -2,31 +2,11 @@
 
 import Link from "next/link";
 
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
+import type { AlarmWithRelations } from "@/types/alarm";
+import { STATUS_BADGE_VARIANT, CRITICALITY_BADGE_VARIANT } from "@/constants/badge-variants";
 import Table from "@/components/ui/Table";
 import Badge from "@/components/ui/Badge";
 import { getSlaInfo } from "@/lib/sla/elapsed";
-
-const STATUS_VARIANT: Record<
-  string,
-  "created" | "assigned" | "investigating" | "done" | "closed"
-> = {
-  CREATED: "created",
-  UNASSIGNED: "created",
-  ASSIGNED: "assigned",
-  IN_PROGRESS: "investigating",
-  VERIFIED: "done",
-  FALSE_ALARM: "closed",
-  ESCALATED: "investigating",
-  CLOSED: "closed",
-};
-
-const CRITICALITY_VARIANT = {
-  LOW: "low" as const,
-  MEDIUM: "medium" as const,
-  HIGH: "high" as const,
-  CRITICAL: "critical" as const,
-};
 
 interface Props {
   alarms: AlarmWithRelations[];
@@ -77,7 +57,7 @@ const ScopedAlarmsTable = ({
       header: "Criticality",
       accessor: "criticality" as const,
       render: (r: AlarmWithRelations) => (
-        <Badge variant={CRITICALITY_VARIANT[r.criticality]}>
+        <Badge variant={CRITICALITY_BADGE_VARIANT[r.criticality]}>
           {r.criticality}
         </Badge>
       ),
@@ -86,7 +66,7 @@ const ScopedAlarmsTable = ({
       header: "Status",
       accessor: "status" as const,
       render: (r: AlarmWithRelations) => (
-        <Badge variant={STATUS_VARIANT[r.status] ?? "created"}>
+        <Badge variant={STATUS_BADGE_VARIANT[r.status] ?? "created"}>
           {r.status}
         </Badge>
       ),

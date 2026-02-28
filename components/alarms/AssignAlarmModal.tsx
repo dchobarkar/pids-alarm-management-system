@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import Modal from "@/components/ui/Modal";
-import type { AlarmWithRelations } from "@/lib/scope/alarm-scope";
-import { getRmpOptionsForAlarm } from "@/app/(dashboard)/supervisor/assignments/actions";
-import { assignAlarm } from "@/app/(dashboard)/supervisor/assignments/actions";
+import Button from "@/components/ui/Button";
+import Select from "@/components/form/Select";
+import Alert from "@/components/ui/Alert";
+import type { AlarmWithRelations } from "@/types/alarm";
+import { getRmpOptionsForAlarm, assignAlarm } from "@/app/(dashboard)/supervisor/assignments/actions";
 
 interface Props {
   open: boolean;
@@ -23,7 +25,6 @@ const AssignAlarmModal = ({ open, onClose, alarm, onSuccess }: Props) => {
 
   useEffect(() => {
     if (!open || !alarm) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setError(null);
     setSelectedRmpId("");
     setLoading(true);
@@ -33,7 +34,7 @@ const AssignAlarmModal = ({ open, onClose, alarm, onSuccess }: Props) => {
         else setError(res.error);
       })
       .finally(() => setLoading(false));
-  }, [open, alarm?.id, alarm]);
+  }, [open, alarm?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,61 +43,54 @@ const AssignAlarmModal = ({ open, onClose, alarm, onSuccess }: Props) => {
     setError(null);
     const result = await assignAlarm(alarm.id, selectedRmpId);
     setSubmitting(false);
-    if (result.success) {
+    if (result?.success) {
       onSuccess();
       onClose();
-    } else setError(result.error);
+    } else if (result?.error) setError(result.error);
   };
+
+  const rmpOptions = useMemo(
+    () => [
+      { value: "", label: "— Select RMP —" },
+      ...rmps.map((r) => ({ value: r.id, label: r.name })),
+    ],
+    [rmps],
+  );
 
   if (!alarm) return null;
 
   return (
     <Modal open={open} onClose={onClose} title="Assign alarm to RMP">
       <form onSubmit={handleSubmit} className="space-y-3">
+        {error && (
+          <Alert variant="error" className="mb-2">
+            {error}
+          </Alert>
+        )}
         {loading ? (
           <p className="text-(--text-muted)">Loading RMPs…</p>
-        ) : error ? (
-          <p className="text-red-500 text-sm">{error}</p>
-        ) : rmps.length === 0 ? (
+        ) : rmps.length === 0 && !error ? (
           <p className="text-(--text-muted)">
             No RMPs mapped to this alarm&apos;s chainage.
           </p>
         ) : (
-          <>
-            <label className="block text-sm font-medium text-(--text-secondary)">
-              RMP
-            </label>
-            <select
-              value={selectedRmpId}
-              onChange={(e) => setSelectedRmpId(e.target.value)}
-              required
-              className="w-full bg-(--bg-surface) border border-(--border-default) rounded px-2 py-1.5 text-sm"
-            >
-              <option value="">Select RMP</option>
-              {rmps.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                </option>
-              ))}
-            </select>
-          </>
+          <Select
+            label="RMP"
+            name="rmpId"
+            options={rmpOptions}
+            value={selectedRmpId}
+            onChange={(e) => setSelectedRmpId(e.target.value)}
+            required
+          />
         )}
-        <div className="flex gap-2 justify-end pt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-3 py-1.5 text-sm border border-(--border-default) rounded hover:bg-(--bg-surface)"
-          >
+        <div className="flex justify-end gap-2 pt-2">
+          <Button type="button" variant="secondary" onClick={onClose}>
             Cancel
-          </button>
+          </Button>
           {rmps.length > 0 && (
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-3 py-1.5 text-sm bg-(--brand-primary) text-white rounded disabled:opacity-50"
-            >
-              {submitting ? "Assigning…" : "Assign"}
-            </button>
+            <Button type="submit" loading={submitting}>
+              Assign
+            </Button>
           )}
         </div>
       </form>

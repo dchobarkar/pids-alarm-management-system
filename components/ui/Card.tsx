@@ -9,20 +9,20 @@ interface CardProps {
 
 const Card = ({ title, action, children, className }: CardProps) => {
   return (
-    <div className={cn("card p-4", className)}>
+    <section className={cn("card p-4 sm:p-5 bg-linear-to-b from-(--bg-card) to-(--bg-elevated)", className)}>
       {(title || action) && (
-        <div className="flex items-center justify-between mb-3">
+        <header className="mb-3 flex items-center justify-between gap-3 border-b border-(--border-default)/70 pb-2">
           {title && (
-            <h3 className="text-sm font-semibold text-(--text-primary)">
+            <h3 className="text-sm font-semibold tracking-tight text-(--text-primary)">
               {title}
             </h3>
           )}
           {action}
-        </div>
+        </header>
       )}
 
-      <div className="text-sm">{children}</div>
-    </div>
+      <div className="text-sm text-(--text-secondary)">{children}</div>
+    </section>
   );
 };
 

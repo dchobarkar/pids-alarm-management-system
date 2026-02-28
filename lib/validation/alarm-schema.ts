@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+import { ALARM_TYPE_VALUES, CRITICALITY_VALUES } from "@/constants/alarm";
+
+/** Zod enum for alarm type — single source of truth: @/constants/alarm ALARM_TYPE_VALUES. */
+const alarmTypeSchema = z.enum(ALARM_TYPE_VALUES);
+/** Zod enum for criticality — single source of truth: @/constants/alarm CRITICALITY_VALUES. */
+const criticalitySchema = z.enum(CRITICALITY_VALUES);
+
+/** Chainage value: positive number, max 3 decimal places. */
 const chainageValueSchema = z
   .number()
   .positive("Chainage value must be positive")
@@ -12,6 +20,7 @@ const chainageValueSchema = z
     { message: "Max 3 decimal places" },
   );
 
+/** Zod schema for creating an alarm (lat/long, chainage, type, criticality, incident time). */
 export const createAlarmSchema = z.object({
   latitude: z
     .number()
@@ -22,14 +31,8 @@ export const createAlarmSchema = z.object({
     .min(-180, "Longitude must be between -180 and 180")
     .max(180, "Longitude must be between -180 and 180"),
   chainageValue: chainageValueSchema,
-  alarmType: z.enum([
-    "VIBRATION",
-    "DIGGING",
-    "INTRUSION",
-    "TAMPERING",
-    "UNKNOWN",
-  ]),
-  criticality: z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]),
+  alarmType: alarmTypeSchema,
+  criticality: criticalitySchema,
   incidentTime: z
     .date()
     .refine(
@@ -37,5 +40,3 @@ export const createAlarmSchema = z.object({
       "Incident time cannot be in the future",
     ),
 });
-
-export type CreateAlarmInput = z.infer<typeof createAlarmSchema>;

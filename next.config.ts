@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
     "@prisma/client-runtime-utils",
     "@prisma/adapter-pg",
   ],
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
 };
 
 export default nextConfig;

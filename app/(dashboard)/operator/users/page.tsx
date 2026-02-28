@@ -1,35 +1,47 @@
+import Link from "next/link";
+
+import type { UserWithSupervisor } from "@/types/user";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import { prisma } from "@/lib/db";
-import UsersTable from "./UsersTable";
-import UserCreateButton from "./UserCreateButton";
+import Button from "@/components/ui/Button";
+import Table from "@/components/ui/Table";
+import { findUsers } from "@/api/user/user.repository";
+import { PATHS } from "@/constants/paths";
+import { getOperatorUsersColumns } from "@/config/operator-users-columns";
 
-export default async function OperatorUsersPage() {
-  const users = await prisma.user.findMany({
-    orderBy: { name: "asc" },
-    include: {
-      supervisor: { select: { id: true, name: true, email: true } },
-    },
-  });
-  const supervisors = await prisma.user.findMany({
-    where: {
-      role: { in: ["SUPERVISOR", "NIGHT_SUPERVISOR", "QRV_SUPERVISOR"] },
-    },
-    orderBy: { name: "asc" },
-  });
+const Page = async () => {
+  const users = await findUsers({ includeSupervisor: true });
+  const userList = users as UserWithSupervisor[];
 
   return (
     <div className="p-6">
-      <Breadcrumb
-        crumbs={[{ label: "Operator", href: "/operator" }, { label: "Users" }]}
-      />
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-(--text-primary)">Users</h1>
-        <UserCreateButton supervisors={supervisors} />
+      <div className="mb-6 flex items-center justify-between">
+        <Breadcrumb
+          crumbs={[
+            { label: "Operator", href: "/operator" },
+            { label: "Users" },
+          ]}
+        />
+
+        <Link href={PATHS.operatorUsersCreate}>
+          <Button>Create user</Button>
+        </Link>
       </div>
+
       <Card>
-        <UsersTable users={users} supervisors={supervisors} />
+        {userList.length === 0 ? (
+          <p className="py-4 text-(--text-muted)">
+            No users yet. Create one to get started.
+          </p>
+        ) : (
+          <Table
+            data={userList}
+            columns={getOperatorUsersColumns(PATHS.operatorUsers)}
+          />
+        )}
       </Card>
     </div>
   );
-}
+};
+
+export default Page;

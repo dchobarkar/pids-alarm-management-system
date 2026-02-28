@@ -1,0 +1,43 @@
+import { writeFile, mkdir } from "fs/promises";
+import path from "path";
+
+import {
+  isAllowedEvidenceMimeType,
+  isAllowedEvidenceFileName,
+} from "@/lib/validation/evidence";
+
+/**
+ * Validate and store one evidence file under uploads/alarms/{alarmId}/.
+ * Returns URL path like /uploads/alarms/{alarmId}/timestamp_originalname.ext
+ * Uses public dir so URL is served by Next.js.
+ */
+export const uploadEvidenceFile = async (
+  alarmId: string,
+  file: File,
+  baseDir: string = process.cwd(),
+): Promise<{ url: string; fileType: string }> => {
+  const mime = file.type.toLowerCase();
+  if (!isAllowedEvidenceMimeType(mime) && !isAllowedEvidenceFileName(file.name))
+    throw new Error("Only JPEG and PNG images are allowed");
+
+  const ext =
+    path.extname(file.name) || (mime === "image/png" ? ".png" : ".jpg");
+  const safeName =
+    `${Date.now()}_${path.basename(file.name, path.extname(file.name))}${ext}`.replace(
+      /[^a-zA-Z0-9._-]/g,
+      "_",
+    );
+  const dir = path.join(baseDir, "public", "uploads", "alarms", alarmId);
+
+  await mkdir(dir, { recursive: true });
+
+  const filePath = path.join(dir, safeName);
+  const bytes = await file.arrayBuffer();
+
+  await writeFile(filePath, Buffer.from(bytes));
+
+  return {
+    url: `/uploads/alarms/${alarmId}/${safeName}`,
+    fileType: "image",
+  };
+};

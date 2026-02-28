@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { checkSlaBreaches } from "@/lib/sla/sla-engine";
+import { checkSlaBreaches } from "@/api/sla/sla.service";
 
 /**
  * GET or POST /api/cron/sla-check
@@ -18,6 +18,7 @@ export async function POST() {
 async function runSlaCheck() {
   try {
     const breached = await checkSlaBreaches();
+
     return NextResponse.json({
       ok: true,
       breached: breached.length,
