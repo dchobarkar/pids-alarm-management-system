@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
+import { AUTH_SIGN_IN_PATH } from "@/constants/auth";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -26,7 +27,7 @@ const RmpNav = () => {
         </Link>
         <button
           type="button"
-          onClick={() => signOut({ callbackUrl: "/auth/signin" })}
+          onClick={() => signOut({ callbackUrl: AUTH_SIGN_IN_PATH })}
           className="text-sm text-(--text-secondary) hover:text-(--text-primary)"
         >
           Sign out

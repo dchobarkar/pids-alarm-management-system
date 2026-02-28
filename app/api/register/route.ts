@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+
 import { SALT_ROUNDS } from "@/constants/auth";
 import { findUserByEmail, createUser } from "@/api/user/user.repository";
 import { Role } from "@/lib/generated/prisma";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json().catch(() => null) as
-      | { name?: string; email?: string; password?: string }
-      | null;
+    const body = (await request.json().catch(() => null)) as {
+      name?: string;
+      email?: string;
+      password?: string;
+    } | null;
 
     const name = body?.name?.trim() ?? "";
     const email = body?.email?.trim().toLowerCase() ?? "";
@@ -55,4 +58,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

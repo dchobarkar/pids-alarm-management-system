@@ -6,6 +6,7 @@ import { Suspense } from "react";
 
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import { AUTH_SIGN_IN_PATH, HOME_PATH } from "@/constants/auth";
 
 const ERROR_MESSAGES: Record<string, string> = {
   CredentialsSignin: "Invalid email or password.",
@@ -26,21 +27,19 @@ const ErrorContent = () => {
   const message = getErrorMessage(errorCode);
 
   return (
-    <div className="max-w-md w-full">
-      <Card title="Authentication error">
-        <p className="text-(--text-secondary) text-center pt-10 mb-6">
-          {message}
-        </p>
-        <div className="flex justify-between w-full">
-          <Link href="/auth/signin">
-            <Button>Back to sign in</Button>
-          </Link>
-          <Link href="/">
-            <Button variant="secondary">Go to home</Button>
-          </Link>
-        </div>
-      </Card>
-    </div>
+    <Card title="Authentication error">
+      <p className="text-(--text-secondary) text-center pt-10 mb-6">
+        {message}
+      </p>
+      <div className="flex justify-between w-full">
+        <Link href={HOME_PATH}>
+          <Button variant="secondary">Go to home</Button>
+        </Link>
+        <Link href={AUTH_SIGN_IN_PATH}>
+          <Button>Back to sign in</Button>
+        </Link>
+      </div>
+    </Card>
   );
 };
 

@@ -5,6 +5,7 @@ import { useRef, useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { CircleUser, LogOut, Menu, User } from "lucide-react";
 
+import { AUTH_SIGN_IN_PATH } from "@/constants/auth";
 import { getDashboardPathForRole } from "@/lib/auth/dashboard-paths";
 import { cn } from "@/lib/utils";
 
@@ -119,7 +120,7 @@ const DBNavbar = ({ sidebarOpen, onSidebarToggle }: DBNavbarProps) => {
                     type="button"
                     onClick={() => {
                       setMenuOpen(false);
-                      signOut({ callbackUrl: "/auth/signin" });
+                      signOut({ callbackUrl: AUTH_SIGN_IN_PATH });
                     }}
                     className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-(--text-secondary) hover:bg-(--bg-elevated) hover:text-(--text-primary)"
                     role="menuitem"

@@ -18,6 +18,7 @@ export async function POST() {
 async function runSlaCheck() {
   try {
     const breached = await checkSlaBreaches();
+
     return NextResponse.json({
       ok: true,
       breached: breached.length,

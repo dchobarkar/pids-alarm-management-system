@@ -1,16 +1,17 @@
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/auth/get-session";
 import { findUserProfileById } from "@/api/user/user.repository";
+import { AUTH_SIGN_IN_PATH } from "@/constants/auth";
+import { getSession } from "@/lib/auth/get-session";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import ProfileForm from "@/components/formComponents/ProfileForm/ProfileForm";
 
 export default async function ProfilePage() {
   const session = await getSession();
-  if (!session?.user?.id) redirect("/auth/signin");
+  if (!session?.user?.id) redirect(AUTH_SIGN_IN_PATH);
 
   const user = await findUserProfileById(session.user.id);
-  if (!user) redirect("/auth/signin");
+  if (!user) redirect(AUTH_SIGN_IN_PATH);
 
   return (
     <div className="p-6">

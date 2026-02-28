@@ -4,12 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { EMAIL_REGEX, MIN_PASSWORD_LENGTH } from "@/constants/auth";
 import Input from "@/components/form/Input";
 import PasswordInput from "@/components/form/PasswordInput";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
+import {
+  APP_NAME,
+  AUTH_SIGN_IN_PATH,
+  EMAIL_REGEX,
+  MIN_PASSWORD_LENGTH,
+} from "@/constants/auth";
 
 type FieldErrors = {
   name?: string;
@@ -20,6 +25,7 @@ type FieldErrors = {
 
 const Page = () => {
   const router = useRouter();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -91,7 +97,7 @@ const Page = () => {
         return;
       }
 
-      router.push("/auth/signin");
+      router.push(AUTH_SIGN_IN_PATH);
     } catch {
       setSubmitError("Registration failed. Please try again.");
     } finally {
@@ -100,80 +106,95 @@ const Page = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto px-6 py-12">
-      <Card title="Create account">
-        <p className="text-(--text-secondary) mb-4">
-          Register for access to the PIDS Alarm Management System.
-        </p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {submitError && <Alert variant="error">{submitError}</Alert>}
-          <Input
-            label="Full name"
-            type="text"
-            placeholder="Jane Doe"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              if (fieldErrors.name) setFieldErrors((prev) => ({ ...prev, name: undefined }));
-            }}
-            autoComplete="name"
-            error={fieldErrors.name}
-            required
-          />
-          <Input
-            label="Email"
-            type="email"
-            placeholder="you@company.com"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: undefined }));
-            }}
-            autoComplete="email"
-            error={fieldErrors.email}
-            required
-          />
-          <PasswordInput
-            label="Password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: undefined }));
-              if (fieldErrors.confirmPassword && e.target.value === confirmPassword)
-                setFieldErrors((prev) => ({ ...prev, confirmPassword: undefined }));
-            }}
-            autoComplete="new-password"
-            helperText="At least 8 characters"
-            error={fieldErrors.password}
-            required
-          />
-          <PasswordInput
-            label="Confirm password"
-            placeholder="••••••••"
-            value={confirmPassword}
-            onChange={(e) => {
-              setConfirmPassword(e.target.value);
-              if (fieldErrors.confirmPassword)
-                setFieldErrors((prev) => ({ ...prev, confirmPassword: undefined }));
-            }}
-            autoComplete="new-password"
-            error={fieldErrors.confirmPassword}
-            required
-          />
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Button type="submit" className="flex-1" loading={loading}>
-              Register
+    <Card title="Create account">
+      <p className="text-(--text-secondary) mb-4">
+        Register for access to {APP_NAME}.
+      </p>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {submitError && <Alert variant="error">{submitError}</Alert>}
+        <Input
+          label="Full name"
+          type="text"
+          placeholder="Jane Doe"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            if (fieldErrors.name)
+              setFieldErrors((prev) => ({ ...prev, name: undefined }));
+          }}
+          autoComplete="name"
+          error={fieldErrors.name}
+          required
+        />
+
+        <Input
+          label="Email"
+          type="email"
+          placeholder="you@company.com"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (fieldErrors.email)
+              setFieldErrors((prev) => ({ ...prev, email: undefined }));
+          }}
+          autoComplete="email"
+          error={fieldErrors.email}
+          required
+        />
+
+        <PasswordInput
+          label="Password"
+          placeholder="••••••••"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            if (fieldErrors.password)
+              setFieldErrors((prev) => ({ ...prev, password: undefined }));
+            if (
+              fieldErrors.confirmPassword &&
+              e.target.value === confirmPassword
+            )
+              setFieldErrors((prev) => ({
+                ...prev,
+                confirmPassword: undefined,
+              }));
+          }}
+          autoComplete="new-password"
+          helperText={`At least ${MIN_PASSWORD_LENGTH} characters`}
+          error={fieldErrors.password}
+          required
+        />
+
+        <PasswordInput
+          label="Confirm password"
+          placeholder="••••••••"
+          value={confirmPassword}
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            if (fieldErrors.confirmPassword)
+              setFieldErrors((prev) => ({
+                ...prev,
+                confirmPassword: undefined,
+              }));
+          }}
+          autoComplete="new-password"
+          error={fieldErrors.confirmPassword}
+          required
+        />
+
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <Link href={AUTH_SIGN_IN_PATH} className="flex-1">
+            <Button type="button" variant="secondary" className="w-full">
+              Back to sign in
             </Button>
-            <Link href="/auth/signin" className="flex-1">
-              <Button type="button" variant="secondary" className="w-full">
-                Back to sign in
-              </Button>
-            </Link>
-          </div>
-        </form>
-      </Card>
-    </div>
+          </Link>
+          <Button type="submit" className="flex-1" loading={loading}>
+            Register
+          </Button>
+        </div>
+      </form>
+    </Card>
   );
 };
 

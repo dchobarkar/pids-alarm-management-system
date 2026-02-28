@@ -24,6 +24,7 @@ const GlobalError = ({ error, reset }: ErrorProps) => {
             An unexpected error occurred while loading the PIDS Alarm Management
             System.
           </p>
+
           <div className="flex flex-wrap gap-3">
             <Button type="button" onClick={() => reset()}>
               Try again
@@ -41,4 +42,3 @@ const GlobalError = ({ error, reset }: ErrorProps) => {
 };
 
 export default GlobalError;
-

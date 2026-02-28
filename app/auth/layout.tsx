@@ -9,11 +9,12 @@ const AuthLayout = ({
   return (
     <div className="min-h-screen flex flex-col bg-(--bg-app)">
       <AuthNavbar />
-      <div className="flex-1">{children}</div>
+      <main className="flex flex-1 items-center justify-center">
+        {children}
+      </main>
       <AuthFooter />
     </div>
   );
 };
 
 export default AuthLayout;
-
