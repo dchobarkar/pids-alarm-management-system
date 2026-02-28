@@ -1,48 +1,8 @@
 import Link from "next/link";
-
-import {
-  Bell,
-  ClipboardCheck,
-  LayoutDashboard,
-  MapPin,
-  Network,
-  Users,
-} from "lucide-react";
+import { LayoutDashboard } from "lucide-react";
 
 import Breadcrumb from "@/components/ui/Breadcrumb";
-
-const QUICK_LINKS = [
-  {
-    href: "/operator/alarms",
-    label: "Alarms",
-    description: "View and manage pipeline intrusion alarms",
-    icon: Bell,
-  },
-  {
-    href: "/operator/reviews",
-    label: "Reviews",
-    description: "Review and verify alarm handling",
-    icon: ClipboardCheck,
-  },
-  {
-    href: "/operator/users",
-    label: "Users",
-    description: "Manage operators and roles",
-    icon: Users,
-  },
-  {
-    href: "/operator/chainages",
-    label: "Chainages",
-    description: "Configure chainage definitions",
-    icon: MapPin,
-  },
-  {
-    href: "/operator/chainage-mapping",
-    label: "Chainage mapping",
-    description: "Map chainages to users and coverage",
-    icon: Network,
-  },
-] as const;
+import { OPERATOR_QUICK_LINKS } from "@/constants/dashboard";
 
 const Page = () => {
   return (
@@ -76,27 +36,30 @@ const Page = () => {
         <h2 className="mb-4 text-sm font-medium text-center uppercase tracking-wider text-(--text-muted)">
           Quick links
         </h2>
+
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-auto max-w-3xl">
-          {QUICK_LINKS.map(({ href, label, description, icon: Icon }) => (
-            <li key={href} className="py-8">
-              <Link
-                href={href}
-                className="group flex gap-4 rounded-xl border border-(--border-default) bg-(--bg-surface) p-5 shadow-(--shadow-card) transition-colors hover:border-(--border-strong) hover:bg-(--bg-elevated)"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--bg-elevated) text-(--text-secondary) transition-colors group-hover:bg-(--brand-primary) group-hover:text-white">
-                  <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <span className="font-medium text-(--text-primary) group-hover:text-(--brand-primary)">
-                    {label}
+          {OPERATOR_QUICK_LINKS.map(
+            ({ href, label, description, icon: Icon }) => (
+              <li key={href} className="py-8">
+                <Link
+                  href={href}
+                  className="group flex gap-4 rounded-xl border border-(--border-default) bg-(--bg-surface) p-5 shadow-(--shadow-card) transition-colors hover:border-(--border-strong) hover:bg-(--bg-elevated)"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--bg-elevated) text-(--text-secondary) transition-colors group-hover:bg-(--brand-primary) group-hover:text-white">
+                    <Icon className="h-5 w-5" strokeWidth={1.5} aria-hidden />
                   </span>
-                  <p className="mt-0.5 text-sm text-(--text-muted)">
-                    {description}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          ))}
+                  <div className="min-w-0 flex-1">
+                    <span className="font-medium text-(--text-primary) group-hover:text-(--brand-primary)">
+                      {label}
+                    </span>
+                    <p className="mt-0.5 text-sm text-(--text-muted)">
+                      {description}
+                    </p>
+                  </div>
+                </Link>
+              </li>
+            ),
+          )}
         </ul>
       </section>
     </div>

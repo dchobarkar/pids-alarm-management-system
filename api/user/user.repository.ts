@@ -11,6 +11,13 @@ export const findUserByEmail = (email: string) =>
 export const findUserById = (id: string) =>
   prisma.user.findUnique({ where: { id } });
 
+/** Find user by id with supervisor (for operator user detail). Returns null if not found. */
+export const findUserByIdWithSupervisor = (id: string) =>
+  prisma.user.findUnique({
+    where: { id },
+    include: { supervisor: { select: { id: true, name: true, email: true } } },
+  });
+
 /** Find user profile fields (name, email, phone) for profile page. */
 export const findUserProfileById = (id: string) =>
   prisma.user.findUnique({

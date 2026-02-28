@@ -11,6 +11,14 @@ export const CRITICALITY_VALUES = [
   "HIGH",
   "CRITICAL",
 ] as const;
+
+/** Status values shown in operator/supervisor alarm list filters. */
+export const ALARM_LIST_FILTER_STATUSES = [
+  "UNASSIGNED",
+  "ASSIGNED",
+  "ESCALATED",
+  "CLOSED",
+] as const;
 export type AlarmTypeValue = (typeof ALARM_TYPE_VALUES)[number];
 export type CriticalityValue = (typeof CRITICALITY_VALUES)[number];
 

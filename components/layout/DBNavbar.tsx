@@ -16,18 +16,18 @@ type DBNavbarProps = {
 
 const DBNavbar = ({ sidebarOpen, onSidebarToggle }: DBNavbarProps) => {
   const { data: session, status } = useSession();
+
   const [menuOpen, setMenuOpen] = useState(false);
+
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node))
         setMenuOpen(false);
-      }
     };
-    if (menuOpen) {
-      document.addEventListener("click", handleClickOutside);
-    }
+    if (menuOpen) document.addEventListener("click", handleClickOutside);
+
     return () => document.removeEventListener("click", handleClickOutside);
   }, [menuOpen]);
 
@@ -106,6 +106,7 @@ const DBNavbar = ({ sidebarOpen, onSidebarToggle }: DBNavbarProps) => {
                     </p>
                   </div>
                 </div>
+
                 <div className="py-1">
                   <Link
                     href="/profile"
@@ -116,6 +117,7 @@ const DBNavbar = ({ sidebarOpen, onSidebarToggle }: DBNavbarProps) => {
                     <User className="h-4 w-4 shrink-0" aria-hidden />
                     Profile
                   </Link>
+
                   <button
                     type="button"
                     onClick={() => {

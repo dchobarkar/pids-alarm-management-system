@@ -36,7 +36,11 @@ const SIDEBAR_LINKS_BY_ROLE: Record<Role, NavItem[]> = {
     { label: "Reviews", href: "/operator/reviews", icon: CheckCircle2 },
     { label: "Users", href: "/operator/users", icon: UsersIcon },
     { label: "Chainages", href: "/operator/chainages", icon: Map },
-    { label: "Chainage mapping", href: "/operator/chainage-mapping", icon: Route },
+    {
+      label: "Chainage mapping",
+      href: "/operator/chainage-mapping",
+      icon: Route,
+    },
   ],
   SUPERVISOR: [
     { label: "Dashboard", href: "/supervisor", icon: LayoutDashboard },

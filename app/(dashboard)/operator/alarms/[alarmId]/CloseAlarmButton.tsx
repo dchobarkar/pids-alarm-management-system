@@ -1,26 +1,27 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { closeAlarm } from "@/api/alarm/operator-alarm-actions";
+import Button from "@/components/ui/Button";
 
 const CloseAlarmButton = ({ alarmId }: { alarmId: string }) => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleClose = async () => {
+    setLoading(true);
     const result = await closeAlarm(alarmId);
+    setLoading(false);
     if (result.success) router.refresh();
     else alert(result.error);
   };
 
   return (
-    <button
-      type="button"
-      onClick={handleClose}
-      className="rounded-md bg-(--brand-primary) px-3 py-1.5 text-sm text-white hover:opacity-90"
-    >
+    <Button type="button" onClick={handleClose} loading={loading}>
       Close alarm
-    </button>
+    </Button>
   );
 };
 

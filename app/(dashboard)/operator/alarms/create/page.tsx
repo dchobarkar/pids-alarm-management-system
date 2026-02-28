@@ -18,6 +18,7 @@ const Page = () => {
           Chainage is derived automatically from the chainage value (must fall
           within an existing range).
         </p>
+
         <CreateAlarmForm />
       </Card>
     </div>

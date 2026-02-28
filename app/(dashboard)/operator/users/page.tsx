@@ -1,19 +1,17 @@
+import Link from "next/link";
+
+import type { UserWithSupervisor } from "@/types/user";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import {
-  findUsers,
-  findUsersByRoles,
-} from "@/api/user/user.repository";
-import { SUPERVISOR_ROLES } from "@/constants/roles";
-import type { UserWithSupervisor } from "@/types/user";
-import UsersTable from "./UsersTable";
-import UserCreateButton from "./UserCreateButton";
+import Button from "@/components/ui/Button";
+import Table from "@/components/ui/Table";
+import { findUsers } from "@/api/user/user.repository";
+import { PATHS } from "@/constants/paths";
+import { getOperatorUsersColumns } from "@/config/operator-users-columns";
 
-const OperatorUsersPage = async () => {
-  const [users, supervisors] = await Promise.all([
-    findUsers({ includeSupervisor: true }),
-    findUsersByRoles(SUPERVISOR_ROLES),
-  ]);
+const Page = async () => {
+  const users = await findUsers({ includeSupervisor: true });
+  const userList = users as UserWithSupervisor[];
 
   return (
     <div className="p-6">
@@ -24,13 +22,26 @@ const OperatorUsersPage = async () => {
             { label: "Users" },
           ]}
         />
-        <UserCreateButton supervisors={supervisors} />
+
+        <Link href={PATHS.operatorUsersCreate}>
+          <Button>Create user</Button>
+        </Link>
       </div>
+
       <Card>
-        <UsersTable users={users as UserWithSupervisor[]} supervisors={supervisors} />
+        {userList.length === 0 ? (
+          <p className="py-4 text-(--text-muted)">
+            No users yet. Create one to get started.
+          </p>
+        ) : (
+          <Table
+            data={userList}
+            columns={getOperatorUsersColumns(PATHS.operatorUsers)}
+          />
+        )}
       </Card>
     </div>
   );
 };
 
-export default OperatorUsersPage;
+export default Page;

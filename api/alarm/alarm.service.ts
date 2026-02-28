@@ -91,3 +91,39 @@ export const closeAlarm = async (
   );
   return { success: true };
 };
+
+/** Operator marks alarm as VERIFIED (IN_PROGRESS → VERIFIED). Caller handles auth and revalidatePath. */
+export const markVerified = async (
+  alarmId: string,
+  operatorId: string,
+): Promise<{ success: true } | { success: false; error: string }> => {
+  const alarm = await getAlarmById(alarmId);
+  if (!alarm) return { success: false, error: "Alarm not found." };
+  assertTransition(alarm.status, "VERIFIED");
+  await updateAlarmStatusWithLog(
+    alarmId,
+    "VERIFIED",
+    "ALARM_VERIFIED",
+    operatorId,
+    { verifiedBy: operatorId },
+  );
+  return { success: true };
+};
+
+/** Operator marks alarm as FALSE_ALARM (IN_PROGRESS → FALSE_ALARM). Caller handles auth and revalidatePath. */
+export const markFalseAlarm = async (
+  alarmId: string,
+  operatorId: string,
+): Promise<{ success: true } | { success: false; error: string }> => {
+  const alarm = await getAlarmById(alarmId);
+  if (!alarm) return { success: false, error: "Alarm not found." };
+  assertTransition(alarm.status, "FALSE_ALARM");
+  await updateAlarmStatusWithLog(
+    alarmId,
+    "FALSE_ALARM",
+    "ALARM_MARKED_FALSE",
+    operatorId,
+    { markedBy: operatorId },
+  );
+  return { success: true };
+};

@@ -4,18 +4,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import {
-  ALARM_TYPE_OPTIONS,
-  CRITICALITY_OPTIONS,
-} from "@/constants/alarm";
 import Input from "@/components/form/Input";
 import Select from "@/components/form/Select";
 import Button from "@/components/ui/Button";
 import Alert from "@/components/ui/Alert";
 import { createAlarm } from "./actions";
+import { ALARM_TYPE_OPTIONS, CRITICALITY_OPTIONS } from "@/constants/alarm";
 
 const CreateAlarmForm = () => {
   const router = useRouter();
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,6 +22,7 @@ const CreateAlarmForm = () => {
     setLoading(true);
     const result = await createAlarm(formData);
     setLoading(false);
+
     if (result.success) {
       router.push("/operator/alarms");
       router.refresh();
@@ -48,6 +47,7 @@ const CreateAlarmForm = () => {
           required
           placeholder="-90 to 90"
         />
+
         <Input
           label="Longitude"
           name="longitude"
@@ -91,16 +91,15 @@ const CreateAlarmForm = () => {
         helperText="Cannot be in the future"
       />
 
-      <div className="flex gap-2 pt-2">
-        <Button type="submit" loading={loading}>
-          Create alarm
-        </Button>
-
+      <div className="flex justify-end gap-2 pt-2">
         <Link href="/operator/alarms">
           <Button type="button" variant="secondary">
             Cancel
           </Button>
         </Link>
+        <Button type="submit" loading={loading}>
+          Create alarm
+        </Button>
       </div>
     </form>
   );
