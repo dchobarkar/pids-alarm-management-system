@@ -3,7 +3,7 @@ import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
-import { findUserByEmail } from "@/api/user/user-repository";
+import { findUserByEmail } from "@/api/user/user.repository";
 import {
   AUTH_ERROR_PATH,
   AUTH_SIGN_IN_PATH,

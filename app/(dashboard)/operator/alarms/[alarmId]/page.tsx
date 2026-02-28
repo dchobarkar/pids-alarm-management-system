@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { getSession } from "@/lib/auth/get-session";
-import { getAlarmById } from "@/api/alarm/alarm-repository";
-import { getVerificationsByAlarm } from "@/api/verification/verification-repository";
+import { getAlarmById } from "@/api/alarm/alarm.repository";
+import { findVerificationsByAlarm } from "@/api/verification/verification.repository";
 import { getSlaInfo } from "@/lib/sla/elapsed";
-import { findEvidenceByAlarmId } from "@/api/evidence/evidence-repository";
+import { findEvidenceByAlarmId } from "@/api/evidence/evidence.repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import Badge from "@/components/ui/Badge";
@@ -20,7 +20,7 @@ export default async function Page({ params }: Props) {
   const alarm = await getAlarmById(alarmId);
   if (!alarm) redirect("/operator/alarms");
 
-  const verifications = await getVerificationsByAlarm(alarmId);
+  const verifications = await findVerificationsByAlarm(alarmId);
   const evidences = await findEvidenceByAlarmId(alarmId);
 
   const slaInfo = getSlaInfo(

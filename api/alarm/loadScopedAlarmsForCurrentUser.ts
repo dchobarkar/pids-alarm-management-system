@@ -3,9 +3,9 @@ import type {
   AlarmWithRelations,
   LoadScopedAlarmsOptions,
 } from "@/types/alarm";
+import { findUserByIdWithChainages } from "@/api/user/user.repository";
+import { getAlarmsByScope } from "@/api/alarm/alarm.service";
 import { getSession } from "@/lib/auth/get-session";
-import { findUserByIdWithChainages } from "@/api/user/user-repository";
-import { getAlarmsByScope } from "@/api/alarm/alarm-repository";
 
 export const loadScopedAlarmsForCurrentUser = async (
   searchParams: Promise<AlarmsSearchParams>,

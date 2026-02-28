@@ -17,9 +17,9 @@ export const uploadEvidenceFile = async (
   baseDir: string = process.cwd(),
 ): Promise<{ url: string; fileType: string }> => {
   const mime = file.type.toLowerCase();
-  if (!isAllowedEvidenceMimeType(mime) && !isAllowedEvidenceFileName(file.name)) {
+  if (!isAllowedEvidenceMimeType(mime) && !isAllowedEvidenceFileName(file.name))
     throw new Error("Only JPEG and PNG images are allowed");
-  }
+
   const ext =
     path.extname(file.name) || (mime === "image/png" ? ".png" : ".jpg");
   const safeName =
@@ -28,10 +28,14 @@ export const uploadEvidenceFile = async (
       "_",
     );
   const dir = path.join(baseDir, "public", "uploads", "alarms", alarmId);
+
   await mkdir(dir, { recursive: true });
+
   const filePath = path.join(dir, safeName);
   const bytes = await file.arrayBuffer();
+
   await writeFile(filePath, Buffer.from(bytes));
+
   return {
     url: `/uploads/alarms/${alarmId}/${safeName}`,
     fileType: "image",

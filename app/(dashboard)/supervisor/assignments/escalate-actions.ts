@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 
 import { SUPERVISOR_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
-import { getAlarmById, updateAlarmStatusWithLog } from "@/api/alarm/alarm-repository";
+import { getAlarmById } from "@/api/alarm/alarm.repository";
+import { updateAlarmStatusWithLog } from "@/api/alarm/alarm.service";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 import { assertAlarmNotClosed } from "@/lib/alarm-state-machine/guards";
 

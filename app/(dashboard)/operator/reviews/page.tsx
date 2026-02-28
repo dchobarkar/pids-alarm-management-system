@@ -1,5 +1,5 @@
 import { getSession } from "@/lib/auth/get-session";
-import { getAlarmsPendingReview } from "@/api/verification/verification-repository";
+import { findAlarmsPendingReview } from "@/api/verification/verification.repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import ReviewQueueClient from "./ReviewQueueClient";
@@ -8,7 +8,7 @@ export default async function OperatorReviewsPage() {
   const session = await getSession();
   if (!session?.user?.id) return null;
 
-  const alarms = await getAlarmsPendingReview();
+  const alarms = await findAlarmsPendingReview();
 
   return (
     <div className="p-6">

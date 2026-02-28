@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
 import { getSession } from "@/lib/auth/get-session";
-import { getAlarmById } from "@/api/alarm/alarm-repository";
-import { getActiveAssignmentForAlarm } from "@/api/assignment/assignment-repository";
+import { getAlarmById } from "@/api/alarm/alarm.repository";
+import { findActiveAssignmentForAlarm } from "@/api/assignment/assignment.repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import VerifyAlarmForm from "@/components/formComponents/VerifyAlarmForm/VerifyAlarmForm";
@@ -17,7 +17,7 @@ export default async function RmpVerifyAlarmPage({ params }: Props) {
   const alarm = await getAlarmById(alarmId);
   if (!alarm) redirect("/rmp/tasks");
 
-  const assignment = await getActiveAssignmentForAlarm(alarmId);
+  const assignment = await findActiveAssignmentForAlarm(alarmId);
   if (!assignment || assignment.rmpId !== session.user.id) {
     redirect("/rmp/tasks");
   }

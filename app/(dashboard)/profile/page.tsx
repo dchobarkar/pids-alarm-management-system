@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/get-session";
-import { findUserProfileById } from "@/api/user/user-repository";
+import { findUserProfileById } from "@/api/user/user.repository";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
 import ProfileForm from "@/components/formComponents/ProfileForm/ProfileForm";

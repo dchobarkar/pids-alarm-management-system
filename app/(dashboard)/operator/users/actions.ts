@@ -10,7 +10,7 @@ import {
   createUser,
   updateUser,
   deleteUser as deleteUserRepo,
-} from "@/api/user/user-repository";
+} from "@/api/user/user.repository";
 import { Role } from "@/lib/generated/prisma";
 
 export const createUserAction = async (formData: FormData) => {

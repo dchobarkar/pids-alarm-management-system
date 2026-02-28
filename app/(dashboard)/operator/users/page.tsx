@@ -3,7 +3,7 @@ import Card from "@/components/ui/Card";
 import {
   findUsers,
   findUsersByRoles,
-} from "@/api/user/user-repository";
+} from "@/api/user/user.repository";
 import { SUPERVISOR_ROLES } from "@/constants/roles";
 import type { UserWithSupervisor } from "@/types/user";
 import UsersTable from "./UsersTable";

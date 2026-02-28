@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { findUserByEmail } from "@/api/user/user-repository";
+import { findUserByEmail } from "@/api/user/user.repository";
 
 export const dynamic = "force-dynamic";
 

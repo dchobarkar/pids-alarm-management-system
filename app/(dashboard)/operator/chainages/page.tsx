@@ -1,6 +1,6 @@
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import { findChainages } from "@/api/chainage/chainage-repository";
+import { findChainages } from "@/api/chainage/chainage.repository";
 import ChainagesTable from "./ChainagesTable";
 import ChainageCreateButton from "@/components/formComponents/CreateChainageForm/form";
 

@@ -4,13 +4,13 @@ import { revalidatePath } from "next/cache";
 
 import { RMP_ROLES, SUPERVISOR_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
-import { getAlarmById } from "@/api/alarm/alarm-repository";
+import { getAlarmById } from "@/api/alarm/alarm.repository";
 import {
   findChainageUsersByChainageId,
   findChainageUserByUserAndChainage,
-} from "@/api/chainage-user/chainage-user-repository";
-import { findUsersByIds, findUserById } from "@/api/user/user-repository";
-import { createAssignment } from "@/api/assignment/assignment-repository";
+} from "@/api/chainage-user/chainage-user.repository";
+import { findUsersByIds, findUserById } from "@/api/user/user.repository";
+import { createAssignment } from "@/api/assignment/assignment.service";
 
 import type { ActionResult } from "@/types/actions";
 

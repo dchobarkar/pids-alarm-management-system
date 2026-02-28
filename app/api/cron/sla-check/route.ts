@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { checkSlaBreaches } from "@/api/sla/sla-engine";
+import { checkSlaBreaches } from "@/api/sla/sla.service";
 
 /**
  * GET or POST /api/cron/sla-check

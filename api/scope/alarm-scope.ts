@@ -1,7 +1,7 @@
 import type { Prisma } from "@/lib/generated/prisma";
-import { prisma } from "@/api/db";
-import { Role } from "@/lib/generated/prisma";
 import { AssignmentStatus } from "@/lib/generated/prisma";
+import { Role } from "@/lib/generated/prisma";
+import { prisma } from "@/api/db";
 import { RMP_ROLES } from "@/constants/roles";
 import type { AlarmWithRelations, GetAlarmsFilters } from "@/types/alarm";
 import type { UserWithChainages } from "@/types/user";

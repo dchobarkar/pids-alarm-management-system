@@ -5,7 +5,7 @@ import {
   createChainage as createChainageRepo,
   updateChainage as updateChainageRepo,
   deleteChainage as deleteChainageRepo,
-} from "@/api/chainage/chainage-repository";
+} from "@/api/chainage/chainage.repository";
 
 export const createChainage = async (formData: FormData) => {
   const label = formData.get("label") as string;

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import { createChainageUsers } from "@/api/chainage-user/chainage-user-repository";
+import { createChainageUsers } from "@/api/chainage-user/chainage-user.repository";
 
 export const assignChainages = async (formData: FormData) => {
   const userId = formData.get("userId") as string;

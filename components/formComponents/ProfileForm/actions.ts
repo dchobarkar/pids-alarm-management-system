@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import type { ActionResult } from "@/types/actions";
 import { getSession } from "@/lib/auth/get-session";
-import { updateUserProfile } from "@/api/user/user-repository";
+import { updateUserProfile } from "@/api/user/user.repository";
 
 /** Update current user's profile (name, phone). Email is read-only. */
 export const updateProfile = async (

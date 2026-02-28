@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { SALT_ROUNDS } from "@/constants/auth";
-import { findUserByEmail, createUser } from "@/api/user/user-repository";
+import { findUserByEmail, createUser } from "@/api/user/user.repository";
 import { Role } from "@/lib/generated/prisma";
 
 export async function POST(request: Request) {

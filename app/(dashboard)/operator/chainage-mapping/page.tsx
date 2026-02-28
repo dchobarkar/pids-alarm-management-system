@@ -1,11 +1,11 @@
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Card from "@/components/ui/Card";
-import { findUsersForSelect } from "@/api/user/user-repository";
+import { findUsersForSelect } from "@/api/user/user.repository";
 import {
   findChainages,
   findChainagesWithUsers,
-} from "@/api/chainage/chainage-repository";
-import { findChainageUsersWithDetails } from "@/api/chainage-user/chainage-user-repository";
+} from "@/api/chainage/chainage.repository";
+import { findChainageUsersWithDetails } from "@/api/chainage-user/chainage-user.repository";
 import AssignForm from "@/components/formComponents/ChainageMappingForm/AssignForm";
 import MappingsList from "./MappingsList";
 import MappedByChainage from "./MappedByChainage";

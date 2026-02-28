@@ -5,10 +5,7 @@ import type { ActionResultWithData } from "@/types/actions";
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
 import { createAlarmSchema } from "@/lib/validation/alarm-schema";
-import {
-  createAlarm as repoCreateAlarm,
-  findChainageByValue,
-} from "@/api/alarm/alarm-repository";
+import { createAlarmAndSetUnassigned } from "@/api/alarm/alarm.service";
 
 export async function createAlarm(
   formData: FormData,
@@ -50,19 +47,18 @@ export async function createAlarm(
   }
 
   const data = parsed.data;
-  const chainage = await findChainageByValue(data.chainageValue);
-  if (!chainage) {
-    return {
-      success: false,
-      error: `No chainage found for value ${data.chainageValue} km. Ensure the value falls within an existing chainage range (startKm–endKm).`,
-    };
+  let alarm;
+  try {
+    alarm = await createAlarmAndSetUnassigned({ ...data, createdById: userId });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Failed to create alarm.";
+    if (msg.includes("No chainage"))
+      return {
+        success: false,
+        error: `No chainage found for value ${data.chainageValue} km. Ensure the value falls within an existing chainage range (startKm–endKm).`,
+      };
+    return { success: false, error: msg };
   }
-
-  const alarm = await repoCreateAlarm({
-    ...data,
-    chainageId: chainage.id,
-    createdById: userId,
-  });
 
   revalidatePath("/operator/alarms");
   revalidatePath("/supervisor/alarms");

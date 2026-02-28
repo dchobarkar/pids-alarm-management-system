@@ -1,26 +1,19 @@
 import type { SlaBreachResult } from "@/types/sla";
-import { prisma } from "@/api/db";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
+import { prisma } from "@/api/db";
 import { SLA_MINUTES } from "@/constants/sla";
+import {
+  findActiveAlarmsForSlaCheck,
+  updateAlarmStatus,
+  createAlarmLog,
+} from "@/api/alarm/alarm.repository";
 
 /**
  * Check all active alarms for SLA breach and auto-escalate.
  * Call from cron / timer (e.g. API route or Azure Function).
  */
 export const checkSlaBreaches = async (): Promise<SlaBreachResult[]> => {
-  const alarms = await prisma.alarm.findMany({
-    where: {
-      status: { in: ["UNASSIGNED", "ASSIGNED", "IN_PROGRESS"] },
-    },
-    include: {
-      assignments: {
-        where: { status: { in: ["PENDING", "ACCEPTED"] } },
-        orderBy: { assignedAt: "desc" },
-        take: 1,
-      },
-    },
-  });
-
+  const alarms = await findActiveAlarmsForSlaCheck();
   const now = Date.now();
   const breached: SlaBreachResult[] = [];
 
@@ -50,21 +43,11 @@ export const checkSlaBreaches = async (): Promise<SlaBreachResult[]> => {
     }
 
     await prisma.$transaction([
-      prisma.alarm.update({
-        where: { id: alarm.id },
-        data: { status: "ESCALATED" },
-      }),
-      prisma.alarmLog.create({
-        data: {
-          alarmId: alarm.id,
-          action: "ALARM_AUTO_ESCALATED",
-          actorId: null,
-          meta: {
-            reason: "SLA exceeded",
-            elapsedMinutes: Math.round(elapsedMinutes),
-            previousStatus: alarm.status,
-          } as object,
-        },
+      updateAlarmStatus(alarm.id, "ESCALATED"),
+      createAlarmLog(alarm.id, "ALARM_AUTO_ESCALATED", null, {
+        reason: "SLA exceeded",
+        elapsedMinutes: Math.round(elapsedMinutes),
+        previousStatus: alarm.status,
       }),
     ]);
 

@@ -3,11 +3,14 @@
 import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/role-guard";
-import { getAlarmById } from "@/api/alarm/alarm-repository";
-import { getActiveAssignmentForAlarm, completeAssignment } from "@/api/assignment/assignment-repository";
-import { createVerification } from "@/api/verification/verification-repository";
-import { createEvidence } from "@/api/evidence/evidence-repository";
-import { createAlarmLog } from "@/api/alarm/alarm-repository";
+import { getAlarmById } from "@/api/alarm/alarm.repository";
+import {
+  findActiveAssignmentForAlarm,
+  completeAssignment,
+} from "@/api/assignment/assignment.repository";
+import { createVerification } from "@/api/verification/verification.service";
+import { createEvidence } from "@/api/evidence/evidence.repository";
+import { createAlarmLog } from "@/api/alarm/alarm.repository";
 import {
   calculateDistanceMeters,
   isWithinGeoRadius,
@@ -27,7 +30,7 @@ export const submitVerification = async (
   const session = await requireRole(RMP_ROLES);
   const rmpId = session.user.id;
 
-  const assignment = await getActiveAssignmentForAlarm(alarmId);
+  const assignment = await findActiveAssignmentForAlarm(alarmId);
   if (!assignment || assignment.rmpId !== rmpId) {
     return {
       success: false,

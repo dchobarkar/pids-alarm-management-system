@@ -4,12 +4,12 @@ import { revalidatePath } from "next/cache";
 
 import { RMP_ROLES } from "@/constants/roles";
 import { requireRole } from "@/lib/auth/role-guard";
-import { getAlarmById } from "@/api/alarm/alarm-repository";
-import { findChainageUserByUserAndChainage } from "@/api/chainage-user/chainage-user-repository";
+import { getAlarmById } from "@/api/alarm/alarm.repository";
+import { findChainageUserByUserAndChainage } from "@/api/chainage-user/chainage-user.repository";
 import {
   createAssignment,
-  acceptAssignment as repoAcceptAssignment,
-} from "@/api/assignment/assignment-repository";
+  acceptAssignment as acceptAssignmentService,
+} from "@/api/assignment/assignment.service";
 
 import type { ActionResult } from "@/types/actions";
 
@@ -54,7 +54,7 @@ export const acceptAssignment = async (
   const session = await requireRole(RMP_ROLES);
   const rmpId = session.user.id;
 
-  const result = await repoAcceptAssignment(assignmentId, rmpId);
+  const result = await acceptAssignmentService(assignmentId, rmpId);
   if (!result.success) return result;
 
   revalidatePath("/rmp/tasks");
@@ -62,4 +62,4 @@ export const acceptAssignment = async (
   revalidatePath("/supervisor/alarms");
   revalidatePath("/operator/alarms");
   return { success: true };
-}
+};

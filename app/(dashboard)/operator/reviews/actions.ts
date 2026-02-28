@@ -4,7 +4,8 @@ import { revalidatePath } from "next/cache";
 import type { ActionResult } from "@/types/actions";
 import { requireRole } from "@/lib/auth/role-guard";
 import { Role } from "@/lib/generated/prisma";
-import { getAlarmById, updateAlarmStatusWithLog } from "@/api/alarm/alarm-repository";
+import { getAlarmById } from "@/api/alarm/alarm.repository";
+import { updateAlarmStatusWithLog } from "@/api/alarm/alarm.service";
 import { assertTransition } from "@/lib/alarm-state-machine/transitions";
 
 /** Operator marks alarm as VERIFIED. Only Operator role; IN_PROGRESS → VERIFIED. */
@@ -32,7 +33,9 @@ export const markVerified = async (alarmId: string): Promise<ActionResult> => {
 };
 
 /** Operator marks alarm as FALSE_ALARM. Only Operator role; IN_PROGRESS → FALSE_ALARM. */
-export const markFalseAlarm = async (alarmId: string): Promise<ActionResult> => {
+export const markFalseAlarm = async (
+  alarmId: string,
+): Promise<ActionResult> => {
   const session = await requireRole(Role.OPERATOR);
   const operatorId = session.user.id;
 
