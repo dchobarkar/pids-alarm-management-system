@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import type { Chainage } from "@/lib/generated/prisma";
@@ -9,6 +9,7 @@ import Button from "@/components/ui/Button";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/form/Input";
 import Alert from "@/components/ui/Alert";
+import { getOperatorChainagesColumns } from "@/config/operator-chainages-columns";
 import {
   updateChainage,
   deleteChainage,
@@ -21,8 +22,10 @@ interface Props {
 const ChainagesTable = ({ chainages }: Props) => {
   const router = useRouter();
   const [editing, setEditing] = useState<Chainage | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Chainage | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   async function handleUpdate(formData: FormData) {
     if (!editing) return;
@@ -38,57 +41,24 @@ const ChainagesTable = ({ chainages }: Props) => {
     router.refresh();
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("Delete this chainage? Mappings will be removed.")) return;
-    await deleteChainage(id);
+  async function handleDeleteConfirm() {
+    if (!deleteTarget) return;
+    setError("");
+    setDeleteLoading(true);
+    await deleteChainage(deleteTarget.id);
+    setDeleteLoading(false);
+    setDeleteTarget(null);
     router.refresh();
   }
 
-  const columns = [
-    { header: "Label", accessor: "label" as const },
-    {
-      header: "Start (km)",
-      accessor: "startKm" as const,
-      render: (r: Chainage) => r.startKm,
-    },
-    {
-      header: "End (km)",
-      accessor: "endKm" as const,
-      render: (r: Chainage) => r.endKm,
-    },
-    {
-      header: "Lat",
-      accessor: "latitude" as const,
-      render: (r: Chainage) => (r.latitude != null ? r.latitude : "—"),
-    },
-    {
-      header: "Long",
-      accessor: "longitude" as const,
-      render: (r: Chainage) => (r.longitude != null ? r.longitude : "—"),
-    },
-    {
-      header: "Actions",
-      accessor: "id" as const,
-      render: (row: Chainage) => (
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setEditing(row)}
-            className="text-sm text-(--brand-primary) hover:underline"
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            onClick={() => handleDelete(row.id)}
-            className="text-sm text-(--alarm-critical) hover:underline"
-          >
-            Delete
-          </button>
-        </div>
-      ),
-    },
-  ];
+  const columns = useMemo(
+    () =>
+      getOperatorChainagesColumns({
+        onEdit: setEditing,
+        onDelete: setDeleteTarget,
+      }),
+    [],
+  );
 
   return (
     <>
@@ -152,10 +122,7 @@ const ChainagesTable = ({ chainages }: Props) => {
               step="any"
               defaultValue={editing.longitude ?? ""}
             />
-            <div className="flex gap-2 pt-2">
-              <Button type="submit" loading={loading}>
-                Save
-              </Button>
+            <div className="flex justify-end gap-2 pt-2">
               <Button
                 type="button"
                 variant="secondary"
@@ -163,8 +130,48 @@ const ChainagesTable = ({ chainages }: Props) => {
               >
                 Cancel
               </Button>
+              <Button type="submit" loading={loading}>
+                Save
+              </Button>
             </div>
           </form>
+        )}
+      </Modal>
+
+      <Modal
+        open={!!deleteTarget}
+        onClose={() => {
+          setDeleteTarget(null);
+          setError("");
+        }}
+        title="Delete chainage"
+      >
+        {deleteTarget && (
+          <>
+            <p className="text-sm text-(--text-secondary) mb-4">
+              Are you sure you want to delete chainage{" "}
+              <strong>{deleteTarget.label}</strong> ({deleteTarget.startKm}–
+              {deleteTarget.endKm} km)? User mappings for this chainage will be
+              removed.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setDeleteTarget(null)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="danger"
+                onClick={handleDeleteConfirm}
+                loading={deleteLoading}
+              >
+                Delete
+              </Button>
+            </div>
+          </>
         )}
       </Modal>
     </>

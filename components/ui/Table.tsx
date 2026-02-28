@@ -24,7 +24,7 @@ const Table = <T extends { id?: string | number }>({
           <tr>
             {columns.map((col) => (
               <th
-                key={String(col.accessor)}
+                key={col.key ?? String(col.accessor)}
                 className="text-left px-3 py-2 font-medium"
               >
                 {col.header}
@@ -37,14 +37,19 @@ const Table = <T extends { id?: string | number }>({
           {data.map((row, i) => {
             const baseId = row.id ?? i;
             const rowKey =
-              typeof baseId === "string" ? `${baseId}-${i}` : `${String(baseId)}-${i}`;
+              typeof baseId === "string"
+                ? `${baseId}-${i}`
+                : `${String(baseId)}-${i}`;
             return (
               <tr
                 key={rowKey}
                 className="border-t border-(--border-default) hover:bg-(--bg-surface)"
               >
                 {columns.map((col) => (
-                  <td key={String(col.accessor)} className="px-3 py-2">
+                  <td
+                    key={col.key ?? String(col.accessor)}
+                    className="px-3 py-2"
+                  >
                     {col.render ? col.render(row) : String(row[col.accessor])}
                   </td>
                 ))}

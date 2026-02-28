@@ -31,6 +31,7 @@ const ChainageCreateButton = () => {
   return (
     <>
       <Button onClick={() => setOpen(true)}>New chainage</Button>
+
       <Modal
         open={open}
         onClose={() => {
@@ -44,8 +45,10 @@ const ChainageCreateButton = () => {
             {error}
           </Alert>
         )}
+
         <form action={handleSubmit} className="space-y-3">
           <Input label="Label" name="label" placeholder="e.g. 0-10" required />
+
           <Input
             label="Start KM"
             name="startKm"
@@ -53,6 +56,7 @@ const ChainageCreateButton = () => {
             step="any"
             required
           />
+
           <Input
             label="End KM"
             name="endKm"
@@ -60,28 +64,31 @@ const ChainageCreateButton = () => {
             step="any"
             required
           />
+
           <Input
             label="Latitude (optional)"
             name="latitude"
             type="number"
             step="any"
           />
+
           <Input
             label="Longitude (optional)"
             name="longitude"
             type="number"
             step="any"
           />
-          <div className="flex gap-2 pt-2">
-            <Button type="submit" loading={loading}>
-              Create
-            </Button>
+
+          <div className="flex justify-end gap-2 pt-2">
             <Button
               type="button"
               variant="secondary"
               onClick={() => setOpen(false)}
             >
               Cancel
+            </Button>
+            <Button type="submit" loading={loading}>
+              Create
             </Button>
           </div>
         </form>
