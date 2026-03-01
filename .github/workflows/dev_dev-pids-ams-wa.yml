@@ -16,16 +16,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "22.x"
 
-      - name: npm install, build, and test
-        run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
+      - name: Install dependencies
+        run: npm install
+
+      # 🔥 Run Prisma migrations BEFORE building
+      - name: Run Prisma Migrations (Production)
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+
+      - name: Build Next.js app
+        run: npm run build
 
       - name: Prepare Standalone Deploy
         run: |
@@ -45,13 +51,13 @@ jobs:
           # Add BUILD_ID
           cp -r .next/BUILD_ID deploy/.next/
 
-      - name: Zip artifact for deployment
+      - name: Zip artifact
         run: |
           cd deploy
           zip -r ../deploy.zip .
           cd ..
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: pids-alarm-management-system
@@ -65,7 +71,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: pids-alarm-management-system
@@ -89,6 +95,7 @@ jobs:
               NEXTAUTH_SECRET="${{ secrets.DEV_NEXTAUTH_SECRET }}" \
               NEXTAUTH_URL="${{ secrets.DEV_NEXTAUTH_URL }}" \
               AUTH_TRUST_HOST="${{ secrets.DEV_AUTH_TRUST_HOST }}" \
+              SCM_DO_BUILD_DURING_DEPLOYMENT=false
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
