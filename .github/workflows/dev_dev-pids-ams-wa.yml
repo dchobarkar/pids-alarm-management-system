@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy Node.js app to Azure Web App - dev-pids-ams-wa
 
 on:
@@ -10,115 +13,53 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: read #This is required for actions/checkout
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
         with:
-          node-version: "22"
+          node-version: '24.x'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Generate Prisma Client
-        run: npx prisma generate
-
-      - name: Build app
-        run: npm run build --if-present
-
-      - name: Run tests
-        run: npm run test --if-present
-
-      - name: Prepare Standalone Deploy
+      - name: npm install, build, and test
         run: |
-          rm -rf deploy
-          mkdir -p deploy
-
-          echo "Copying standalone build..."
-          cp -r .next/standalone/. deploy/
-
-          echo "Copying static files..."
-          mkdir -p deploy/.next
-          cp -r .next/static deploy/.next/static
-
-          echo "Copying public folder..."
-          cp -r public deploy/public
-
-          echo "Copying Prisma folder..."
-          cp -r prisma deploy/prisma
-
-          echo "Copying BUILD_ID..."
-          cp -r .next/BUILD_ID deploy/.next/
-
-      - name: Zip artifact for deployment
-        run: |
-          cd deploy
-          zip -r ../deploy.zip .
-          cd ..
+          npm install
+          npm run build --if-present
+          npm run test --if-present
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: pids-alarm-management-system
-          path: deploy.zip
+          name: node-app
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
-      - name: Checkout Code (Required for Prisma CLI)
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
         with:
-          node-version: "22"
-
-      - name: Install dependencies (for Prisma CLI)
-        run: npm ci
-
+          name: node-app
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2C533481B4E24CF6948B9802FF52B62F }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7DCA478838824C94833A4F8FB83C150C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2481ED2D7B924127A0D825558A5AD445 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_96394FF9A77540808587AF447C9EF2BE }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7B32DE29B4894B7B9889360710964748 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_FC0EA7AC7CB24C9A9F716C32B290E987 }}
 
-      - name: Run Prisma Migrations on Azure PostgreSQL
-        env:
-          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
-        run: npx prisma migrate deploy
-
-      - name: Configure Web App Settings
-        run: |
-          RG=$(az webapp list --query "[?name=='dev-pids-ams-wa'].resourceGroup" -o tsv)
-
-          az webapp config appsettings set \
-            --name dev-pids-ams-wa \
-            --resource-group "$RG" \
-            --settings \
-              DATABASE_URL="${{ secrets.DEV_DATABASE_URL }}" \
-              NEXTAUTH_SECRET="${{ secrets.DEV_NEXTAUTH_SECRET }}" \
-              NEXTAUTH_URL="${{ secrets.DEV_NEXTAUTH_URL }}" \
-              AUTH_TRUST_HOST="${{ secrets.DEV_AUTH_TRUST_HOST }}"
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: pids-alarm-management-system
-
-      - name: Deploy to Azure Web App
+      - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "dev-pids-ams-wa"
-          slot-name: "Production"
-          package: deploy.zip
+          app-name: 'dev-pids-ams-wa'
+          slot-name: 'Production'
+          package: .
+          
