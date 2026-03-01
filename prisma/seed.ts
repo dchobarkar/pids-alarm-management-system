@@ -2,16 +2,6 @@ import "dotenv/config";
 import bcrypt from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-import { DEFAULT_PASSWORD, SALT_ROUNDS } from "../constants/auth";
-import {
-  SEED_USERS,
-  SEED_CHAINAGES,
-  SEED_CHAINAGE_USERS,
-  SEED_ALARMS,
-  SEED_ASSIGNMENTS,
-  SEED_VERIFICATIONS,
-  SEED_EVIDENCE,
-} from "../constants/seed-data";
 import {
   PrismaClient,
   Role,
@@ -21,6 +11,133 @@ import {
   AssignmentStatus,
 } from "../lib/generated/prisma";
 
+// -----------------------------------------------------------------------------
+// Inline constants (no imports from project files so seed can be copied to deploy)
+// -----------------------------------------------------------------------------
+const SALT_ROUNDS = 10;
+const DEFAULT_PASSWORD = "Password@123";
+
+const SEED_USERS = [
+  {
+    name: "PIDS Operator",
+    email: "operator@pids.com",
+    role: "OPERATOR" as const,
+  },
+  {
+    name: "Supervisor 1",
+    email: "supervisor1@pids.com",
+    role: "SUPERVISOR" as const,
+  },
+  {
+    name: "RMP Alpha",
+    email: "rmp1@pids.com",
+    role: "RMP" as const,
+    supervisorEmail: "supervisor1@pids.com",
+  },
+  {
+    name: "RMP Beta",
+    email: "rmp2@pids.com",
+    role: "RMP" as const,
+    supervisorEmail: "supervisor1@pids.com",
+  },
+  {
+    name: "Emergency Responder",
+    email: "er@pids.com",
+    role: "ER" as const,
+    supervisorEmail: "supervisor1@pids.com",
+  },
+];
+
+const SEED_CHAINAGES = [
+  {
+    label: "0-10",
+    startKm: 0,
+    endKm: 10,
+    latitude: 19.076,
+    longitude: 72.8777,
+  },
+  {
+    label: "11-20",
+    startKm: 11,
+    endKm: 20,
+    latitude: 19.2183,
+    longitude: 72.9781,
+  },
+];
+
+const SEED_CHAINAGE_USERS = [
+  { userEmail: "supervisor1@pids.com", chainageLabel: "0-10" },
+  { userEmail: "rmp1@pids.com", chainageLabel: "0-10" },
+  { userEmail: "rmp2@pids.com", chainageLabel: "0-10" },
+  { userEmail: "er@pids.com", chainageLabel: "11-20" },
+];
+
+const SEED_ALARMS = [
+  {
+    latitude: 19.08,
+    longitude: 72.88,
+    chainageValue: 5.234,
+    chainageLabel: "0-10",
+    alarmType: "VIBRATION" as const,
+    criticality: "HIGH" as const,
+    status: "ASSIGNED" as const,
+    createdByEmail: "operator@pids.com",
+  },
+  {
+    latitude: 19.09,
+    longitude: 72.89,
+    chainageValue: 7.891,
+    chainageLabel: "0-10",
+    alarmType: "DIGGING" as const,
+    criticality: "CRITICAL" as const,
+    status: "VERIFIED" as const,
+    createdByEmail: "operator@pids.com",
+  },
+];
+
+const SEED_ASSIGNMENTS = [
+  {
+    alarmIndex: 0,
+    rmpEmail: "rmp1@pids.com",
+    supervisorEmail: "supervisor1@pids.com",
+    status: "ACCEPTED" as const,
+    acceptedAt: true,
+    completedAt: false,
+  },
+  {
+    alarmIndex: 1,
+    rmpEmail: "rmp2@pids.com",
+    supervisorEmail: "supervisor1@pids.com",
+    status: "COMPLETED" as const,
+    acceptedAt: true,
+    completedAt: true,
+  },
+];
+
+const SEED_VERIFICATIONS = [
+  {
+    alarmIndex: 1,
+    verifiedByEmail: "rmp2@pids.com",
+    latitude: 19.0905,
+    longitude: 72.8902,
+    distance: 35,
+    remarks: "Digging activity confirmed near pipeline",
+    geoMismatch: false,
+  },
+];
+
+const SEED_EVIDENCE = [
+  {
+    alarmIndex: 1,
+    uploadedByEmail: "rmp2@pids.com",
+    fileUrl: "/uploads/alarms/alarm2/photo1.jpg",
+    fileType: "image",
+  },
+];
+
+// -----------------------------------------------------------------------------
+// DB connection and seed
+// -----------------------------------------------------------------------------
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
   throw new Error("DATABASE_URL is required for seed. Set it in .env");
@@ -114,16 +231,13 @@ async function main() {
   // ASSIGNMENTS
   // --------------------------------------------------
   for (const a of SEED_ASSIGNMENTS) {
-    const alarmId = alarmIds[a.alarmIndex];
-    const rmpId = userIdByEmail[a.rmpEmail];
-    const supervisorId = a.supervisorEmail
-      ? userIdByEmail[a.supervisorEmail]
-      : null;
     await prisma.alarmAssignment.create({
       data: {
-        alarmId,
-        rmpId,
-        supervisorId,
+        alarmId: alarmIds[a.alarmIndex],
+        rmpId: userIdByEmail[a.rmpEmail],
+        supervisorId: a.supervisorEmail
+          ? userIdByEmail[a.supervisorEmail]
+          : null,
         status: a.status as AssignmentStatus,
         acceptedAt: a.acceptedAt ? new Date() : null,
         completedAt: a.completedAt ? new Date() : null,
