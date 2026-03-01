@@ -16,23 +16,29 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: "22.x"
+          node-version: "22"
+          cache: "pnpm"
 
-      - name: npm install, build, and test
-        run: |
-          npm install
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma Client
-        run: npx prisma generate
+        run: pnpm exec prisma generate
 
       - name: Build app
-        run: npm run build --if-present
+        run: pnpm build
 
       - name: Run tests
-        run: npm run test --if-present
+        run: pnpm test --if-present
 
       - name: Prepare Standalone Deploy
         run: |
@@ -61,7 +67,7 @@ jobs:
           zip -r ../deploy.zip .
           cd ..
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: pids-alarm-management-system
@@ -75,21 +81,23 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout Code (Needed for Prisma CLI)
+      - name: Checkout Code (Required for Prisma CLI)
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: "22.x"
+          node-version: "22"
+          cache: "pnpm"
 
-      - name: Install dependencies (for Prisma CLI)
-        run: npm ci
-
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          name: pids-alarm-management-system
+          version: 8
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -98,11 +106,10 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7DCA478838824C94833A4F8FB83C150C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2481ED2D7B924127A0D825558A5AD445 }}
 
-      # ✅ THIS IS THE IMPORTANT PART
       - name: Run Prisma Migrations on Azure PostgreSQL
         env:
           DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
-        run: npx prisma migrate deploy
+        run: pnpm exec prisma migrate deploy
 
       - name: Configure Web App Settings
         run: |
@@ -116,6 +123,11 @@ jobs:
               NEXTAUTH_SECRET="${{ secrets.DEV_NEXTAUTH_SECRET }}" \
               NEXTAUTH_URL="${{ secrets.DEV_NEXTAUTH_URL }}" \
               AUTH_TRUST_HOST="${{ secrets.DEV_AUTH_TRUST_HOST }}"
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pids-alarm-management-system
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
