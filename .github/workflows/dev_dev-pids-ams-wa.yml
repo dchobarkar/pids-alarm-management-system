@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '24.x'
+          node-version: "24.x"
 
       - name: npm install, build, and test
         run: |
@@ -47,7 +47,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: node-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -55,11 +55,23 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7DCA478838824C94833A4F8FB83C150C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2481ED2D7B924127A0D825558A5AD445 }}
 
-      - name: 'Deploy to Azure Web App'
+      # Set Web App env vars: DB, NextAuth secret/URL, trust host. Add matching repo secrets.
+      - name: Set Web App configuration
+        run: |
+          RG=$(az webapp list --query "[?name=='dev-pids-ams-wa'].resourceGroup" -o tsv)
+          az webapp config appsettings set \
+            --name dev-pids-ams-wa \
+            --resource-group "$RG" \
+            --settings \
+              DATABASE_URL="${{ secrets.DEV_DATABASE_URL }}" \
+              NEXTAUTH_SECRET="${{ secrets.DEV_NEXTAUTH_SECRET }}" \
+              NEXTAUTH_URL="${{ secrets.DEV_NEXTAUTH_URL }}" \
+              AUTH_TRUST_HOST="${{ secrets.DEV_AUTH_TRUST_HOST }}"
+
+      - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'dev-pids-ams-wa'
-          slot-name: 'Production'
+          app-name: "dev-pids-ams-wa"
+          slot-name: "Production"
           package: .
-          
