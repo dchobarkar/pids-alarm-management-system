@@ -1,5 +1,10 @@
 import type { NextConfig } from "next";
 
+/**
+ * Next.js 16 config for Azure Web App (Linux).
+ * - output: "standalone" → .next/standalone + server.js for Node (no full node_modules on server).
+ * - serverExternalPackages: Prisma must be external so the standalone trace includes it.
+ */
 const nextConfig: NextConfig = {
   output: "standalone",
 
