@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js app to Azure Web App - dev-pids-ams-wa
 
 on:
@@ -13,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - name: Checkout Code
@@ -22,7 +19,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: "24.x"
+          node-version: "22.x"
 
       - name: npm install, build, and test
         run: |
@@ -32,14 +29,17 @@ jobs:
 
       - name: Prepare Standalone Deploy
         run: |
-          rm -rf deploy/*
-          mkdir -p deploy/.next/standalone
+          rm -rf deploy
+          mkdir -p deploy
 
-          # Copy entire standalone folder, *including root*
-          cp -r .next/standalone/. deploy/.next/standalone/
+          echo "Copying standalone build..."
+          cp -r .next/standalone/. deploy/
 
-          # Copy static files (if not already copied into nested .next)
+          echo "Copying static files..."
+          mkdir -p deploy/.next
           cp -r .next/static deploy/.next/static
+
+          echo "Copying public folder..."
           cp -r public deploy/public
 
           # Add BUILD_ID
@@ -61,8 +61,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -77,10 +77,10 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7DCA478838824C94833A4F8FB83C150C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_2481ED2D7B924127A0D825558A5AD445 }}
 
-      # Set Web App env vars: DB, NextAuth secret/URL, trust host. Add matching repo secrets.
-      - name: Set Web App configuration
+      - name: Configure Web App Settings
         run: |
           RG=$(az webapp list --query "[?name=='dev-pids-ams-wa'].resourceGroup" -o tsv)
+
           az webapp config appsettings set \
             --name dev-pids-ams-wa \
             --resource-group "$RG" \
@@ -88,7 +88,7 @@ jobs:
               DATABASE_URL="${{ secrets.DEV_DATABASE_URL }}" \
               NEXTAUTH_SECRET="${{ secrets.DEV_NEXTAUTH_SECRET }}" \
               NEXTAUTH_URL="${{ secrets.DEV_NEXTAUTH_URL }}" \
-              AUTH_TRUST_HOST="${{ secrets.DEV_AUTH_TRUST_HOST }}"
+              AUTH_TRUST_HOST="${{ secrets.DEV_AUTH_TRUST_HOST }}" \
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
