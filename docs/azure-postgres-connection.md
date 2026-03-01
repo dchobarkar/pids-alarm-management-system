@@ -82,12 +82,12 @@ The workflow **Set Web App configuration** injects these as Application settings
 
 **Repo** → **Settings** → **Secrets and variables** → **Actions** → **New repository secret** for each:
 
-| Secret name         | Description | Example / notes |
-|---------------------|-------------|------------------|
-| `DATABASE_URL`      | PostgreSQL connection string | `postgresql://user:pass@host:5432/db?sslmode=require` |
-| `NEXTAUTH_SECRET`   | Secret used to sign JWT/session cookies | e.g. `openssl rand -base64 32` |
-| `NEXTAUTH_URL`      | Full URL of the app (required for auth callbacks) | `https://dev-pids-ams-wa.azurewebsites.net` (or your custom domain) |
-| `AUTH_TRUST_HOST`   | NextAuth trust proxy host (needed behind Azure) | `true` |
+| Secret name       | Description                                       | Example / notes                                                     |
+| ----------------- | ------------------------------------------------- | ------------------------------------------------------------------- |
+| `DATABASE_URL`    | PostgreSQL connection string                      | `postgresql://user:pass@host:5432/db?sslmode=require`               |
+| `NEXTAUTH_SECRET` | Secret used to sign JWT/session cookies           | e.g. `openssl rand -base64 32`                                      |
+| `NEXTAUTH_URL`    | Full URL of the app (required for auth callbacks) | `https://dev-pids-ams-wa.azurewebsites.net` (or your custom domain) |
+| `AUTH_TRUST_HOST` | NextAuth trust proxy host (needed behind Azure)   | `true`                                                              |
 
 The workflow uses these and configures the Web App so the deployed app has the right DB and auth settings. No need to put these values in the repo or in the workflow file.
 

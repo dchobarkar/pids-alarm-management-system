@@ -10,14 +10,9 @@ import {
   SESSION_MAX_AGE_SECONDS,
   SESSION_UPDATE_AGE_SECONDS,
 } from "@/constants/auth";
-import { getEnv } from "@/lib/env";
 
-const secret = getEnv("AUTH_SECRET", {
-  alternateKeys: ["NEXTAUTH_SECRET"],
-  warnIfMissing: true,
-  warnMessage:
-    "AUTH_SECRET or NEXTAUTH_SECRET is not set. Sign-in may fail. Add one to .env (e.g. run: openssl rand -base64 32)",
-});
+const secret =
+  process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET ?? undefined;
 
 export const authOptions: NextAuthConfig = {
   secret,

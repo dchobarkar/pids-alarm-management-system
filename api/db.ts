@@ -3,13 +3,13 @@
  * Uses Prisma 7 driver adapter (PrismaPg). In Next.js, a single instance
  * is reused to avoid connection pool exhaustion from hot reload in development.
  *
- * Initialization is lazy so DATABASE_URL is only read at runtime, not during
- * `next build` (CI does not have DATABASE_URL; the Web App gets it from app settings).
+ * DATABASE_URL is read only when the client is first used (at request time),
+ * not at module load, so CI builds succeed without DATABASE_URL. No strict env
+ * check here—if DATABASE_URL is missing at runtime, the driver will fail on first use.
  */
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-import { getRequiredEnv } from "@/lib/env";
 import { PrismaClient } from "@/lib/generated/prisma";
 
 const globalForPrisma = globalThis as unknown as {
@@ -19,7 +19,7 @@ const globalForPrisma = globalThis as unknown as {
 function getPrisma(): PrismaClient {
   if (globalForPrisma.prisma) return globalForPrisma.prisma;
 
-  const connectionString = getRequiredEnv("DATABASE_URL");
+  const connectionString = process.env.DATABASE_URL ?? "";
 
   const adapter = new PrismaPg({ connectionString });
   const client = new PrismaClient({ adapter });

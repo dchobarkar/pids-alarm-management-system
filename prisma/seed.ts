@@ -12,7 +12,6 @@ import {
   SEED_VERIFICATIONS,
   SEED_EVIDENCE,
 } from "../constants/seed-data";
-import { getRequiredEnv } from "../lib/env";
 import {
   PrismaClient,
   Role,
@@ -22,7 +21,10 @@ import {
   AssignmentStatus,
 } from "../lib/generated/prisma";
 
-const connectionString = getRequiredEnv("DATABASE_URL");
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error("DATABASE_URL is required for seed. Set it in .env");
+}
 
 const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
