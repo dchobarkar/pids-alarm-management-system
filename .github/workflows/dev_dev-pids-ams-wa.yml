@@ -24,38 +24,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 🔥 Run Prisma migrations BEFORE building
-      - name: Run Prisma Migrations (Production)
-        run: npx prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
-
       - name: Build Next.js app
         run: npm run build
 
-      - name: Prepare Standalone Deploy
+      - name: Zip full project (include prisma)
         run: |
-          rm -rf deploy
-          mkdir -p deploy
-
-          echo "Copying standalone build..."
-          cp -r .next/standalone/. deploy/
-
-          echo "Copying static files..."
-          mkdir -p deploy/.next
-          cp -r .next/static deploy/.next/static
-
-          echo "Copying public folder..."
-          cp -r public deploy/public
-
-          # Add BUILD_ID
-          cp -r .next/BUILD_ID deploy/.next/
-
-      - name: Zip artifact
-        run: |
-          cd deploy
-          zip -r ../deploy.zip .
-          cd ..
+          zip -r deploy.zip . \
+            -x "*.git*" \
+            -x "node_modules/.cache/*"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -95,7 +71,7 @@ jobs:
               NEXTAUTH_SECRET="${{ secrets.DEV_NEXTAUTH_SECRET }}" \
               NEXTAUTH_URL="${{ secrets.DEV_NEXTAUTH_URL }}" \
               AUTH_TRUST_HOST="${{ secrets.DEV_AUTH_TRUST_HOST }}" \
-              SCM_DO_BUILD_DURING_DEPLOYMENT=false
+              SCM_DO_BUILD_DURING_DEPLOYMENT=true
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
