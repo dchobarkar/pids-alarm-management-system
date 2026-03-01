@@ -42,8 +42,10 @@ jobs:
           echo "Copying public folder..."
           cp -r public deploy/public
 
-          echo "Copying Prisma folder..."
+          echo "Copying Prisma folder, config, and generated client..."
           cp -r prisma deploy/prisma
+          cp prisma.config.ts deploy/
+          mkdir -p deploy/lib/generated && cp -r lib/generated/prisma deploy/lib/generated/
 
           # Add BUILD_ID
           cp -r .next/BUILD_ID deploy/.next/
