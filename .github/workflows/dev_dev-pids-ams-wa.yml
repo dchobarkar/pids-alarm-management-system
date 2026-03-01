@@ -27,11 +27,31 @@ jobs:
       - name: Build Next.js app
         run: npm run build
 
-      - name: Zip full project (include prisma)
+      - name: Prepare Standalone Deploy
         run: |
-          zip -r deploy.zip . \
-            -x "*.git*" \
-            -x "node_modules/.cache/*"
+          rm -rf deploy
+          mkdir -p deploy
+
+          echo "Copying standalone build..."
+          cp -r .next/standalone/. deploy/
+
+          echo "Copying static files..."
+          mkdir -p deploy/.next
+          cp -r .next/static deploy/.next/static
+
+          echo "Copying public folder..."
+          cp -r public deploy/public
+
+          echo "Copying Prisma folder..."
+          cp -r prisma deploy/prisma
+
+          cp -r .next/BUILD_ID deploy/.next/
+
+      - name: Zip artifact
+        run: |
+          cd deploy
+          zip -r ../deploy.zip .
+          cd ..
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -71,7 +91,7 @@ jobs:
               NEXTAUTH_SECRET="${{ secrets.DEV_NEXTAUTH_SECRET }}" \
               NEXTAUTH_URL="${{ secrets.DEV_NEXTAUTH_URL }}" \
               AUTH_TRUST_HOST="${{ secrets.DEV_AUTH_TRUST_HOST }}" \
-              SCM_DO_BUILD_DURING_DEPLOYMENT=true
+              SCM_DO_BUILD_DURING_DEPLOYMENT=false
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
