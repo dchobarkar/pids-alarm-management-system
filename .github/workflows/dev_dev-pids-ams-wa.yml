@@ -43,17 +43,6 @@ jobs:
           cp -r public deploy/public
 
           echo "Copying Prisma folder..."
-          mkdir -p deploy/node_modules/prisma
-          cp -r node_modules/prisma/* deploy/node_modules/prisma/
-
-          mkdir -p deploy/node_modules/@prisma/client
-          cp -r node_modules/@prisma/client/* deploy/node_modules/@prisma/client/
-
-          # Also copy any hidden .prisma folders
-          mkdir -p deploy/node_modules/@prisma/client/.prisma
-          cp -r node_modules/@prisma/client/.prisma/* deploy/node_modules/@prisma/client/.prisma/
-
-          # Copy Prisma schemas
           cp -r prisma deploy/prisma
 
           # Add BUILD_ID
