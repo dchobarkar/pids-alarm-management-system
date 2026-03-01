@@ -1,4 +1,4 @@
-/** bcrypt salt rounds for password hashing. */
+/** bcryptjs salt rounds for password hashing. */
 export const SALT_ROUNDS = 10;
 
 /** Minimum length for user passwords. */

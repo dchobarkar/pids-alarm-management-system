@@ -1,7 +1,7 @@
 import type { Role } from "@/lib/generated/prisma";
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 import { findUserByEmail } from "@/api/user/user.repository";
 import {

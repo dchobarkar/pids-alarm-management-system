@@ -1,6 +1,6 @@
 import type { Role } from "@/lib/generated/prisma";
 
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 import { MIN_PASSWORD_LENGTH, SALT_ROUNDS } from "@/constants/auth";
 import { EMAIL_REGEX } from "@/constants/auth";
