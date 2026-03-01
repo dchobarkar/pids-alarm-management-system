@@ -33,14 +33,14 @@ jobs:
       - name: Prepare Standalone Deploy
         run: |
           rm -rf deploy/*
-          mkdir -p deploy/.next
+          mkdir -p deploy/.next/standalone
 
-          # Add Build Files
-          cp -r .next/standalone/* deploy/
+          # Copy entire standalone folder, *including root*
+          cp -r .next/standalone/. deploy/.next/standalone/
+
+          # Copy static files (if not already copied into nested .next)
           cp -r .next/static deploy/.next/static
-          cp -r .next/server deploy/.next/server
-          cp -r .next/*.json deploy/.next/
-          cp -r public deploy/
+          cp -r public deploy/public
 
           # Add BUILD_ID
           cp -r .next/BUILD_ID deploy/.next/
